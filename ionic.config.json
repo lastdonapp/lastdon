@@ -1,0 +1,7 @@
+{
+  "name": "lastDon",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
