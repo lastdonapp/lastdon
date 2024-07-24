@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { SupabaseService } from '../services/supabase.service'; // Asegúrate de tener el servicio de Supabase configurado
-import { AlertController } from '@ionic/angular';
 import { Router } from '@angular/router';
+import { SupabaseService } from '../services/supabase.service';
+import { UserModel } from 'src/models/usermodel';
 
 @Component({
   selector: 'app-register',
@@ -11,40 +11,30 @@ import { Router } from '@angular/router';
 export class RegisterPage {
   email: string = "";
   password: string = "";
-  confirmPassword: string = "";
+  userType: string = "";
+  errorMessage: string | null = null;
 
-  constructor(
-    private supabaseService: SupabaseService,
-    private alertController: AlertController,
-    private router: Router
-  ) {}
+  constructor(private supabaseService: SupabaseService, private router: Router) {}
 
   async register() {
-    if (this.password !== this.confirmPassword) {
-      this.showAlert('Error', 'Las contraseñas no coinciden');
+    if (!this.email || !this.password || !this.userType) {
+      this.errorMessage = 'Todos los campos son requeridos.';
       return;
     }
 
     try {
-      const { user, error } = await this.supabaseService.signUp(this.email, this.password);
-      if (error) {
-        this.showAlert('Error', 'No se pudo registrar el usuario');
-      } else {
-        this.showAlert('Éxito', 'Usuario registrado con éxito');
+      // Registro de usuario en la tabla personalizada
+      const response = await this.supabaseService.registerUser(this.email, this.password, this.userType);
+      
+      if (response) {
+        // Redirige al login después de un registro exitoso
         this.router.navigate(['/login']);
+      } else {
+        this.errorMessage = 'Error en el registro';
       }
-    } catch (error) {
-      this.showAlert('Error', 'Ocurrió un error al registrar el usuario');
+    } catch (err) {
+      console.error(err);
+      this.errorMessage = (err as Error).message || 'Ocurrió un error inesperado';
     }
-  }
-
-  async showAlert(header: string, message: string) {
-    const alert = await this.alertController.create({
-      header,
-      message,
-      buttons: ['OK']
-    });
-
-    await alert.present();
   }
 }

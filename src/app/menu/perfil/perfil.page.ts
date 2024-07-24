@@ -1,7 +1,5 @@
 import { Component } from '@angular/core';
-import { SupabaseService } from 'src/app/services/supabase.service'; // Asegúrate de tener el servicio de Supabase configurado
-import { AlertController } from '@ionic/angular';
-import { Router } from '@angular/router';
+import { SupabaseService } from '../../services/supabase.service';
 
 @Component({
   selector: 'app-perfil',
@@ -13,39 +11,28 @@ export class PerfilPage {
   newPassword: string = "";
   confirmPassword: string = "";
 
-  constructor(
-    private supabaseService: SupabaseService,
-    private alertController: AlertController,
-    private router: Router
-  ) {}
+  constructor(private supabaseService: SupabaseService) {}
 
   async changePassword() {
     if (this.newPassword !== this.confirmPassword) {
-      this.showAlert('Error', 'Las nuevas contraseñas no coinciden');
+      alert('Las contraseñas no coinciden');
       return;
     }
 
     try {
       const user = await this.supabaseService.getCurrentUser();
-      if (!user || !user.email) {
-        this.showAlert('Error', 'No se encontró usuario o correo electrónico');
-        return;
+      if (user) {
+        const userId = user.id;
+        const response = await this.supabaseService.updatePassword(userId, this.newPassword).toPromise();
+        if (response.error) {
+          alert('Error al cambiar la contraseña');
+        } else {
+          alert('Contraseña cambiada con éxito');
+        }
       }
-
-      const { error: signInError } = await this.supabaseService.signIn(user.email, this.currentPassword);
-      if (signInError) {
-        this.showAlert('Error', 'Contraseña actual incorrecta');
-        return;
-      }
-
-      const { error: updateError } = await this.supabaseService.updatePassword(this.newPassword);
-      if (updateError) {
-        this.showAlert('Error', 'No se pudo cambiar la contraseña');
-      } else {
-        this.showAlert('Éxito', 'Contraseña cambiada con éxito');
-      }
-    } catch (error) {
-      this.showAlert('Error', 'Ocurrió un error al cambiar la contraseña');
+    } catch (err) {
+      console.error(err);
+      alert('Error inesperado');
     }
   }
 
@@ -53,22 +40,14 @@ export class PerfilPage {
     try {
       const { error } = await this.supabaseService.signOut();
       if (error) {
-        this.showAlert('Error', 'No se pudo cerrar sesión');
+        alert('Error al cerrar sesión');
       } else {
-        this.router.navigate(['/login']);
+        // Redirige al login o realiza otras acciones necesarias
+        console.log('Sesión cerrada');
       }
-    } catch (error) {
-      this.showAlert('Error', 'Ocurrió un error al cerrar sesión');
+    } catch (err) {
+      console.error(err);
+      alert('Error inesperado');
     }
-  }
-
-  async showAlert(header: string, message: string) {
-    const alert = await this.alertController.create({
-      header,
-      message,
-      buttons: ['OK']
-    });
-
-    await alert.present();
   }
 }

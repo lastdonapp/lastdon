@@ -8,18 +8,24 @@ import { SupabaseService } from '../services/supabase.service';
   styleUrls: ['./login.page.scss'],
 })
 export class LoginPage {
-  email: string = '';
-  password: string = '';
+  email: string = "";
+  password: string = "";
+  errorMessage: string | null = null;
 
   constructor(private supabaseService: SupabaseService, private router: Router) {}
 
   async login() {
-    const { user, error } = await this.supabaseService.signIn(this.email, this.password);
-    if (error) {
-      alert(error.message);
-    } else {
-      this.router.navigateByUrl('/menu');
+    try {
+      // Consulta para verificar el usuario
+      const { session, error } = await this.supabaseService.signIn(this.email, this.password);
+      if (session) {
+        this.router.navigate(['/menu']);
+      } else if (error) {
+        this.errorMessage = error.message || 'Credenciales inválidas';
+      }
+    } catch (err) {
+      console.error(err);
+      this.errorMessage = (err as Error).message || 'Ocurrió un error inesperado';
     }
   }
-  
 }
