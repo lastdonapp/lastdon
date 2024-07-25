@@ -15,6 +15,10 @@ const routes: Routes = [
       {
         path: 'agregar-pedidos',
         loadChildren: () => import('./agregar-pedidos/agregar-pedidos.module').then(m => m.AgregarPedidosPageModule)
+      },
+      {
+        path: 'perfil',  // Añadido para la página perfil
+        loadChildren: () => import('./perfil/perfil.module').then(m => m.PerfilPageModule)
       }
     ]
   }

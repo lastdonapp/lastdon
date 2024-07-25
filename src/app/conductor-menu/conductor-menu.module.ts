@@ -7,6 +7,7 @@ import { ConductorMenuPageRoutingModule } from './conductor-menu-routing.module'
 import { ConductorMenuPage } from './conductor-menu.page';
 import { MisPedidosPageModule } from './mis-pedidos/mis-pedidos.module';
 import { AgregarPedidosPageModule } from './agregar-pedidos/agregar-pedidos.module';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 @NgModule({
   imports: [
@@ -15,7 +16,8 @@ import { AgregarPedidosPageModule } from './agregar-pedidos/agregar-pedidos.modu
     IonicModule,
     ConductorMenuPageRoutingModule,
     MisPedidosPageModule,
-    AgregarPedidosPageModule
+    AgregarPedidosPageModule,
+    SharedModule
   ],
   declarations: [ConductorMenuPage]
 })

@@ -18,9 +18,9 @@ import { ContactoPageModule } from './contacto/contacto.module';
     IonicModule,
     RouterModule,  // Asegúrate de que RouterModule esté aquí
     MenuRoutingModule,
+    InformacionPageModule,
     PerfilPageModule,
     PedidosPageModule,
-    InformacionPageModule,
     ContactoPageModule
   ],
   declarations: [MenuPage]

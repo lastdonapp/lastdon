@@ -7,12 +7,11 @@ const routes: Routes = [
     path: '',
     component: MenuPage,
     children: [
-      // Define child routes here
+      { path: 'informacion', loadChildren: () => import('./informacion/informacion.module').then(m => m.InformacionPageModule) },
       { path: 'perfil', loadChildren: () => import('./perfil/perfil.module').then(m => m.PerfilPageModule) },
       { path: 'pedidos', loadChildren: () => import('./pedidos/pedidos.module').then(m => m.PedidosPageModule) },
-      { path: 'informacion', loadChildren: () => import('./informacion/informacion.module').then(m => m.InformacionPageModule) },
       { path: 'contacto', loadChildren: () => import('./contacto/contacto.module').then(m => m.ContactoPageModule) },
-      { path: '', redirectTo: 'perfil', pathMatch: 'full' } // Default route
+      { path: '', redirectTo: 'informacion', pathMatch: 'full' } // Default route
     ]
   }
 ];

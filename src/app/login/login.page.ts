@@ -16,10 +16,14 @@ export class LoginPage {
 
   async login() {
     try {
-      // Consulta para verificar el usuario
-      const { session, error } = await this.supabaseService.signIn(this.email, this.password);
+      const { session, userType, error } = await this.supabaseService.signIn(this.email, this.password);
+      
       if (session) {
-        this.router.navigate(['/menu']);
+        if (userType === 'conductor') {
+          this.router.navigate(['/conductor-menu']);
+        } else {
+          this.router.navigate(['/menu']);
+        }
       } else if (error) {
         this.errorMessage = error.message || 'Credenciales inválidas';
       }
@@ -28,4 +32,5 @@ export class LoginPage {
       this.errorMessage = (err as Error).message || 'Ocurrió un error inesperado';
     }
   }
+  
 }

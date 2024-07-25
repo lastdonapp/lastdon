@@ -9,10 +9,12 @@
     <ion-item routerLink="/conductor-menu/mis-pedidos">
       <ion-label>Mis Pedidos</ion-label>
     </ion-item>
+    <ion-item routerLink="/conductor-menu/agregar-pedido">
+      <ion-label>Agregar Pedido</ion-label>
+    </ion-item>
+    <ion-item routerLink="/conductor-menu/perfil">
+      <ion-label>Perfil</ion-label>
+    </ion-item>
   </ion-list>
-  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button routerLink="/conductor-menu/agregar-pedido">
-      <ion-icon name="add"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
+  <router-outlet></router-outlet> <!-- Añadir el router outlet -->
 </ion-content>

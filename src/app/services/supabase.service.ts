@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { createClient, SupabaseClient, User } from '@supabase/supabase-js';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -8,7 +7,6 @@ import { catchError } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class SupabaseService {
-  private supabase: SupabaseClient;
   private apiUrl = 'https://liimeyoinrftwakomrqs.supabase.co/rest/v1/users';
   private apiKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxpaW1leW9pbnJmdHdha29tcnFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjE3NzIzNzAsImV4cCI6MjAzNzM0ODM3MH0.KGRZUVCHgmBJZcuMIa09wX7ABmk6FkvSzWmz2xY4in4'; // Reemplaza con tu clave de Supabase
 
@@ -20,9 +18,7 @@ export class SupabaseService {
     })
   };
 
-  constructor(private http: HttpClient) {
-    this.supabase = createClient('https://liimeyoinrftwakomrqs.supabase.co', this.apiKey);
-  }
+  constructor(private http: HttpClient) {}
 
   // Registrar usuario
   async registerUser(email: string, password: string, userType: string): Promise<any> {
@@ -42,23 +38,24 @@ export class SupabaseService {
       });
   
       if (!response.ok) {
-        // Manejar el error de la respuesta
         const errorData = await response.json();
+        console.error('Error en la respuesta del servidor:', errorData);
         throw new Error(errorData.message || 'Error en el registro');
       }
   
-      // Devolver la respuesta en caso de éxito
-      return await response.json();
+      // Si el registro es exitoso, simplemente devuelve un objeto de éxito
+      return { success: true };
     } catch (error) {
-      // Lanzar el error para que pueda ser manejado por el llamador
+      console.error('Error al registrar usuario:', error);
       throw error;
     }
   }
+  
 
   // Iniciar sesión - consulta por correo electrónico y contraseña
   async signIn(email: string, password: string): Promise<any> {
     try {
-      const response = await fetch(`${this.apiUrl}?email=eq.${encodeURIComponent(email)}`, {
+      const response = await fetch('https://liimeyoinrftwakomrqs.supabase.co/rest/v1/users?email=eq.' + encodeURIComponent(email), {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -66,21 +63,27 @@ export class SupabaseService {
           'Authorization': `Bearer ${this.apiKey}`
         }
       });
-  
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || 'Error en el inicio de sesión');
       }
-  
+
       const users = await response.json();
-  
-      // Verificar si el usuario y la contraseña coinciden
       const user = users.find((user: any) => user.password === password); // Asegúrate de que la comparación sea segura
-  
-      return {
-        session: user ? { user } : null,
-        error: user ? null : new Error('Credenciales inválidas')
-      };
+
+      if (user) {
+        localStorage.setItem('currentUser', JSON.stringify(user)); // Guarda el usuario en el localStorage
+        return {
+          session: { user },
+          userType: user.user_type // Devuelve el tipo de usuario
+        };
+      } else {
+        return {
+          session: null,
+          error: new Error('Credenciales inválidas')
+        };
+      }
     } catch (error) {
       throw error;
     }
@@ -96,21 +99,23 @@ export class SupabaseService {
   }
 
   // Obtener el usuario actual
-  async getCurrentUser(): Promise<User | null> {
-    const { data: { user }, error } = await this.supabase.auth.getUser();
-    if (error) {
-      throw new Error(error.message);
-    }
-    return user;
+  getCurrentUser(): any {
+    const user = localStorage.getItem('currentUser');
+    return user ? JSON.parse(user) : null;
   }
 
   // Cerrar sesión
   async signOut(): Promise<any> {
-    const { error } = await this.supabase.auth.signOut();
-    if (error) {
-      throw new Error(error.message);
+    try {
+      localStorage.removeItem('currentUser');
+      return { error: null };
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message);
+      } else {
+        throw new Error('An unexpected error occurred during sign out');
+      }
     }
-    return { error: null };
   }
 
   // Manejo de errores

@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { SupabaseService } from '../services/supabase.service';
-import { UserModel } from 'src/models/usermodel';
 
 @Component({
   selector: 'app-register',
@@ -25,15 +24,16 @@ export class RegisterPage {
     try {
       // Registro de usuario en la tabla personalizada
       const response = await this.supabaseService.registerUser(this.email, this.password, this.userType);
-      
-      if (response) {
+      console.log('Usuario registrado:', response);
+
+      if (response.success) {
         // Redirige al login después de un registro exitoso
         this.router.navigate(['/login']);
       } else {
         this.errorMessage = 'Error en el registro';
       }
     } catch (err) {
-      console.error(err);
+      console.error('Error en el registro:', err);
       this.errorMessage = (err as Error).message || 'Ocurrió un error inesperado';
     }
   }
