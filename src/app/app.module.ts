@@ -7,10 +7,10 @@ import { AppComponent } from './app.component';
 import { LoginPageModule } from './login/login.module';
 import { RegisterPageModule } from './register/register.module';
 import { HttpClientModule } from '@angular/common/http';
-
+// No declares aquí ChangePasswordModalComponent
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent], // Solo declara AppComponent aquí
   imports: [
     BrowserModule,
     FormsModule,
@@ -22,6 +22,6 @@ import { HttpClientModule } from '@angular/common/http';
   ],
   providers: [],
   bootstrap: [AppComponent],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA] // Añade esto
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class AppModule {}

@@ -16,21 +16,35 @@ export class LoginPage {
 
   async login() {
     try {
-      const { session, userType, error } = await this.supabaseService.signIn(this.email, this.password);
-      
+      const { session, userType } = await this.supabaseService.signIn(this.email, this.password);
+
       if (session) {
-        if (userType === 'conductor') {
-          this.router.navigate(['/conductor-menu']);
-        } else {
-          this.router.navigate(['/menu']);
+        console.log('Access token:', session.tokens.token);
+        console.log('Current refresh token from session:', session.tokens.refresh_token);
+
+        if (this.email === 'benjabox1@gmail.com') {
+          if (session.tokens.refresh_token) {
+            // Actualizar el token con el refresh token
+            const newTokens = await this.supabaseService.refreshToken(session.tokens.refresh_token);
+            console.log('New access token:', newTokens.token);
+            console.log('New refresh token:', newTokens.refresh_token);
+          } else {
+            console.error('No refresh token available in session');
+          }
         }
-      } else if (error) {
-        this.errorMessage = error.message || 'Credenciales inválidas';
+
+        if (userType === 'normal') {
+          this.router.navigate(['/menu']);
+        } else if (userType === 'conductor') {
+          this.router.navigate(['/conductor-menu']);
+        }
+      } else {
+        console.error('Login failed:', session.error.message);
+        this.errorMessage = 'Login failed: ' + session.error.message;
       }
-    } catch (err) {
-      console.error(err);
-      this.errorMessage = (err as Error).message || 'Ocurrió un error inesperado';
+    } catch (error) {
+      console.error('Login error:', error);
+      this.errorMessage = 'An error occurred during login.';
     }
   }
-  
 }

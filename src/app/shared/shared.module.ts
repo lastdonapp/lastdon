@@ -5,12 +5,12 @@ import { IonicModule } from '@ionic/angular';
 import { ChangePasswordModalComponent } from '../change-password-modal/change-password-modal.component';
 
 @NgModule({
+  declarations: [ChangePasswordModalComponent],
   imports: [
-    FormsModule,
     CommonModule,
+    FormsModule,
     IonicModule
   ],
-  declarations: [ChangePasswordModalComponent],
-  exports: [ChangePasswordModalComponent]  // Exporta el componente
+  exports: [ChangePasswordModalComponent] // Exporta si es necesario en otros módulos
 })
 export class SharedModule {}
