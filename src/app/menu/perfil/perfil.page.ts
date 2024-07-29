@@ -1,20 +1,48 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { SupabaseService } from '../../services/supabase.service';
-import { ChangePasswordModalComponent } from 'src/app/change-password-modal/change-password-modal.component';// Asegúrate de que la ruta sea correcta
+import { ChangePasswordModalComponent } from 'src/app/change-password-modal/change-password-modal.component';
 
 @Component({
   selector: 'app-perfil',
   templateUrl: './perfil.page.html',
   styleUrls: ['./perfil.page.scss'],
 })
-export class PerfilPage {
+export class PerfilPage implements OnInit {
+  isDayMode: boolean = false; // Estado inicial
+
   constructor(
-    private supabaseService: SupabaseService, 
+    private supabaseService: SupabaseService,
     private router: Router,
     private modalController: ModalController
   ) {}
+
+  ngOnInit() {
+    // Verificar el modo almacenado en localStorage
+    const savedMode = localStorage.getItem('mode');
+    if (savedMode) {
+      this.isDayMode = savedMode === 'day';
+      this.applyMode();
+    }
+  }
+
+  toggleMode() {
+    this.isDayMode = !this.isDayMode;
+    this.applyMode();
+    // Guardar el modo en localStorage
+    localStorage.setItem('mode', this.isDayMode ? 'day' : 'night');
+  }
+
+  applyMode() {
+    if (this.isDayMode) {
+      document.body.classList.add('day-mode');
+      document.body.classList.remove('night-mode');
+    } else {
+      document.body.classList.add('night-mode');
+      document.body.classList.remove('day-mode');
+    }
+  }
 
   async openChangePasswordModal() {
     const modal = await this.modalController.create({

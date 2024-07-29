@@ -1,15 +1,21 @@
-/*
- * App Global CSS
- * ----------------------------------------------------------------------------
- * Put style rules here that you want to apply globally. These styles are for
- * the entire app and not just one component. Additionally, this file can be
- * used as an entry point to import other CSS/Sass files to be included in the
- * output CSS.
- * For more information on global stylesheets, visit the documentation:
- * https://ionicframework.com/docs/layout/global-stylesheets
- */
+:root {
+  --ion-background-color: #121212;
+  --ion-text-color: #FFFFFF;
+  --ion-color-primary: #FF5722;
+  --ion-color-primary-rgb: 255, 87, 34;
+  --ion-color-primary-contrast: #FFFFFF;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #E64A19;
+  --ion-color-primary-tint: #FF7043;
+}
 
-/* Core CSS required for Ionic components to work properly */
+/* Otros estilos personalizados */
+body {
+  background-color: var(--ion-background-color);
+  color: var(--ion-text-color);
+}
+
+  
 @import "@ionic/angular/css/core.css";
 
 /* Basic CSS for apps built with Ionic */

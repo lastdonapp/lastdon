@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { SupabaseService } from '../services/supabase.service';
+import { ToastController } from '@ionic/angular';
 
 @Component({
   selector: 'app-login',
@@ -12,7 +13,11 @@ export class LoginPage {
   password: string = "";
   errorMessage: string | null = null;
 
-  constructor(private supabaseService: SupabaseService, private router: Router) {}
+  constructor(
+    private supabaseService: SupabaseService, 
+    private router: Router,
+    private toastController: ToastController
+  ) {}
 
   async login() {
     try {
@@ -34,17 +39,29 @@ export class LoginPage {
         }
 
         if (userType === 'normal') {
+          await this.showToast('Inicio de sesión exitoso', 'success');
           this.router.navigate(['/menu']);
         } else if (userType === 'conductor') {
+          await this.showToast('Inicio de sesión exitoso', 'success');
           this.router.navigate(['/conductor-menu']);
         }
       } else {
         console.error('Login failed:', session.error.message);
-        this.errorMessage = 'Login failed: ' + session.error.message;
+        await this.showToast('Correo o contraseña incorrectos', 'danger');
       }
     } catch (error) {
       console.error('Login error:', error);
-      this.errorMessage = 'An error occurred during login.';
+      await this.showToast('Ocurrió un error durante el inicio de sesión.', 'danger');
     }
+  }
+
+  async showToast(message: string, color: 'success' | 'danger') {
+    const toast = await this.toastController.create({
+      message: message,
+      duration: 2000,
+      position: 'top',
+      color: color
+    });
+    await toast.present();
   }
 }

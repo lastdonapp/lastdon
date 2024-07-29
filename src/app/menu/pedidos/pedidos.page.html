@@ -1,18 +1,22 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Pedidos</ion-title>
+    <ion-title>Mis Pedidos</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-  <ion-card>
+<ion-content class="ion-padding">
+  <ion-card *ngFor="let pedido of pedidos">
     <ion-card-header>
-      <ion-card-title>Pedidos</ion-card-title>
-      <ion-card-subtitle>Card Subtitle</ion-card-subtitle>
+      <ion-card-title>Pedido #{{ pedido.id }}</ion-card-title>
     </ion-card-header>
-  
     <ion-card-content>
-      Here's a small text description for the card content. Nothing more, nothing less.
+      <p><strong>Fecha:</strong> {{ pedido.date_created | date }}</p>
+      <p><strong>Total:</strong> {{ pedido.total_amount | currency }}</p>
+      <!-- Muestra más detalles del pedido según sea necesario -->
     </ion-card-content>
   </ion-card>
+
+  <ion-text color="danger" *ngIf="errorMessage">
+    <p>{{ errorMessage }}</p>
+  </ion-text>
 </ion-content>

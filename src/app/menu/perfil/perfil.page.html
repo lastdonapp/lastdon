@@ -1,6 +1,9 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>Perfil</ion-title>
+    <ion-buttons slot="end">
+      <ion-toggle [(ngModel)]="isDayMode" (ionChange)="toggleMode()"></ion-toggle>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
