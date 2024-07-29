@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 @Injectable({
@@ -21,6 +21,37 @@ export class SupabaseService {
 
   constructor(private http: HttpClient) {}
 
+  // supabase.service.ts
+async getUserInfo(accessToken: string): Promise<any> {
+  try {
+    const url = 'https://api.mercadolibre.com/users/me'; // Usa la URL directa
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.text();
+      console.error('Error al obtener la información del usuario:', errorBody);
+      throw new Error('No se pudo obtener la información del usuario');
+    }
+
+    const userInfo = await response.json();
+    return userInfo;
+  } catch (error) {
+    console.error('Error al obtener la información del usuario:', error);
+    throw error;
+  }
+}
+
+  
+  
+
+  
+  
   // Registrar usuario
   async registerUser(email: string, password: string, userType: string): Promise<any> {
     try {
@@ -51,32 +82,34 @@ export class SupabaseService {
     }
   }
   
+
   // Obtener el token desde la base de datos
-  async getToken(): Promise<any> {
-    try {
-      const response = await fetch(this.tokensUrl, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': this.apiKey,
-          'Authorization': `Bearer ${this.apiKey}`
-        }
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error('Error al obtener el token:', errorData);
-        throw new Error(errorData.message || 'Error al obtener el token');
+async getToken(): Promise<any> {
+  try {
+    const response = await fetch(this.tokensUrl, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': this.apiKey,
+        'Authorization': `Bearer ${this.apiKey}`
       }
+    });
 
-      const tokens = await response.json();
-      console.log('Tokens from Supabase:', tokens); // Verificar qué se está recuperando
-      return tokens[0]; // Suponiendo que solo hay una fila en la tabla
-    } catch (error) {
-      console.error('Error al obtener el token:', error);
-      throw error;
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Error al obtener el token:', errorData);
+      throw new Error(errorData.message || 'Error al obtener el token');
     }
+
+    const tokens = await response.json();
+    console.log('Tokens from Supabase:', tokens); // Verificar qué se está recuperando
+    return tokens[0]; // Suponiendo que solo hay una fila en la tabla
+  } catch (error) {
+    console.error('Error al obtener el token:', error);
+    throw error;
   }
+}
+
 
   // Guardar el token en la base de datos
   async saveToken(accessToken: string, refreshToken: string): Promise<any> {
@@ -89,8 +122,8 @@ export class SupabaseService {
           'Authorization': `Bearer ${this.apiKey}`
         },
         body: JSON.stringify({
-          access_token: accessToken,
-          'refresh-token': refreshToken // Columna con guion
+          token: accessToken,
+          'refresh_token': refreshToken // Columna con guion
         })
       });
 
@@ -119,8 +152,8 @@ export class SupabaseService {
           'Authorization': `Bearer ${this.apiKey}`
         },
         body: JSON.stringify({
-          access_token: accessToken,
-          'refresh-token': refreshToken, // Columna con guion
+          token: accessToken,
+          'refresh_token': refreshToken, // Columna con guion
           time: currentTime // Actualizar la columna 'time'
         })
       });
@@ -138,16 +171,16 @@ export class SupabaseService {
     }
   }
 
-  // Renovar el token usando el refresh-token
-  async refreshToken(refreshToken: string): Promise<any> {
+  // Renovar el token usando el refresh_token
+  async refreshToken(refreshToken: string): Promise<{ access_token: string, refresh_token: string }> {
     try {
       // Log para verificar el valor del refreshToken recibido
       console.log('Received refreshToken:', refreshToken);
-
+  
       if (!refreshToken) {
         throw new Error('Refresh token is undefined or null');
       }
-
+  
       const url = 'https://api.mercadolibre.com/oauth/token';
       const body = new URLSearchParams({
         grant_type: 'refresh_token',
@@ -155,11 +188,11 @@ export class SupabaseService {
         client_secret: 'DUGcxegFSocnuLhoyb41qbf2W3T6TnS3',
         refresh_token: refreshToken
       }).toString();
-
+  
       // Log de la URL y del body que se enviará
       console.log('URL:', url);
       console.log('Body:', body);
-
+  
       const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -167,10 +200,10 @@ export class SupabaseService {
         },
         body: body
       });
-
+  
       // Log del status de la respuesta
       console.log('Response status:', response.status);
-
+  
       // Verifica si la respuesta es JSON
       let responseBody;
       try {
@@ -182,22 +215,26 @@ export class SupabaseService {
         console.error('Response body (text):', responseText);
         throw new Error('Error al interpretar la respuesta de la API');
       }
-
+  
       if (!response.ok) {
         // Si la respuesta no es OK, mostramos el cuerpo del error
         console.error('Error al renovar el token:', responseBody);
         throw new Error(responseBody.error || 'Error al renovar el token');
       }
-
+  
       // Actualiza el token en la base de datos
       await this.updateTokenInTable(responseBody.access_token, responseBody.refresh_token);
-
-      return responseBody;
+  
+      return {
+        access_token: responseBody.access_token,
+        refresh_token: responseBody.refresh_token
+      };
     } catch (error) {
       console.error('Error al renovar el token:', error);
       throw error;
     }
   }
+  
 
   // Obtener el usuario actual
   getCurrentUser(): any {
@@ -227,29 +264,29 @@ export class SupabaseService {
           'Content-Type': 'application/json',
           'apikey': this.apiKey,
           'Authorization': `Bearer ${this.apiKey}`
-        } as Record<string, string>,
+        },
       });
-
+  
       if (!response.ok) {
         const errorData = await response.json();
         console.error('Error en la respuesta del servidor:', errorData);
         throw new Error(errorData.message || 'Error en el inicio de sesión');
       }
-
+  
       const users = await response.json();
       const user = users.find((user: any) => user.password === password);
-
+  
       if (user) {
         // Obtener el token desde la tabla de tokens
         const tokens = await this.getToken();
         console.log('Tokens from database:', tokens); // Verificar qué se está recuperando
-
+  
         // Verifica si tokens es válido
         if (!tokens || !tokens['refresh_token']) {
           console.error('No refresh token found in database');
           throw new Error('Refresh token no encontrado en la base de datos');
         }
-
+  
         localStorage.setItem('currentUser', JSON.stringify(user));
         return {
           session: { user, tokens },
@@ -266,12 +303,18 @@ export class SupabaseService {
       throw error;
     }
   }
+  
 
   // Actualizar el token en la tabla
   async updateTokenInTable(accessToken: string, refreshToken: string): Promise<any> {
     try {
+      // Obtén la hora actual en UTC
+      const now = new Date();
+
+      // Restar 4 horas a la hora actual
+      now.setHours(now.getHours() - 4);
       // Extrae solo la hora de la fecha actual
-      const time = new Date().toISOString().split('T')[1].split('.')[0]; // Formato HH:MM:SS
+      const time = now.toISOString().split('T')[1].split('.')[0]; // Formato HH:MM:SS
   
       const response = await fetch(`${this.tokensUrl}?id=eq.1`, { // Asegúrate de usar el ID correcto
         method: 'PATCH',
@@ -314,9 +357,18 @@ export class SupabaseService {
 
   // Manejo de errores
   private handleError(operation = 'operation') {
-    return (error: any): Observable<any> => {
+    return (error: HttpErrorResponse): Observable<any> => {
       console.error(`${operation} failed: ${error.message}`);
-      return of({ error: error.message });
+      // Puedes personalizar el mensaje de error aquí si es necesario
+      let errorMessage = 'Ocurrió un error desconocido.';
+      if (error.error instanceof ErrorEvent) {
+        // Errores del lado del cliente
+        errorMessage = `Error del cliente: ${error.error.message}`;
+      } else {
+        // Errores del lado del servidor
+        errorMessage = `Error del servidor: ${error.status} ${error.message}`;
+      }
+      return throwError(() => new Error(errorMessage));
     };
   }
 }

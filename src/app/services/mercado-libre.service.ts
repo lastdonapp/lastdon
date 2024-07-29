@@ -8,26 +8,40 @@ import { Observable, of } from 'rxjs';
 })
 export class MercadoLibreService {
 
-  private apiUrl = 'https://api.mercadolibre.com';
-
   constructor(private http: HttpClient, private supabaseService: SupabaseService) { }
 
-  getOrders(): Observable<any> {
-    const user = this.supabaseService.getCurrentUser();
-    
-    console.log('Current user:', user); // Log para ver los detalles del usuario
-
-    if (user && user.token) {
-      console.log('User token:', user.token); // Log para ver el token del usuario
-      const headers = new HttpHeaders().set('Authorization', `Bearer ${user.token}`);
-      const url = `${this.apiUrl}/orders/search?seller_email=${user.email}`;
-      
-      console.log('Request URL:', url); // Log para ver la URL de la solicitud
-
-      return this.http.get(url, { headers });
-    } else {
-      console.error('No user found or missing token');
-      return of({ error: 'No user found or missing token' });
+  async getOrders() {
+    const currentUser = this.supabaseService.getCurrentUser();
+    console.log('Current user:', currentUser);
+  
+    if (!currentUser) {
+      console.error('No current user found');
+      return { error: 'No current user found' };
     }
+  
+    const tokens = await this.supabaseService.getToken();
+    if (!tokens || !tokens.token) {
+      console.error('No user found or missing token');
+      return { error: 'No user found or missing token' };
+    }
+  
+    const url = `https://api.mercadolibre.com/orders/search?seller=${currentUser.id}`;
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${tokens.token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+  
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Error al obtener los pedidos:', errorData);
+      return { error: errorData.message || 'Error al obtener los pedidos' };
+    }
+  
+    const orders = await response.json();
+    return orders;
   }
+  
 }

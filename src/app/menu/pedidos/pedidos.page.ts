@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { MercadoLibreService } from 'src/app/services/mercado-libre.service';
+import { SupabaseService } from 'src/app/services/supabase.service';
 
 @Component({
   selector: 'app-pedidos',
@@ -7,26 +7,17 @@ import { MercadoLibreService } from 'src/app/services/mercado-libre.service';
   styleUrls: ['./pedidos.page.scss'],
 })
 export class PedidosPage implements OnInit {
+  userInfo: any;
 
-  pedidos: any[] = [];
-  errorMessage: string | null = null;
+  constructor(private supabaseService: SupabaseService) {}
 
-  constructor(private mercadoLibreService: MercadoLibreService) {}
-
-  ngOnInit() {
-    this.loadPedidos();
-  }
-
-  loadPedidos() {
-    this.mercadoLibreService.getOrders().subscribe({
-      next: (data) => {
-        console.log('Orders data:', data); // Log para ver los datos de los pedidos
-        this.pedidos = data.results || [];
-      },
-      error: (error) => {
-        console.error('Error loading orders:', error); // Log para ver cualquier error
-        this.errorMessage = 'Error loading orders';
-      }
-    });
+  async ngOnInit() {
+    try {
+      const tokenData = await this.supabaseService.getToken();
+      const accessToken = tokenData.token; // Suponiendo que la propiedad del token es 'token'
+      this.userInfo = await this.supabaseService.getUserInfo(accessToken);
+    } catch (error) {
+      console.error('Error al cargar la información del usuario:', error);
+    }
   }
 }

@@ -1,0 +1,8 @@
+{
+  "/api": {
+    "target": "https://api.mercadolibre.com",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  }
+}

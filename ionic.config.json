@@ -1,7 +1,10 @@
 {
   "name": "lastDon",
-  "integrations": {
-    "capacitor": {}
-  },
-  "type": "angular"
+  "type": "angular",
+  "proxies": [
+    {
+      "path": "/api",
+      "proxyUrl": "https://api.mercadolibre.com"
+    }
+  ]
 }
