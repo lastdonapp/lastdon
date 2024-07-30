@@ -11,6 +11,7 @@ import { ChangePasswordModalComponent } from 'src/app/change-password-modal/chan
 })
 export class PerfilPage implements OnInit {
   isDayMode: boolean = false; // Estado inicial
+  userInfo: any;
 
   constructor(
     private supabaseService: SupabaseService,
@@ -18,8 +19,14 @@ export class PerfilPage implements OnInit {
     private modalController: ModalController
   ) {}
 
-  ngOnInit() {
-    // Verificar el modo almacenado en localStorage
+  async ngOnInit() {
+    try {
+      const tokenData = await this.supabaseService.getToken();
+      const accessToken = tokenData.token;
+      this.userInfo = await this.supabaseService.getUserInfo(accessToken);
+    } catch (error) {
+      console.error('Error al cargar la información del usuario:', error);
+    }
     const savedMode = localStorage.getItem('mode');
     if (savedMode) {
       this.isDayMode = savedMode === 'day';

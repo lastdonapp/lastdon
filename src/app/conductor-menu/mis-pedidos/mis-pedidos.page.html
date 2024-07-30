@@ -1,95 +1,22 @@
-<!-- pedidos.page.html -->
 <ion-header>
-  <ion-toolbar color="primary">
-    <ion-title>Mis Pedidos</ion-title>
+  <ion-toolbar>
+    <ion-title>Mis Ítems</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-card>
-    <ion-card-header color="secondary">
-      <ion-card-title>Información del Usuario</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <ion-grid>
-        <ion-row>
-          <ion-col size="12">
-            <p><strong>ID:</strong> {{ userInfo.id }}</p>
-          </ion-col>
-          <ion-col size="12">
-            <p><strong>Nickname:</strong> {{ userInfo.nickname }}</p>
-          </ion-col>
-          <ion-col size="12">
-            <p><strong>Registration Date:</strong> {{ userInfo.registration_date }}</p>
-          </ion-col>
-          <ion-col size="12">
-            <p><strong>First Name:</strong> {{ userInfo.first_name }}</p>
-          </ion-col>
-          <ion-col size="12">
-            <p><strong>Last Name:</strong> {{ userInfo.last_name }}</p>
-          </ion-col>
-          <ion-col size="12">
-            <p><strong>Gender:</strong> {{ userInfo.gender }}</p>
-          </ion-col>
-          <ion-col size="12">
-            <p><strong>Country ID:</strong> {{ userInfo.country_id }}</p>
-          </ion-col>
-          <ion-col size="12">
-            <p><strong>Email:</strong> {{ userInfo.email }}</p>
-          </ion-col>
-          <ion-col size="12">
-            <p><strong>Identification Number:</strong> {{ userInfo.identification.number }}</p>
-          </ion-col>
-          <ion-col size="12">
-            <p><strong>Identification Type:</strong> {{ userInfo.identification.type }}</p>
-          </ion-col>
-          <ion-col size="12">
-            <p><strong>Address:</strong> {{ userInfo.address.address || 'No address provided' }}</p>
-          </ion-col>
-          <ion-col size="12">
-            <p><strong>City:</strong> {{ userInfo.address.city || 'No city provided' }}</p>
-          </ion-col>
-          <ion-col size="12">
-            <p><strong>State:</strong> {{ userInfo.address.state || 'No state provided' }}</p>
-          </ion-col>
-          <ion-col size="12">
-            <p><strong>Zip Code:</strong> {{ userInfo.address.zip_code || 'No zip code provided' }}</p>
-          </ion-col>
-          <ion-col size="12">
-            <p><strong>Phone Number:</strong> {{ userInfo.phone.number || 'No phone number provided' }}</p>
-          </ion-col>
-          <ion-col size="12">
-            <p><strong>Alternative Phone Number:</strong> {{ userInfo.alternative_phone.number || 'No alternative phone number provided' }}</p>
-          </ion-col>
-          <ion-col size="12">
-            <p><strong>User Type:</strong> {{ userInfo.user_type }}</p>
-          </ion-col>
-          <ion-col size="12">
-            <p><strong>Tags:</strong> {{ userInfo.tags.join(', ') }}</p>
-          </ion-col>
-          <ion-col size="12">
-            <p><strong>Points:</strong> {{ userInfo.points }}</p>
-          </ion-col>
-          <ion-col size="12">
-            <p><strong>Site ID:</strong> {{ userInfo.site_id }}</p>
-          </ion-col>
-          <ion-col size="12">
-            <p><strong>Permalink:</strong> <a [href]="userInfo.permalink" target="_blank">{{ userInfo.permalink }}</a></p>
-          </ion-col>
-          <ion-col size="12">
-            <p><strong>Seller Experience:</strong> {{ userInfo.seller_experience }}</p>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
-    </ion-card-content>
-  </ion-card>
-  
-  <ion-card color="tertiary" *ngIf="!userInfo">
+  <ion-card *ngFor="let item of items">
     <ion-card-header>
-      <ion-card-title>No se pudo cargar la información del usuario</ion-card-title>
+      <ion-card-title>{{ item.title }}</ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      <p>Por favor, intenta de nuevo más tarde.</p>
+      <p><strong>ID:</strong> {{ item.id }}</p>
+      <p><strong>Price:</strong> {{ item.price }}</p>
+      <p><strong>Available Quantity:</strong> {{ item.available_quantity }}</p>
+      <!-- Añade más campos según sea necesario -->
     </ion-card-content>
   </ion-card>
+  <div *ngIf="items.length === 0">
+    <p>No se encontraron ítems.</p>
+  </div>
 </ion-content>

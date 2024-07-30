@@ -65,5 +65,4 @@ export class LoginPage {
       await this.showToast('Ocurrió un error durante el inicio de sesión.', 'danger');
     }
   }
-  
 }

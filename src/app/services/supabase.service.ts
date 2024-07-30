@@ -1,7 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { Observable, throwError, from } from 'rxjs';
+import { catchError , switchMap} from 'rxjs/operators';
+import { HashingService } from './hashing.service';
+
+
 
 @Injectable({
   providedIn: 'root'
@@ -10,6 +13,8 @@ export class SupabaseService {
   private apiUrl = 'https://liimeyoinrftwakomrqs.supabase.co/rest/v1/users';
   private tokensUrl = 'https://liimeyoinrftwakomrqs.supabase.co/rest/v1/tokens'; // URL para tokens
   private apiKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxpaW1leW9pbnJmdHdha29tcnFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjE3NzIzNzAsImV4cCI6MjAzNzM0ODM3MH0.KGRZUVCHgmBJZcuMIa09wX7ABmk6FkvSzWmz2xY4in4'; // Reemplaza con tu clave de Supabase
+  private hashingService = new HashingService();
+
 
   private httpOptions = {
     headers: new HttpHeaders({
@@ -22,39 +27,82 @@ export class SupabaseService {
   constructor(private http: HttpClient) {}
 
   // supabase.service.ts
-async getUserInfo(accessToken: string): Promise<any> {
-  try {
-    const url = 'https://api.mercadolibre.com/users/me'; // Usa la URL directa
+  async getUserItems(accessToken: string): Promise<any> {
+    try {
+      const userInfo = await this.getUserInfo(accessToken);
+      const userId = userInfo.id; // Suponiendo que el 'userId' es 'id'
+      console.log("userinfo ", userInfo);
+      console.log("id ", userId);
+  
+      const url = `/api/users/${userId}/items/search`;
+      
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`
+        }
+      });
+      console.log("response: ", response)
+      if (!response.ok) {
+        throw new Error('Error al obtener los ítems del vendedor');
+      }
+      const data = await response.json();
+      console.log("data: ", data)
+      return data.results;
+    } catch (error: any) {
+      throw new Error('Error al obtener los ítems del vendedor: ' + (error.message || error));
+    }
+  }
+  
+  
+  async getUserOrders(accessToken: string): Promise<any> {
+    try {
+      const userInfo = await this.getUserInfo(accessToken);
+      const sellerId = userInfo.id; // Suponiendo que el 'seller_id' es 'id'
+      console.log("userinfo ", userInfo);
+      console.log("id ", sellerId);
+  
+      const url = `/api/orders/search?buyer=${sellerId}`;
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`
+        }
+      });
+      console.log("response: ", response)
+      if (!response.ok) {
+        throw new Error('Error al obtener los pedidos del comprador');
+      }
+      const data = await response.json();
+      console.log("data: ", data)
+      return data.results;
+    } catch (error: any) {
+      throw new Error('Error al obtener los pedidos del comprador: ' + (error.message || error));
+    }
+  }
+  
+  
+  
+  
+  async getUserInfo(accessToken: string): Promise<any> {
+    const url = `https://api.mercadolibre.com/users/me`;
     const response = await fetch(url, {
-      method: 'GET',
       headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json'
+        'Authorization': `Bearer ${accessToken}`
       }
     });
-
     if (!response.ok) {
-      const errorBody = await response.text();
-      console.error('Error al obtener la información del usuario:', errorBody);
-      throw new Error('No se pudo obtener la información del usuario');
+      throw new Error('Error al obtener la información del usuario');
     }
-
-    const userInfo = await response.json();
-    return userInfo;
-  } catch (error) {
-    console.error('Error al obtener la información del usuario:', error);
-    throw error;
+    const data = await response.json();
+    return data;
   }
-}
-
-  
-  
-
   
   
   // Registrar usuario
   async registerUser(email: string, password: string, userType: string): Promise<any> {
     try {
+      const salt = crypto.randomUUID(); // Genera una sal usando una función disponible en la Web Crypto API
+      const hashedPassword = await this.hashingService.hashPassword(password, salt); // Hashea la contraseña con la sal
+
       const response = await fetch(this.apiUrl, {
         method: 'POST',
         headers: {
@@ -64,7 +112,8 @@ async getUserInfo(accessToken: string): Promise<any> {
         },
         body: JSON.stringify({
           email: email,
-          password: password,
+          password: hashedPassword,
+          salt: salt, // También almacena la sal en la base de datos
           user_type: userType
         })
       });
@@ -81,7 +130,6 @@ async getUserInfo(accessToken: string): Promise<any> {
       throw error;
     }
   }
-  
 
   // Obtener el token desde la base de datos
 async getToken(): Promise<any> {
@@ -274,9 +322,9 @@ async getToken(): Promise<any> {
       }
   
       const users = await response.json();
-      const user = users.find((user: any) => user.password === password);
+      const user = users[0]; // Asumimos que solo hay un usuario por email
   
-      if (user) {
+      if (user && await this.hashingService.verifyPassword(password, user.salt, user.password)) { // Verifica la contraseña hasheada
         // Obtener el token desde la tabla de tokens
         const tokens = await this.getToken();
         console.log('Tokens from database:', tokens); // Verificar qué se está recuperando
@@ -347,10 +395,22 @@ async getToken(): Promise<any> {
   
 
   // Actualizar contraseña
-  updatePassword(userId: string, newPassword: string): Observable<any> {
-    const updateData = { password: newPassword };
-    // Actualiza la contraseña del usuario por ID
-    return this.http.patch<any>(`${this.apiUrl}?id=eq.${userId}`, updateData, this.httpOptions).pipe(
+  updatePassword(userId: string, newPassword: string, conPassword: string): Observable<any> {
+    const user = this.getCurrentUser();
+
+    if (!this.hashingService.verifyPassword(conPassword, user.salt, user.password)) {
+      throw new Error('Current password does not match');
+    }
+
+    const salt = crypto.randomUUID(); // Genera un salt usando la Web Crypto API
+    return from(this.hashingService.hashPassword(newPassword, salt)).pipe(
+      switchMap(hashedPassword => {
+        const updateData = {
+          password: hashedPassword, // Contraseña hasheada
+          salt: salt // Sal a actualizar
+        };
+        return this.http.patch<any>(`${this.apiUrl}?id=eq.${userId}`, updateData, this.httpOptions);
+      }),
       catchError(this.handleError('updatePassword'))
     );
   }

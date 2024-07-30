@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { SupabaseService } from 'src/app/services/supabase.service';
+import { SupabaseService } from '../../services/supabase.service';
 
 @Component({
   selector: 'app-pedidos',
@@ -7,17 +7,17 @@ import { SupabaseService } from 'src/app/services/supabase.service';
   styleUrls: ['./pedidos.page.scss'],
 })
 export class PedidosPage implements OnInit {
-  userInfo: any;
+  orders: any[] = [];
 
   constructor(private supabaseService: SupabaseService) {}
 
   async ngOnInit() {
     try {
       const tokenData = await this.supabaseService.getToken();
-      const accessToken = tokenData.token; // Suponiendo que la propiedad del token es 'token'
-      this.userInfo = await this.supabaseService.getUserInfo(accessToken);
+      const accessToken = tokenData.token;
+      this.orders = await this.supabaseService.getUserOrders(accessToken);
     } catch (error) {
-      console.error('Error al cargar la información del usuario:', error);
+      console.error('Error al cargar los pedidos del comprador:', error);
     }
   }
 }
