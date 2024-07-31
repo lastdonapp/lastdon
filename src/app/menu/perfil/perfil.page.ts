@@ -12,6 +12,7 @@ import { ChangePasswordModalComponent } from 'src/app/change-password-modal/chan
 export class PerfilPage implements OnInit {
   isDayMode: boolean = false; // Estado inicial
   userInfo: any;
+  currentUser: any;
 
   constructor(
     private supabaseService: SupabaseService,
@@ -20,18 +21,27 @@ export class PerfilPage implements OnInit {
   ) {}
 
   async ngOnInit() {
+    // Cargar la información del usuario logueado primero
+    this.currentUser = this.getCurrentUser();
+
     try {
       const tokenData = await this.supabaseService.getToken();
       const accessToken = tokenData.token;
       this.userInfo = await this.supabaseService.getUserInfo(accessToken);
     } catch (error) {
-      console.error('Error al cargar la información del usuario:', error);
+      console.error('Error al cargar la información del usuario de Mercado Libre:', error);
     }
+
     const savedMode = localStorage.getItem('mode');
     if (savedMode) {
       this.isDayMode = savedMode === 'day';
       this.applyMode();
     }
+  }
+
+  getCurrentUser() {
+    const user = localStorage.getItem('currentUser');
+    return user ? JSON.parse(user) : null;
   }
 
   toggleMode() {

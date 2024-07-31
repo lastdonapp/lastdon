@@ -3,6 +3,8 @@ import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http
 import { Observable, throwError, from } from 'rxjs';
 import { catchError , switchMap} from 'rxjs/operators';
 import { HashingService } from './hashing.service';
+import { environment } from 'src/environments/environment.prod';
+import { createClient } from '@supabase/supabase-js';
 
 
 
@@ -10,9 +12,10 @@ import { HashingService } from './hashing.service';
   providedIn: 'root'
 })
 export class SupabaseService {
-  private apiUrl = 'https://liimeyoinrftwakomrqs.supabase.co/rest/v1/users';
-  private tokensUrl = 'https://liimeyoinrftwakomrqs.supabase.co/rest/v1/tokens'; // URL para tokens
-  private apiKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxpaW1leW9pbnJmdHdha29tcnFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjE3NzIzNzAsImV4cCI6MjAzNzM0ODM3MH0.KGRZUVCHgmBJZcuMIa09wX7ABmk6FkvSzWmz2xY4in4'; // Reemplaza con tu clave de Supabase
+  private tokensUrl = environment.tokensUrl; // URL para tokens
+  private apiUrl = environment.apiUrl; // Usa la URL de la API del entorno
+  private apiKey = environment.apiKey; // Usa la API Key del entorno
+  private pedidos = environment.pedUrl
   private hashingService = new HashingService();
 
 
@@ -26,7 +29,6 @@ export class SupabaseService {
 
   constructor(private http: HttpClient) {}
 
-  // supabase.service.ts
   async getUserItems(accessToken: string): Promise<any> {
     try {
       const userInfo = await this.getUserInfo(accessToken);
@@ -414,6 +416,54 @@ async getToken(): Promise<any> {
       catchError(this.handleError('updatePassword'))
     );
   }
+  
+  async addPedido(pedido: any): Promise<any> {
+    try {
+      const response = await fetch(`${this.pedidos}`, { // Ajusta la URL si es necesario
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': this.apiKey, // API Key para autorización
+          'Authorization': `Bearer ${this.apiKey}` // Autorización con Bearer Token
+        },
+        body: JSON.stringify({
+          direccion_pedido: pedido.direccionPedido,
+          direccion_entrega: pedido.direccionEntrega,
+          nombre_destinatario: pedido.nombreDestinatario,
+          numeracion_casa: pedido.numeracionCasa,
+          vivienda: pedido.vivienda,
+          comuna: pedido.comuna,
+          telefono: pedido.telefono,
+          cantidad_paquetes: pedido.cantidadPaquetes,
+          dimensiones: pedido.dimensiones, // Cambiado de "resistente" a "dimensiones"
+          fragil: pedido.fragil,
+          cambio: pedido.cambio,
+          excede_10_kilos: pedido.excede10Kilos,
+          fecha: pedido.fecha,
+          costo: pedido.costo,
+          estado: pedido.estado,
+          fecha_tomado: pedido.fechaTomado,
+          conductor: pedido.conductor,
+          usuario: pedido.usuario,
+          codigo: pedido.codigo
+        })
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Error en la respuesta del servidor:', errorData);
+        throw new Error(errorData.message || 'Error al agregar pedido');
+      }
+  
+      const data = await response.json();
+      return { data, error: null };
+    } catch (error) {
+      console.error('Error al agregar pedido:', error);
+      return { data: null, error };
+    }
+  }
+  
+
 
   // Manejo de errores
   private handleError(operation = 'operation') {

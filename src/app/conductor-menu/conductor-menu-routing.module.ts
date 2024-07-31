@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-
 import { ConductorMenuPage } from './conductor-menu.page';
 
 const routes: Routes = [
@@ -17,7 +16,7 @@ const routes: Routes = [
         loadChildren: () => import('./agregar-pedidos/agregar-pedidos.module').then(m => m.AgregarPedidosPageModule)
       },
       {
-        path: 'perfil',  // Añadido para la página perfil
+        path: 'perfil',
         loadChildren: () => import('./perfil/perfil.module').then(m => m.PerfilPageModule)
       }
     ]
@@ -26,6 +25,6 @@ const routes: Routes = [
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule],
+  exports: [RouterModule]
 })
-export class ConductorMenuPageRoutingModule {}
+export class ConductorMenuPageRoutingModule { }

@@ -1,0 +1,277 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Agregar Pedido</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Datos del Pedido</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+      <form (ngSubmit)="onSubmit()" #pedidoForm="ngForm">
+
+        <!-- Direcciones y datos básicos -->
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Dirección del Pedido</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-item>
+              
+              <ion-input
+                [(ngModel)]="pedido.direccionPedido"
+                name="direccionPedido"
+                #direccionPedido="ngModel"
+                required
+              ></ion-input>
+            </ion-item>
+            <ion-text color="danger" *ngIf="direccionPedido.invalid && (direccionPedido.dirty || direccionPedido.touched)">
+              <p *ngIf="direccionPedido.errors?.['required']">La dirección del pedido es requerida.</p>
+            </ion-text>
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Dirección de Entrega</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-item>
+              
+              <ion-input
+                [(ngModel)]="pedido.direccionEntrega"
+                name="direccionEntrega"
+                #direccionEntrega="ngModel"
+                required
+              ></ion-input>
+            </ion-item>
+            <ion-text color="danger" *ngIf="direccionEntrega.invalid && (direccionEntrega.dirty || direccionEntrega.touched)">
+              <p *ngIf="direccionEntrega.errors?.['required']">La dirección de entrega es requerida.</p>
+            </ion-text>
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Nombre del Destinatario</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-item>
+              
+              <ion-input
+                [(ngModel)]="pedido.nombreDestinatario"
+                name="nombreDestinatario"
+                #nombreDestinatario="ngModel"
+                required
+              ></ion-input>
+            </ion-item>
+            <ion-text color="danger" *ngIf="nombreDestinatario.invalid && (nombreDestinatario.dirty || nombreDestinatario.touched)">
+              <p *ngIf="nombreDestinatario.errors?.['required']">El nombre del destinatario es requerido.</p>
+            </ion-text>
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Numeración de la Casa</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-item>
+              
+              <ion-input
+                [(ngModel)]="pedido.numeracionCasa"
+                name="numeracionCasa"
+                #numeracionCasa="ngModel"
+                required
+              ></ion-input>
+            </ion-item>
+            <ion-text color="danger" *ngIf="numeracionCasa.invalid && (numeracionCasa.dirty || numeracionCasa.touched)">
+              <p *ngIf="numeracionCasa.errors?.['required']">La numeración de la casa es requerida.</p>
+            </ion-text>
+          </ion-card-content>
+        </ion-card>
+
+        <!-- Vivienda -->
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Vivienda</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-item>
+    
+              <ion-select
+                [(ngModel)]="pedido.vivienda"
+                name="vivienda"
+                #vivienda="ngModel"
+                required
+              >
+                <ion-select-option value="casa">Casa</ion-select-option>
+                <ion-select-option value="departamento">Departamento</ion-select-option>
+                <ion-select-option value="recinto">Recinto</ion-select-option>
+              </ion-select>
+            </ion-item>
+            <ion-text color="danger" *ngIf="vivienda.invalid && (vivienda.dirty || vivienda.touched)">
+              <p *ngIf="vivienda.errors?.['required']">La vivienda es requerida.</p>
+            </ion-text>
+          </ion-card-content>
+        </ion-card>
+
+        <!-- Comuna -->
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Comuna</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-item>
+              
+              <ion-select
+                [(ngModel)]="pedido.comuna"
+                name="comuna"
+                #comuna="ngModel"
+                required
+              >
+                <ion-select-option *ngFor="let comuna of comunas" [value]="comuna">{{comuna}}</ion-select-option>
+              </ion-select>
+            </ion-item>
+            <ion-text color="danger" *ngIf="comuna.invalid && (comuna.dirty || comuna.touched)">
+              <p *ngIf="comuna.errors?.['required']">La comuna es requerida.</p>
+            </ion-text>
+          </ion-card-content>
+        </ion-card>
+
+        <!-- Teléfono -->
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Teléfono</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-item>
+              <ion-note slot="start" style="font-size: 16px; font-weight: bold; margin-right: 8px;">+569</ion-note>
+              <ion-input
+                [(ngModel)]="telefonoInput"
+                name="telefono"
+                #telefono="ngModel"
+                type="tel"
+                pattern="[0-9]{8}"
+                placeholder="Ingrese número de teléfono"
+                required
+                (ngModelChange)="onTelefonoChange($event)"
+                style="flex: 1;"
+              ></ion-input>
+            </ion-item>
+            <ion-text color="danger" *ngIf="telefono.invalid && (telefono.dirty || telefono.touched)">
+              <p *ngIf="telefono.errors?.['required']">El teléfono es requerido.</p>
+              <p *ngIf="telefono.errors?.['pattern']">El número de teléfono debe tener 8 dígitos.</p>
+            </ion-text>
+          </ion-card-content>
+        </ion-card>
+
+        <!-- Cantidad de Paquetes -->
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Cantidad de Paquetes</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-item>
+              
+              <ion-input
+                [(ngModel)]="pedido.cantidadPaquetes"
+                name="cantidadPaquetes"
+                #cantidadPaquetes="ngModel"
+                type="number"
+                min="0"
+                required
+                (ngModelChange)="updateCosto()"
+              ></ion-input>
+            </ion-item>
+            <ion-text color="danger" *ngIf="cantidadPaquetes.invalid && (cantidadPaquetes.dirty || cantidadPaquetes.touched)">
+              <p *ngIf="cantidadPaquetes.errors?.['required']">La cantidad de paquetes es requerida.</p>
+              <p *ngIf="cantidadPaquetes.errors?.['min']">La cantidad de paquetes no puede ser negativa.</p>
+            </ion-text>
+          </ion-card-content>
+        </ion-card>
+
+        <!-- Dimensiones -->
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Dimensiones</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-item>
+              <ion-select
+                [(ngModel)]="pedido.dimensiones.unidad"
+                name="dimensionesUnidad"
+                #dimensionesUnidad="ngModel"
+                required
+                (ngModelChange)="updateCosto()"
+                style="flex: 1;"
+              >
+                <ion-select-option value="metros">Metros</ion-select-option>
+                <ion-select-option value="centimetros">Centímetros</ion-select-option>
+              </ion-select>
+              <ion-input
+                [(ngModel)]="pedido.dimensiones.valor"
+                name="dimensionesValor"
+                #dimensionesValor="ngModel"
+                type="number"
+                min="0"
+                required
+                placeholder="Valor"
+                (ngModelChange)="updateCosto()"
+                style="flex: 2;"
+              ></ion-input>
+            </ion-item>
+            <ion-text color="danger" *ngIf="dimensionesUnidad.invalid && (dimensionesUnidad.dirty || dimensionesUnidad.touched)">
+              <p *ngIf="dimensionesUnidad.errors?.['required']">La unidad de dimensiones es requerida.</p>
+            </ion-text>
+            <ion-text color="danger" *ngIf="dimensionesValor.invalid && (dimensionesValor.dirty || dimensionesValor.touched)">
+              <p *ngIf="dimensionesValor.errors?.['required']">El valor de las dimensiones es requerido.</p>
+              <p *ngIf="dimensionesValor.errors?.['min']">El valor de las dimensiones no puede ser negativo.</p>
+            </ion-text>
+          </ion-card-content>
+        </ion-card>
+
+        <!-- Otros Campos -->
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Otros Campos</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-item>
+              <ion-label>¿Es para cambio?</ion-label>
+              <ion-checkbox [(ngModel)]="pedido.cambio" name="cambio"></ion-checkbox>
+            </ion-item>
+
+            <ion-item>
+              <ion-label>¿Excede 10 Kilos?</ion-label>
+              <ion-checkbox [(ngModel)]="pedido.excede10Kilos" name="excede10Kilos"></ion-checkbox>
+            </ion-item>
+          </ion-card-content>
+        </ion-card>
+
+        <!-- Costo -->
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Costo</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-item>
+              <ion-label>CLP$ </ion-label>
+              <ion-input [(ngModel)]="pedido.costo" name="costo" readonly></ion-input>
+            </ion-item>
+          </ion-card-content>
+        </ion-card>
+
+        <!-- Botón de Envío -->
+        <ion-card>
+          <ion-card-content>
+            <ion-button expand="block" type="submit" [disabled]="pedidoForm.invalid">Agregar Pedido</ion-button>
+          </ion-card-content>
+        </ion-card>
+      </form>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

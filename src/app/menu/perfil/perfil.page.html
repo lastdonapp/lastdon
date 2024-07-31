@@ -11,9 +11,20 @@
   <ion-button expand="block" (click)="openChangePasswordModal()">Cambiar Contraseña</ion-button>
   <ion-button expand="block" color="danger" (click)="logout()">Cerrar Sesión</ion-button>
 
-  <ion-card *ngIf="userInfo">
+  <ion-card *ngIf="currentUser">
     <ion-card-header>
       <ion-card-title>Información del Usuario</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p><strong>Email:</strong> {{ currentUser.email }}</p>
+      <p><strong>Fecha de Registro:</strong> {{ currentUser.created_at }}</p>
+      <p><strong>Tipo de Usuario:</strong> {{ currentUser.user_type }}</p>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card *ngIf="userInfo">
+    <ion-card-header>
+      <ion-card-title>Información del Usuario de Mercado Libre</ion-card-title>
     </ion-card-header>
     <ion-card-content>
       <p><strong>ID:</strong> {{ userInfo.id }}</p>
@@ -43,6 +54,6 @@
   </ion-card>
 
   <div *ngIf="!userInfo">
-    <p>No se pudo cargar la información del usuario.</p>
+    <p>No se pudo cargar la información del usuario de Mercado Libre.</p>
   </div>
 </ion-content>

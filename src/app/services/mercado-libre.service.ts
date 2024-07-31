@@ -1,47 +1,40 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { SupabaseService } from './supabase.service';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
-export class MercadoLibreService {
+export class AuthService {
+  private apiUrl = 'https://api.example.com/oauth/token'; // Reemplaza con la URL de tu API
+  private clientId = 'your-client-id'; // Reemplaza con tu client_id
+  private clientSecret = 'your-client-secret'; // Reemplaza con tu client_secret
+  private audience = 'your-audience'; // Reemplaza con el valor adecuado para el audience
 
-  constructor(private http: HttpClient, private supabaseService: SupabaseService) { }
+  constructor(private http: HttpClient) {}
 
-  async getOrders() {
-    const currentUser = this.supabaseService.getCurrentUser();
-    console.log('Current user:', currentUser);
-  
-    if (!currentUser) {
-      console.error('No current user found');
-      return { error: 'No current user found' };
-    }
-  
-    const tokens = await this.supabaseService.getToken();
-    if (!tokens || !tokens.token) {
-      console.error('No user found or missing token');
-      return { error: 'No user found or missing token' };
-    }
-  
-    const url = `https://api.mercadolibre.com/orders/search?seller=${currentUser.id}`;
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${tokens.token}`,
-        'Content-Type': 'application/json'
-      }
-    });
-  
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error('Error al obtener los pedidos:', errorData);
-      return { error: errorData.message || 'Error al obtener los pedidos' };
-    }
-  
-    const orders = await response.json();
-    return orders;
+  private getAuthHeader(): string {
+    const credentials = `${this.clientId}:${this.clientSecret}`;
+    return `Basic ${btoa(credentials)}`;
   }
-  
+
+  public getToken(): Observable<any> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': this.getAuthHeader()
+    });
+
+    const body = {
+      audience: this.audience,
+      grant_type: 'client_credentials'
+    };
+
+    return this.http.post<any>(this.apiUrl, body, { headers }).pipe(
+      catchError((error) => {
+        console.error('Error al obtener el token:', error);
+        throw error;
+      })
+    );
+  }
 }
