@@ -1,5 +1,7 @@
+// pedidos.page.ts
 import { Component, OnInit } from '@angular/core';
-import { SupabaseService } from '../../services/supabase.service';
+import { SupabaseService } from 'src/app/services/supabase.service';
+import { ToastController } from '@ionic/angular';
 
 @Component({
   selector: 'app-pedidos',
@@ -7,17 +9,40 @@ import { SupabaseService } from '../../services/supabase.service';
   styleUrls: ['./pedidos.page.scss'],
 })
 export class PedidosPage implements OnInit {
-  orders: any[] = [];
+  pedidos: any[] = [];
+  usuario: any = this.supabaseService.getCurrentUser();
+  dimensiones: any = ''
 
-  constructor(private supabaseService: SupabaseService) {}
+  constructor(private supabaseService: SupabaseService, private toastController: ToastController) { }
 
-  async ngOnInit() {
+  ngOnInit() {
+    this.loadPedidos();
+  }
+
+  async loadPedidos() {
     try {
-      const tokenData = await this.supabaseService.getToken();
-      const accessToken = tokenData.token;
-      this.orders = await this.supabaseService.getUserOrders(accessToken);
+      console.log(this.usuario)
+      this.pedidos = await this.supabaseService.getPedidos(this.usuario.email);
+      this.pedidos.forEach((pedido: any) =>{
+        if (pedido.dimensiones){
+          pedido.dimensiones = JSON.parse(pedido.dimensiones);
+        }
+      });
+      if (this.pedidos.length === 0) {
+        this.showToast('No tienes pedidos actualmente.');
+      }
     } catch (error) {
-      console.error('Error al cargar los pedidos del comprador:', error);
+      this.showToast('Error al cargar los pedidos.');
+      console.error('Error al cargar los pedidos:', error);
     }
+  }
+
+  async showToast(message: string) {
+    const toast = await this.toastController.create({
+      message,
+      duration: 2000,
+      position: 'bottom'
+    });
+    toast.present();
   }
 }

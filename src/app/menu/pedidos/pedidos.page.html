@@ -1,3 +1,4 @@
+<!-- pedidos.page.html -->
 <ion-header>
   <ion-toolbar>
     <ion-title>Mis Pedidos</ion-title>
@@ -5,16 +6,34 @@
 </ion-header>
 
 <ion-content>
-  <ion-list *ngIf="orders.length > 0">
-    <ion-item *ngFor="let order of orders">
-      <ion-label>
-        <h2>Pedido ID: {{ order.id }}</h2>
-        <p>Estado: {{ order.status }}</p>
-        <!-- Agrega más detalles según sea necesario -->
-      </ion-label>
+  <ion-list *ngIf="pedidos.length > 0; else noPedidos">
+    <ion-item *ngFor="let pedido of pedidos">
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>{{ pedido.nombre_pedido }}</ion-card-title>
+          <ion-card-subtitle>{{ pedido.fecha }}</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+          <p><strong>Descripción:</strong> {{ pedido.descripcion_pedido }}</p>
+          <p><strong>Dirección de Pedido:</strong> {{ pedido.direccion_pedido }}</p>
+          <p><strong>Dirección de Entrega:</strong> {{ pedido.direccion_entrega }}</p>
+          <p><strong>Destinatario:</strong> {{ pedido.nombre_destinatario }}</p>
+          <p><strong>Comuna:</strong> {{ pedido.comuna }}</p>
+          <p><strong>Teléfono:</strong> {{ pedido.telefono }}</p>
+          <p><strong>Cantidad de Paquetes:</strong> {{ pedido.cantidad_paquetes }}</p>
+          <p><strong>Dimensiones:</strong> {{ pedido.dimensiones.valor }} {{ pedido.dimensiones.unidad }}</p>
+          <p><strong>Fragil:</strong> {{ pedido.fragil ? 'Sí' : 'No' }}</p>
+          <p><strong>Cambio:</strong> {{ pedido.cambio ? 'Sí' : 'No' }}</p>
+          <p><strong>Excede 10 Kilos:</strong> {{ pedido.excede_10_kilos ? 'Sí' : 'No' }}</p>
+          <p><strong>Costo:</strong> {{ pedido.costo }}</p>
+          <p><strong>Estado:</strong> {{ pedido.estado }}</p>
+        </ion-card-content>
+      </ion-card>
     </ion-item>
   </ion-list>
-  <div *ngIf="orders.length === 0">
-    <p>No tienes pedidos actualmente.</p>
-  </div>
+  <ng-template #noPedidos>
+    <ion-text>
+      <h2>No tienes pedidos actualmente.</h2>
+    </ion-text>
+  </ng-template>
 </ion-content>

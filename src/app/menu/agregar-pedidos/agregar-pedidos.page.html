@@ -12,7 +12,44 @@
 
     <ion-card-content>
       <form (ngSubmit)="onSubmit()" #pedidoForm="ngForm">
-
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Nombre del Pedido</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-item>
+              
+              <ion-input
+                [(ngModel)]="pedido.nombrePedido"
+                name="nombrePedido"
+                #nombrePedido="ngModel"
+                required
+              ></ion-input>
+            </ion-item>
+            <ion-text color="danger" *ngIf="nombrePedido.invalid && (nombrePedido.dirty || nombrePedido.touched)">
+              <p *ngIf="nombrePedido.errors?.['required']">El nombre del pedido es requerido.</p>
+            </ion-text>
+          </ion-card-content>
+        </ion-card>
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Descripcion del Pedido</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-item>
+              
+              <ion-input
+                [(ngModel)]="pedido.descripcionPedido"
+                name="descripcionPedido"
+                #descripcionPedido="ngModel"
+                required
+              ></ion-input>
+            </ion-item>
+            <ion-text color="danger" *ngIf="descripcionPedido.invalid && (descripcionPedido.dirty || descripcionPedido.touched)">
+              <p *ngIf="descripcionPedido.errors?.['required']">La descripcion del pedido es requerida.</p>
+            </ion-text>
+          </ion-card-content>
+        </ion-card>
         <!-- Direcciones y datos básicos -->
         <ion-card>
           <ion-card-header>
@@ -240,6 +277,10 @@
             <ion-card-title>Otros Campos</ion-card-title>
           </ion-card-header>
           <ion-card-content>
+            <ion-item>
+              <ion-label>¿Es fragil?</ion-label>
+              <ion-checkbox [(ngModel)]="pedido.fragil" name="fragil"></ion-checkbox>
+            </ion-item>
             <ion-item>
               <ion-label>¿Es para cambio?</ion-label>
               <ion-checkbox [(ngModel)]="pedido.cambio" name="cambio"></ion-checkbox>

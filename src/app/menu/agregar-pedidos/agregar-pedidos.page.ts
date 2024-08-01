@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { SupabaseService } from '../../services/supabase.service';
 import { Router } from '@angular/router';
+import { ToastController } from '@ionic/angular';
 
 @Component({
   selector: 'app-agregar-pedidos',
@@ -9,6 +10,8 @@ import { Router } from '@angular/router';
 })
 export class AgregarPedidosPage implements OnInit {
   pedido: any = {
+    nombrePedido:'',
+    descripcionPedido:'',
     direccionPedido: '',
     direccionEntrega: '',
     nombreDestinatario: '',
@@ -24,6 +27,7 @@ export class AgregarPedidosPage implements OnInit {
     fragil: false,
     cambio: false,
     excede10Kilos: false,
+    fecha: '',
     costo: 0,
     estado: 'por tomar',
     fechaTomado: null,
@@ -41,13 +45,26 @@ export class AgregarPedidosPage implements OnInit {
 
   constructor(
     private supabaseService: SupabaseService,
-    private router: Router
+    private router: Router,
+    private toastController: ToastController
   ) {}
 
   ngOnInit() {
     const user = this.supabaseService.getCurrentUser();
     this.pedido.usuario = user.email;
     this.pedido.codigo = this.generateUniqueCode();
+    this.pedido.fecha = new Date().toISOString();
+  }
+
+  // Definir la función showToast
+  async showToast(message: string, color: string) {
+    const toast = await this.toastController.create({
+      message: message,
+      duration: 2000,
+      position: 'top',
+      color: color
+    });
+    toast.present();
   }
 
   onTelefonoChange(value: string) {
@@ -71,6 +88,7 @@ export class AgregarPedidosPage implements OnInit {
         console.error('Error al agregar pedido:', error);
       } else {
         console.log('Pedido agregado:', data);
+        await this.showToast('pedido agregado exitosamente', 'success');
         this.router.navigate(['/menu']);
       }
     } catch (error) {

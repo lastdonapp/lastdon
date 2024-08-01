@@ -1,22 +1,32 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Mis Ítems</ion-title>
+    <ion-title>Mis Pedidos</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-card *ngFor="let item of items">
-    <ion-card-header>
-      <ion-card-title>{{ item.title }}</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <p><strong>ID:</strong> {{ item.id }}</p>
-      <p><strong>Price:</strong> {{ item.price }}</p>
-      <p><strong>Available Quantity:</strong> {{ item.available_quantity }}</p>
-      <!-- Añade más campos según sea necesario -->
-    </ion-card-content>
-  </ion-card>
-  <div *ngIf="items.length === 0">
-    <p>No se encontraron ítems.</p>
-  </div>
+  <!-- Filtro de estado -->
+  <ion-item>
+    <ion-label>Filtrar por estado</ion-label>
+    <ion-select [(ngModel)]="selectedState" (ionChange)="filterPedidos()">
+      <ion-select-option value="">Todos</ion-select-option>
+      <ion-select-option value="tomado">Tomado</ion-select-option>
+      <ion-select-option value="entregado">Entregado</ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <!-- Lista de pedidos -->
+  <ion-list>
+    <ion-item *ngFor="let pedido of pedidos">
+      <ion-label>
+        <h2>{{ pedido.nombre_pedido }}</h2>
+        <p>{{ pedido.descripcion_pedido }}</p>
+        <p>Estado: {{ pedido.estado }}</p>
+        <p>Fecha tomado: {{ pedido.fecha_tomado | date }}</p>
+      </ion-label>
+      <ion-button (click)="entregarPedido(pedido.id)" *ngIf="pedido.estado === 'tomado'" color="primary">
+        Entregado
+      </ion-button>
+    </ion-item>
+  </ion-list>
 </ion-content>

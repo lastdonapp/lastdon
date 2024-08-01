@@ -1,25 +1,40 @@
+<!-- agregar-pedidos.page.html -->
 <ion-header>
   <ion-toolbar>
-    <ion-title>Agregar Pedido</ion-title>
+    <ion-title>Agregar Pedidos</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>Agregar Nuevo Pedido</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <!-- Formulario para agregar nuevos pedidos -->
-      <ion-item>
-        <ion-label position="floating">Nombre del Pedido</ion-label>
-        <ion-input type="text"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label position="floating">Descripción</ion-label>
-        <ion-input type="text"></ion-input>
-      </ion-item>
-      <ion-button expand="full">Agregar Pedido</ion-button>
-    </ion-card-content>
-  </ion-card>
+  <ion-list *ngIf="pedidos.length > 0; else noPedidos">
+    <ion-item *ngFor="let pedido of pedidos">
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>{{ pedido.nombre_pedido }}</ion-card-title>
+          <ion-card-subtitle>{{ pedido.fecha }}</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+          <p><strong>Descripción:</strong> {{ pedido.descripcion_pedido }}</p>
+          <p><strong>Dirección de Pedido:</strong> {{ pedido.direccion_pedido }}</p>
+          <p><strong>Dirección de Entrega:</strong> {{ pedido.direccion_entrega }}</p>
+          <p><strong>Destinatario:</strong> {{ pedido.nombre_destinatario }}</p>
+          <p><strong>Comuna:</strong> {{ pedido.comuna }}</p>
+          <p><strong>Teléfono:</strong> {{ pedido.telefono }}</p>
+          <p><strong>Cantidad de Paquetes:</strong> {{ pedido.cantidad_paquetes }}</p>
+          <p><strong>Dimensiones:</strong> {{ pedido.dimensiones.valor }} {{ pedido.dimensiones.unidad }}</p>
+          <p><strong>Fragil:</strong> {{ pedido.fragil ? 'Sí' : 'No' }}</p>
+          <p><strong>Cambio:</strong> {{ pedido.cambio ? 'Sí' : 'No' }}</p>
+          <p><strong>Excede 10 Kilos:</strong> {{ pedido.excede_10_kilos ? 'Sí' : 'No' }}</p>
+          <p><strong>Costo:</strong> {{ pedido.costo }}</p>
+          <p><strong>Estado:</strong> {{ pedido.estado }}</p>
+          <ion-button (click)="tomarPedido(pedido.id)" color="primary">Tomar</ion-button>
+        </ion-card-content>
+      </ion-card>
+    </ion-item>
+  </ion-list>
+  <ng-template #noPedidos>
+    <ion-text>
+      <h2>No hay pedidos disponibles para tomar.</h2>
+    </ion-text>
+  </ng-template>
 </ion-content>

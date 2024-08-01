@@ -427,6 +427,8 @@ async getToken(): Promise<any> {
           'Authorization': `Bearer ${this.apiKey}` // Autorización con Bearer Token
         },
         body: JSON.stringify({
+          nombre_pedido: pedido.nombrePedido,
+          descripcion_pedido: pedido.descripcionPedido,
           direccion_pedido: pedido.direccionPedido,
           direccion_entrega: pedido.direccionEntrega,
           nombre_destinatario: pedido.nombreDestinatario,
@@ -435,7 +437,7 @@ async getToken(): Promise<any> {
           comuna: pedido.comuna,
           telefono: pedido.telefono,
           cantidad_paquetes: pedido.cantidadPaquetes,
-          dimensiones: pedido.dimensiones, // Cambiado de "resistente" a "dimensiones"
+          dimensiones: pedido.dimensiones,
           fragil: pedido.fragil,
           cambio: pedido.cambio,
           excede_10_kilos: pedido.excede10Kilos,
@@ -450,19 +452,163 @@ async getToken(): Promise<any> {
       });
   
       if (!response.ok) {
-        const errorData = await response.json();
-        console.error('Error en la respuesta del servidor:', errorData);
-        throw new Error(errorData.message || 'Error al agregar pedido');
+        const errorText = await response.text(); // Obtener el texto de error
+        console.error('Error en la respuesta del servidor:', errorText);
+        throw new Error(errorText || 'Error al agregar pedido');
       }
   
-      const data = await response.json();
-      return { data, error: null };
+      
+  
+      return { data: null, error: null }; // No se espera respuesta útil, devolver null
     } catch (error) {
       console.error('Error al agregar pedido:', error);
       return { data: null, error };
     }
   }
+  //traer pedidos
+  async getPedidos(usuario: string): Promise<any> {
+    try {
+      const response = await fetch(`${this.pedidos}?usuario=eq.${encodeURIComponent(usuario)}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': this.apiKey,
+          'Authorization': `Bearer ${this.apiKey}`
+        }
+      });
   
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Error al obtener los pedidos:', errorData);
+        throw new Error(errorData.message || 'Error al obtener el token');
+      }
+  
+      const pedidos = await response.json();
+      console.log('pedidos Supabase:', pedidos); 
+      return pedidos; 
+    } catch (error) {
+      console.error('Error al obtener los pedidos:', error);
+      throw error;
+    }
+  }
+  
+  async getPedidosPorTomar(): Promise<any> {
+    try {
+      const response = await fetch(`${this.pedidos}?estado=eq.por tomar`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': this.apiKey,
+          'Authorization': `Bearer ${this.apiKey}`
+        }
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Error al obtener los pedidos:', errorData);
+        throw new Error(errorData.message || 'Error al obtener los pedidos');
+      }
+  
+      const pedidos = await response.json();
+      console.log('Pedidos por tomar:', pedidos);
+      return pedidos;
+    } catch (error) {
+      console.error('Error al obtener los pedidos:', error);
+      throw error;
+    }
+  }
+
+  // supabase.service.ts
+  async tomarPedido(pedidoId: string, conductor: string): Promise<any> {
+    try {
+      const response = await fetch(`${this.pedidos}?id=eq.${encodeURIComponent(pedidoId)}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': this.apiKey,
+          'Authorization': `Bearer ${this.apiKey}`
+        },
+        body: JSON.stringify({
+          estado: 'tomado',
+          conductor: conductor,
+          fecha_tomado: new Date().toISOString() // Fecha actual en formato ISO
+        })
+      });
+  
+      // Verificar si la respuesta no es un JSON
+      if (!response.ok) {
+        const errorText = await response.text(); // Obtener el texto de error
+        console.error('Error al actualizar el pedido:', errorText);
+        throw new Error(errorText || 'Error al actualizar el pedido');
+      }
+  
+      // Intentar analizar la respuesta JSON solo si el cuerpo no está vacío
+      const responseText = await response.text();
+      if (responseText.trim() === '') {
+        // Respuesta vacía, podemos asumir que la actualización fue exitosa
+        console.log('Pedido actualizado con éxito, pero sin respuesta JSON');
+        return { success: true };
+      }
+  
+      const updatedPedido = JSON.parse(responseText);
+      console.log('Pedido actualizado:', updatedPedido);
+      return updatedPedido;
+  
+    } catch (error) {
+      console.error('Error al actualizar el pedido:', error);
+      throw error;
+    }
+  }
+  async getPedidosPorConductor(email: string, estado: string): Promise<any[]> {
+    try {
+      const query = estado ? `?conductor=eq.${encodeURIComponent(email)}&estado=eq.${encodeURIComponent(estado)}` : `?conductor=eq.${encodeURIComponent(email)}`;
+      const response = await fetch(`${this.pedidos}${query}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': this.apiKey,
+          'Authorization': `Bearer ${this.apiKey}`
+        }
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error al obtener los pedidos:', errorText);
+        throw new Error(errorText || 'Error al obtener los pedidos');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error al obtener los pedidos:', error);
+      throw error;
+    }
+  }
+
+  async entregarPedido(pedidoId: string): Promise<void> {
+    try {
+      const response = await fetch(`${this.pedidos}?id=eq.${encodeURIComponent(pedidoId)}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': this.apiKey,
+          'Authorization': `Bearer ${this.apiKey}`
+        },
+        body: JSON.stringify({
+          estado: 'entregado'
+        })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error al actualizar el pedido:', errorText);
+        throw new Error(errorText || 'Error al actualizar el pedido');
+      }
+    } catch (error) {
+      console.error('Error al entregar el pedido:', error);
+      throw error;
+    }
+  }
+
 
 
   // Manejo de errores
