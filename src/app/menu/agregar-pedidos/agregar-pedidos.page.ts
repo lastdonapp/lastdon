@@ -33,7 +33,8 @@ export class AgregarPedidosPage implements OnInit {
     fechaTomado: null,
     conductor: '',
     usuario: '',
-    codigo: ''
+    codigo: '',
+    image_url: '' // Asegúrate de incluir esta propiedad para la URL de la foto
   };
 
   comunas: string[] = [
@@ -42,6 +43,7 @@ export class AgregarPedidosPage implements OnInit {
   ];
 
   telefonoInput: string = ''; // Input del teléfono sin el prefijo
+  capturedPhoto: string = ''; // Variable para almacenar la URL de la foto capturada
   photoUrl: string = ''; // URL de la foto del pedido
 
   constructor(
@@ -57,40 +59,37 @@ export class AgregarPedidosPage implements OnInit {
     this.pedido.fecha = new Date().toISOString();
   }
 
-  async takeAndUploadPhoto() {
+  async takePhoto() {
     try {
       // Captura la foto
-      const photo = await this.supabaseService.takePicture();
-  
-      // Genera un nombre único para el archivo usando un timestamp
-      const timestamp = new Date().getTime();
-      const filePath = `photos/photo-${timestamp}.jpeg`;
-  
-      // Subir la foto al bucket de Supabase
-      const { error: uploadError } = await this.supabaseService.uploadImage(photo, filePath);
-  
-      if (uploadError) {
-        throw new Error(`Upload error: ${uploadError.message}`);
+      const photo: any = await this.supabaseService.takePicture();
+      if (photo) {
+        this.createImageFromBlob(photo);
       }
-  
-      // Obtener la URL de la foto subida
-      const { publicURL, error: urlError } = await this.supabaseService.getImageUrl(filePath);
-  
-      if (urlError) {
-        throw new Error(`URL fetch error: ${urlError}`);
-      }
-  
-      // Guardar la URL de la foto
-      this.photoUrl = publicURL || '';
-      console.log('Image uploaded and URL saved:', this.photoUrl);
     } catch (error) {
-      console.error('Error taking or uploading photo:', error);
+      console.error('Error taking photo:', error);
     }
   }
-  
-  
-  
-  
+
+  private createImageFromBlob(photo: Blob) {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      this.capturedPhoto = reader.result as string;
+    };
+    reader.readAsDataURL(photo);
+  }
+
+  private async convertBlobToFile(blob: Blob, fileName: string): Promise<File> {
+    return new Promise<File>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const file = new File([blob], fileName, { type: blob.type });
+        resolve(file);
+      };
+      reader.onerror = reject;
+      reader.readAsArrayBuffer(blob);
+    });
+  }
 
   async showToast(message: string, color: string) {
     const toast = await this.toastController.create({
@@ -117,9 +116,37 @@ export class AgregarPedidosPage implements OnInit {
 
   async onSubmit() {
     try {
-      if (this.photoUrl) {
-        this.pedido.foto = this.photoUrl;
+      if (this.capturedPhoto) {
+        // Genera un nombre único para el archivo usando un timestamp
+        const timestamp = new Date().getTime();
+        const filePath = `photos/photo-${timestamp}.jpeg`;
+
+        // Convertir el Data URL a un blob
+        const blob = await fetch(this.capturedPhoto).then(res => res.blob());
+
+        // Convertir el blob en un archivo
+        const file = await this.convertBlobToFile(blob, filePath);
+
+        // Subir la foto al bucket de Supabase
+        const { error: uploadError } = await this.supabaseService.uploadImage(file, filePath);
+
+        if (uploadError) {
+          throw new Error(`Upload error: ${uploadError.message}`);
+        }
+
+        // Obtener la URL de la foto subida
+        const { publicURL, error: urlError } = await this.supabaseService.getImageUrl(filePath);
+
+        if (urlError) {
+          throw new Error(`URL fetch error: ${urlError}`);
+        }
+
+        // Guardar la URL de la foto
+        this.photoUrl = publicURL || '';
+        this.pedido.image_url = this.photoUrl; // Guarda la URL en el objeto pedido
+        console.log('imagen url ',this.pedido.image_url)
       }
+
       this.pedido.costo = this.calculateCost();
       const { data, error } = await this.supabaseService.addPedido(this.pedido);
       if (error) {
@@ -127,6 +154,7 @@ export class AgregarPedidosPage implements OnInit {
       } else {
         console.log('Pedido agregado:', data);
         await this.showToast('Pedido agregado exitosamente', 'success');
+        this.capturedPhoto = ''; // Limpiar la variable de la foto capturada
         this.router.navigate(['/menu']);
       }
     } catch (error) {

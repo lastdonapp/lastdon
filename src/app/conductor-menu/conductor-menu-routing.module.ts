@@ -18,6 +18,10 @@ const routes: Routes = [
       {
         path: 'perfil',
         loadChildren: () => import('./perfil/perfil.module').then(m => m.PerfilPageModule)
+      },
+      {
+        path: 'detalles-pedido/:id',
+        loadChildren: () => import('./detalles-pedido/detalles-pedido.module').then(m => m.DetallesPedidoPageModule)
       }
     ]
   }

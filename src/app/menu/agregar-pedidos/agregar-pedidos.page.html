@@ -306,17 +306,19 @@
           </ion-card-content>
         </ion-card>
 
-        <ion-card>
+         <ion-card>
           <ion-card-header>
             <ion-card-title>Foto del Pedido</ion-card-title>
           </ion-card-header>
           <ion-card-content>
             <ion-item>
-              <ion-button (click)="takeAndUploadPhoto()">Tomar Foto</ion-button>
+              <ion-label>Foto del pedido</ion-label>
+              <ion-button (click)="takePhoto()">Tomar Foto</ion-button>
             </ion-item>
-            <ion-item *ngIf="photoUrl">
-              <ion-label>Foto Subida:</ion-label>
-              <ion-img [src]="photoUrl"></ion-img>
+        
+            <ion-item *ngIf="capturedPhoto">
+              <ion-label>Foto capturada:</ion-label>
+              <ion-img [src]="capturedPhoto"></ion-img>
             </ion-item>
           </ion-card-content>
         </ion-card>

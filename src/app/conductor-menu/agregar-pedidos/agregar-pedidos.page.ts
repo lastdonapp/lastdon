@@ -1,5 +1,6 @@
 // agregar-pedidos.page.ts
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { SupabaseService } from 'src/app/services/supabase.service';
 
@@ -14,7 +15,8 @@ export class AgregarPedidosPage implements OnInit {
 
   constructor(
     private supabaseService: SupabaseService,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -27,6 +29,11 @@ export class AgregarPedidosPage implements OnInit {
     } catch (error) {
       console.error('Error al cargar pedidos por tomar:', error);
     }
+  }
+
+  async verDetalles(id: string) {
+    // Navega a la página de detalles del pedido
+    this.router.navigate(['conductor-menu/detalles-pedido', id]);
   }
 
   async tomarPedido(pedidoId: string) {

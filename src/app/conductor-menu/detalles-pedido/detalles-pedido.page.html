@@ -1,0 +1,31 @@
+<!-- detalles-pedido.page.html -->
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Detalles del Pedido</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content *ngIf="pedido">
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>{{ pedido.nombre_pedido }}</ion-card-title>
+      <ion-card-subtitle>{{ pedido.fecha }}</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-img *ngIf="pedido.foto" [src]="pedido.foto" alt="Foto del pedido"></ion-img>
+      <p><strong>Descripción:</strong> {{ pedido.descripcion_pedido }}</p>
+      <p><strong>Dirección de Pedido:</strong> {{ pedido.direccion_pedido }}</p>
+      <p><strong>Dirección de Entrega:</strong> {{ pedido.direccion_entrega }}</p>
+      <p><strong>Destinatario:</strong> {{ pedido.nombre_destinatario }}</p>
+      <p><strong>Comuna:</strong> {{ pedido.comuna }}</p>
+      <p><strong>Teléfono:</strong> {{ pedido.telefono }}</p>
+      <p><strong>Cantidad de Paquetes:</strong> {{ pedido.cantidad_paquetes }}</p>
+      <p><strong>Dimensiones:</strong> {{ pedido.dimensiones.valor }} {{ pedido.dimensiones.unidad }}</p>
+      <p><strong>Fragil:</strong> {{ pedido.fragil ? 'Sí' : 'No' }}</p>
+      <p><strong>Cambio:</strong> {{ pedido.cambio ? 'Sí' : 'No' }}</p>
+      <p><strong>Excede 10 Kilos:</strong> {{ pedido.excede_10_kilos ? 'Sí' : 'No' }}</p>
+      <p><strong>Costo:</strong> {{ pedido.costo }}</p>
+      <p><strong>Estado:</strong> {{ pedido.estado }}</p>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

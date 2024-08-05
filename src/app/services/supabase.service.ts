@@ -494,7 +494,8 @@ async getToken(): Promise<any> {
           fecha_tomado: pedido.fechaTomado,
           conductor: pedido.conductor,
           usuario: pedido.usuario,
-          codigo: pedido.codigo
+          codigo: pedido.codigo,
+          image_url: pedido.image_url
         })
       });
   
@@ -537,6 +538,15 @@ async getToken(): Promise<any> {
       console.error('Error al obtener los pedidos:', error);
       throw error;
     }
+  }
+
+  async getPedidoById(id: string) {
+    const { data, error } = await this.supabase
+      .from('pedidos')
+      .select('*')
+      .eq('id', id)
+      .single();
+    return { data, error };
   }
   
   async getPedidosPorTomar(): Promise<any> {
