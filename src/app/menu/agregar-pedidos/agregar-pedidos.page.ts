@@ -10,8 +10,8 @@ import { ToastController } from '@ionic/angular';
 })
 export class AgregarPedidosPage implements OnInit {
   pedido: any = {
-    nombrePedido:'',
-    descripcionPedido:'',
+    nombrePedido: '',
+    descripcionPedido: '',
     direccionPedido: '',
     direccionEntrega: '',
     nombreDestinatario: '',
@@ -42,6 +42,7 @@ export class AgregarPedidosPage implements OnInit {
   ];
 
   telefonoInput: string = ''; // Input del teléfono sin el prefijo
+  photoUrl: string = ''; // URL de la foto del pedido
 
   constructor(
     private supabaseService: SupabaseService,
@@ -56,7 +57,41 @@ export class AgregarPedidosPage implements OnInit {
     this.pedido.fecha = new Date().toISOString();
   }
 
-  // Definir la función showToast
+  async takeAndUploadPhoto() {
+    try {
+      // Captura la foto
+      const photo = await this.supabaseService.takePicture();
+  
+      // Genera un nombre único para el archivo usando un timestamp
+      const timestamp = new Date().getTime();
+      const filePath = `photos/photo-${timestamp}.jpeg`;
+  
+      // Subir la foto al bucket de Supabase
+      const { error: uploadError } = await this.supabaseService.uploadImage(photo, filePath);
+  
+      if (uploadError) {
+        throw new Error(`Upload error: ${uploadError.message}`);
+      }
+  
+      // Obtener la URL de la foto subida
+      const { publicURL, error: urlError } = await this.supabaseService.getImageUrl(filePath);
+  
+      if (urlError) {
+        throw new Error(`URL fetch error: ${urlError}`);
+      }
+  
+      // Guardar la URL de la foto
+      this.photoUrl = publicURL || '';
+      console.log('Image uploaded and URL saved:', this.photoUrl);
+    } catch (error) {
+      console.error('Error taking or uploading photo:', error);
+    }
+  }
+  
+  
+  
+  
+
   async showToast(message: string, color: string) {
     const toast = await this.toastController.create({
       message: message,
@@ -82,13 +117,16 @@ export class AgregarPedidosPage implements OnInit {
 
   async onSubmit() {
     try {
+      if (this.photoUrl) {
+        this.pedido.foto = this.photoUrl;
+      }
       this.pedido.costo = this.calculateCost();
       const { data, error } = await this.supabaseService.addPedido(this.pedido);
       if (error) {
         console.error('Error al agregar pedido:', error);
       } else {
         console.log('Pedido agregado:', data);
-        await this.showToast('pedido agregado exitosamente', 'success');
+        await this.showToast('Pedido agregado exitosamente', 'success');
         this.router.navigate(['/menu']);
       }
     } catch (error) {

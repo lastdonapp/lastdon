@@ -5,6 +5,8 @@ import { catchError , switchMap} from 'rxjs/operators';
 import { HashingService } from './hashing.service';
 import { environment } from 'src/environments/environment.prod';
 import { createClient } from '@supabase/supabase-js';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+
 
 
 
@@ -15,8 +17,10 @@ export class SupabaseService {
   private tokensUrl = environment.tokensUrl; // URL para tokens
   private apiUrl = environment.apiUrl; // Usa la URL de la API del entorno
   private apiKey = environment.apiKey; // Usa la API Key del entorno
-  private pedidos = environment.pedUrl
+  private pedidos = environment.pedUrl;
+  private URL = environment.URL; // url base
   private hashingService = new HashingService();
+  private supabase = createClient(this.URL, this.apiKey);
 
 
   private httpOptions = {
@@ -28,6 +32,49 @@ export class SupabaseService {
   };
 
   constructor(private http: HttpClient) {}
+
+  async takePicture(): Promise<File> {
+    const image = await Camera.getPhoto({
+      quality: 100,
+      resultType: CameraResultType.Uri,
+      source: CameraSource.Camera
+    });
+
+    const response = await fetch(image.webPath!);
+    const blob = await response.blob();
+
+    // Convertir el Blob a File
+    const file = new File([blob], `photo-${new Date().getTime()}.jpeg`, { type: 'image/jpeg' });
+
+    return file;
+  }
+
+  async uploadImage(file: File, path: string) {
+    const { data, error } = await this.supabase.storage.from('imagenes').upload(path, file);
+    return { data, error };
+  }
+
+  async getImageUrl(path: string): Promise<{ publicURL: string | null; error: string | null }> {
+    const { data } = this.supabase.storage.from('imagenes').getPublicUrl(path);
+    if (!data.publicUrl) {
+      return { publicURL: null, error: 'No public URL found' };
+    }
+    return { publicURL: data.publicUrl, error: null };
+  }
+
+
+  async saveImageUrlToTable(imageUrl: string) {
+    const { data, error } = await this.supabase
+      .from('pedidos')
+      .insert([{ image_url: imageUrl }]);
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  }
+
 
   async getUserItems(accessToken: string): Promise<any> {
     try {

@@ -6,5 +6,8 @@
       "path": "/api",
       "proxyUrl": "https://api.mercadolibre.com"
     }
-  ]
+  ],
+  "integrations": {
+    "cordova": {}
+  }
 }

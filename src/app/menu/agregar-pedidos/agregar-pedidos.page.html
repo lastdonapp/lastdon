@@ -306,10 +306,25 @@
           </ion-card-content>
         </ion-card>
 
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Foto del Pedido</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-item>
+              <ion-button (click)="takeAndUploadPhoto()">Tomar Foto</ion-button>
+            </ion-item>
+            <ion-item *ngIf="photoUrl">
+              <ion-label>Foto Subida:</ion-label>
+              <ion-img [src]="photoUrl"></ion-img>
+            </ion-item>
+          </ion-card-content>
+        </ion-card>
+
         <!-- Botón de Envío -->
         <ion-card>
           <ion-card-content>
-            <ion-button expand="block" type="submit" [disabled]="pedidoForm.invalid">Agregar Pedido</ion-button>
+            <ion-button expand="full" type="submit" [disabled]="pedidoForm.form.invalid">Agregar Pedido</ion-button>
           </ion-card-content>
         </ion-card>
       </form>

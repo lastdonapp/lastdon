@@ -1,9 +1,11 @@
+
 const path = require('path');
 
 module.exports = {
   resolve: {
-    fallback: {
-      "crypto": require.resolve("crypto-browserify")
+    alias: {
+      global: path.resolve(__dirname, 'src/polyfills.ts')
     }
   }
 };
+

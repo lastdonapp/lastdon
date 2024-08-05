@@ -38,7 +38,7 @@ export class LoginPage {
         console.log('Access token:', session.tokens.token); // Cambiado de `token` a `access_token`
         console.log('Current refresh token from session:', session.tokens.refresh_token);
   
-        if (this.email === 'benjabox1@gmail.com') {
+        if (this.email === 'admin@gmail.com') {
           if (session.tokens.refresh_token) {
             // Actualizar el token con el refresh token
             const newTokens = await this.supabaseService.refreshToken(session.tokens.refresh_token);
