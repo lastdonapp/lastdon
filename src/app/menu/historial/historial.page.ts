@@ -3,11 +3,11 @@ import { SupabaseService } from 'src/app/services/supabase.service';// Asegúrat
 import { ToastController } from '@ionic/angular';
 
 @Component({
-  selector: 'app-mis-pedidos',
-  templateUrl: './mis-pedidos.page.html',
-  styleUrls: ['./mis-pedidos.page.scss'],
+  selector: 'app-historial',
+  templateUrl: './historial.page.html',
+  styleUrls: ['./historial.page.scss'],
 })
-export class MisPedidosPage implements OnInit {
+export class HistorialPage implements OnInit {
   pedidos: any[] = [];
   selectedState: string = ''; // Valor para filtrar pedidos
 
@@ -32,27 +32,13 @@ export class MisPedidosPage implements OnInit {
 
   async getPedidos(email: string) {
     try {
-      const pedidos = await this.supabaseService.getPedidosPorConductor(email, this.selectedState);
+      const pedidos = await this.supabaseService.getPedidosPorUsuario(email, this.selectedState);
       this.pedidos = pedidos;
     } catch (error) {
       console.error('Error al obtener los pedidos:', error);
     }
   }
 
-  async entregarPedido(pedidoId: string) {
-    try {
-      await this.supabaseService.entregarPedido(pedidoId);
-      const toast = await this.toastController.create({
-        message: 'Pedido marcado como entregado',
-        duration: 2000,
-        color: 'success'
-      });
-      await toast.present();
-      this.loadPedidos(); // Recargar la lista de pedidos
-    } catch (error) {
-      console.error('Error al entregar el pedido:', error);
-    }
-  }
 
   filterPedidos() {
     // Aplicar filtro por estado

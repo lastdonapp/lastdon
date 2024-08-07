@@ -34,7 +34,8 @@ export class AgregarPedidosPage implements OnInit {
     conductor: '',
     usuario: '',
     codigo: '',
-    image_url: '' // Asegúrate de incluir esta propiedad para la URL de la foto
+    image_url: '', // Asegúrate de incluir esta propiedad para la URL de la foto
+    pagado: false
   };
 
   comunas: string[] = [

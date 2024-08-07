@@ -26,9 +26,19 @@ const routes: Routes = [
       {
         path: 'contacto',
         loadChildren: () => import('./contacto/contacto.module').then(m => m.ContactoPageModule)
+      },
+      {
+        path: 'pagos',
+        loadChildren: () => import('./pagos/pagos.module').then( m => m.PagosPageModule)
+      },
+      {
+        path: 'historial',
+        loadChildren: () => import('./historial/historial.module').then( m => m.HistorialPageModule)
       }
     ]
-  }
+  },
+  
+  
 ];
 
 @NgModule({

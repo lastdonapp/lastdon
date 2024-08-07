@@ -495,7 +495,8 @@ async getToken(): Promise<any> {
           conductor: pedido.conductor,
           usuario: pedido.usuario,
           codigo: pedido.codigo,
-          image_url: pedido.image_url
+          image_url: pedido.image_url,
+          pagado: pedido.pagado
         })
       });
   
@@ -616,6 +617,47 @@ async getToken(): Promise<any> {
       throw error;
     }
   }
+
+  async pagarPedido(pedidoId: string, usuario: string): Promise<any> {
+    try {
+      const response = await fetch(`${this.pedidos}?id=eq.${encodeURIComponent(pedidoId)}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': this.apiKey,
+          'Authorization': `Bearer ${this.apiKey}`
+        },
+        body: JSON.stringify({
+          pagado: true,
+          conductor: usuario,
+          fecha_tomado: new Date().toISOString() // Fecha actual en formato ISO
+        })
+      });
+  
+      // Verificar si la respuesta no es un JSON
+      if (!response.ok) {
+        const errorText = await response.text(); // Obtener el texto de error
+        console.error('Error al actualizar el pedido:', errorText);
+        throw new Error(errorText || 'Error al actualizar el pedido');
+      }
+  
+      // Intentar analizar la respuesta JSON solo si el cuerpo no está vacío
+      const responseText = await response.text();
+      if (responseText.trim() === '') {
+        // Respuesta vacía, podemos asumir que la actualización fue exitosa
+        console.log('Pedido actualizado con éxito, pero sin respuesta JSON');
+        return { success: true };
+      }
+  
+      const updatedPedido = JSON.parse(responseText);
+      console.log('Pedido actualizado:', updatedPedido);
+      return updatedPedido;
+  
+    } catch (error) {
+      console.error('Error al actualizar el pedido:', error);
+      throw error;
+    }
+  }
   async getPedidosPorConductor(email: string, estado: string): Promise<any[]> {
     try {
       const query = estado ? `?conductor=eq.${encodeURIComponent(email)}&estado=eq.${encodeURIComponent(estado)}` : `?conductor=eq.${encodeURIComponent(email)}`;
@@ -640,6 +682,60 @@ async getToken(): Promise<any> {
       throw error;
     }
   }
+
+  async getPedidosPorUsuario(email: string, estado: string): Promise<any[]> {
+    try {
+      const query = estado ? `?usuario=eq.${encodeURIComponent(email)}&estado=eq.${encodeURIComponent(estado)}` : `?usuario=eq.${encodeURIComponent(email)}`;
+      const response = await fetch(`${this.pedidos}${query}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': this.apiKey,
+          'Authorization': `Bearer ${this.apiKey}`
+        }
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error al obtener los pedidos:', errorText);
+        throw new Error(errorText || 'Error al obtener los pedidos');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error al obtener los pedidos:', error);
+      throw error;
+    }
+  }
+  async getPedidosPorUsuarioPorpagar(email: string, estado: string): Promise<any[]> {
+    try {
+      let query = `?usuario=eq.${encodeURIComponent(email)}&pagado=eq.false`;
+      if (estado) {
+        query += `&estado=eq.${encodeURIComponent(estado)}`;
+      }
+  
+      const response = await fetch(`${this.pedidos}${query}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': this.apiKey,
+          'Authorization': `Bearer ${this.apiKey}`
+        }
+      });
+  
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error al obtener los pedidos:', errorText);
+        throw new Error(errorText || 'Error al obtener los pedidos');
+      }
+  
+      return await response.json();
+    } catch (error) {
+      console.error('Error al obtener los pedidos:', error);
+      throw error;
+    }
+  }
+  
 
   async entregarPedido(pedidoId: string): Promise<void> {
     try {
