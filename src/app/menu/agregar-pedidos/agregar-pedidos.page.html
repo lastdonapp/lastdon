@@ -57,39 +57,52 @@
           </ion-card-header>
           <ion-card-content>
             <ion-item>
-              
               <ion-input
                 [(ngModel)]="pedido.direccionPedido"
                 name="direccionPedido"
                 #direccionPedido="ngModel"
                 required
+                (ionInput)="onDireccionPedidoChange($event)"
               ></ion-input>
             </ion-item>
+            <!-- Mostrar sugerencias para Dirección del Pedido -->
+            <ion-list *ngIf="sugerenciasPedido.length > 0">
+              <ion-item *ngFor="let sugerencia of sugerenciasPedido" (click)="seleccionarDireccionPedido(sugerencia)">
+                {{ sugerencia.properties.name }} - {{ sugerencia.properties.city }}
+              </ion-item>
+            </ion-list>
             <ion-text color="danger" *ngIf="direccionPedido.invalid && (direccionPedido.dirty || direccionPedido.touched)">
               <p *ngIf="direccionPedido.errors?.['required']">La dirección del pedido es requerida.</p>
             </ion-text>
           </ion-card-content>
         </ion-card>
-
+        
         <ion-card>
           <ion-card-header>
             <ion-card-title>Dirección de Entrega</ion-card-title>
           </ion-card-header>
           <ion-card-content>
             <ion-item>
-              
               <ion-input
                 [(ngModel)]="pedido.direccionEntrega"
                 name="direccionEntrega"
                 #direccionEntrega="ngModel"
                 required
+                (ionInput)="onDireccionEntregaChange($event)"
               ></ion-input>
             </ion-item>
+            <!-- Mostrar sugerencias para Dirección de Entrega -->
+            <ion-list *ngIf="sugerenciasEntrega.length > 0">
+              <ion-item *ngFor="let sugerencia of sugerenciasEntrega" (click)="seleccionarDireccionEntrega(sugerencia)">
+                {{ sugerencia.properties.name }} - {{ sugerencia.properties.city }}
+              </ion-item>
+            </ion-list>
             <ion-text color="danger" *ngIf="direccionEntrega.invalid && (direccionEntrega.dirty || direccionEntrega.touched)">
               <p *ngIf="direccionEntrega.errors?.['required']">La dirección de entrega es requerida.</p>
             </ion-text>
           </ion-card-content>
         </ion-card>
+        
 
         <ion-card>
           <ion-card-header>

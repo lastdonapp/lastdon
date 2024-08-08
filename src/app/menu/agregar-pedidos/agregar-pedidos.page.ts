@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { SupabaseService } from '../../services/supabase.service';
 import { Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-agregar-pedidos',
@@ -9,6 +12,9 @@ import { ToastController } from '@ionic/angular';
   styleUrls: ['./agregar-pedidos.page.scss'],
 })
 export class AgregarPedidosPage implements OnInit {
+  sugerenciasPedido: any[] = [];
+  sugerenciasEntrega: any[] = [];
+  sugerencias: any[] = []; // Para almacenar las sugerencias
   pedido: any = {
     nombrePedido: '',
     descripcionPedido: '',
@@ -48,6 +54,7 @@ export class AgregarPedidosPage implements OnInit {
   photoUrl: string = ''; // URL de la foto del pedido
 
   constructor(
+    private http: HttpClient,
     private supabaseService: SupabaseService,
     private router: Router,
     private toastController: ToastController
@@ -190,4 +197,44 @@ export class AgregarPedidosPage implements OnInit {
   generateUniqueCode() {
     return 'PED-' + Math.random().toString(36).substr(2, 9).toUpperCase();
   }
+ 
+  buscarDirecciones(query: string): Observable<any> {
+    const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(query)}`;
+    return this.http.get(url).pipe(
+      map((response: any) => response.features)
+    );
+  }
+
+  onDireccionPedidoChange(event: any) {
+    const value = event.target.value;
+    if (value.length > 2) {
+      this.buscarDirecciones(value).subscribe((results: any) => {
+        this.sugerenciasPedido = results;
+      });
+    } else {
+      this.sugerenciasPedido = [];
+    }
+  }
+
+  onDireccionEntregaChange(event: any) {
+    const value = event.target.value;
+    if (value.length > 2) {
+      this.buscarDirecciones(value).subscribe((results: any) => {
+        this.sugerenciasEntrega = results;
+      });
+    } else {
+      this.sugerenciasEntrega = [];
+    }
+  }
+
+  seleccionarDireccionPedido(sugerencia: any) {
+    this.pedido.direccionPedido = sugerencia.properties.name;
+    this.sugerenciasPedido = [];
+  }
+
+  seleccionarDireccionEntrega(sugerencia: any) {
+    this.pedido.direccionEntrega = sugerencia.properties.name;
+    this.sugerenciasEntrega = [];
+  }
+
 }
