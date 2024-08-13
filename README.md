@@ -1,6 +1,6 @@
 # Lastdon - Aplicación de Transporte de Paquetes
 
-![Lastdon Logo](url-del-logo)  <!-- Si tienes un logo, añade la URL aquí -->
+![Lastdon Logo](https://media.licdn.com/dms/image/D4E0BAQHSJ8StZrmgzA/company-logo_200_200/0/1695409052320?e=2147483647&v=beta&t=4YWGmw6vegYybloQ1g2JVMZDW08DgMRJCIYtk7rCPQ4)  <!-- Si tienes un logo, añade la URL aquí -->
 
 **Lastdon** es una aplicación móvil que facilita el transporte de paquetes permitiendo una interacción rápida entre usuarios y conductores. Desarrollada con Ionic, Lastdon proporciona una solución eficiente y segura para gestionar envíos, asegurando que tus productos lleguen a su destino de manera rápida, confiable y segura.
 
