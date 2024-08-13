@@ -14,8 +14,6 @@
 - [Uso](#uso)
 - [Estructura del Proyecto](#estructura-del-proyecto)
 - [Contribución](#contribución)
-- [Licencia](#licencia)
-- [Contacto](#contacto)
 
 ## Descripción
 
