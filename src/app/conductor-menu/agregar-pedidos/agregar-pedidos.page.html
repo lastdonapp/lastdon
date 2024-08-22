@@ -1,7 +1,7 @@
 <!-- agregar-pedidos.page.html -->
 <ion-header>
   <ion-toolbar>
-    <ion-title>Agregar Pedidos</ion-title>
+    <ion-title>Agregar Entrega</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -14,7 +14,6 @@
           <ion-card-subtitle>{{ pedido.fecha }}</ion-card-subtitle>
         </ion-card-header>
         <ion-card-content>
-          <ion-img *ngIf="pedido.image_url" [src]="pedido.image_url" alt="Foto del pedido"></ion-img>
           <p><strong>Dirección de Pedido:</strong> {{ pedido.direccion_pedido }}</p>
           <p><strong>Dirección de Entrega:</strong> {{ pedido.direccion_entrega }}</p>
           <p><strong>Comuna:</strong> {{ pedido.comuna }}</p>

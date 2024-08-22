@@ -1,10 +1,9 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.example.app',
+  appId: 'io.ionic.starter',
   appName: 'lastDon',
   webDir: 'www',
-  bundledWebRuntime: false,
   cordova: {
     preferences: {
       ScrollEnabled: 'false',

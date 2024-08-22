@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { SupabaseService } from 'src/app/services/supabase.service';// Asegúrate de ajustar la ruta según tu estructura
 import { ToastController } from '@ionic/angular';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-mis-pedidos',
@@ -11,7 +12,7 @@ export class MisPedidosPage implements OnInit {
   pedidos: any[] = [];
   selectedState: string = ''; // Valor para filtrar pedidos
 
-  constructor(private supabaseService: SupabaseService, private toastController: ToastController) {}
+  constructor(private supabaseService: SupabaseService, private toastController: ToastController, private router: Router) {}
 
   ngOnInit() {
     this.loadPedidos();
@@ -52,6 +53,11 @@ export class MisPedidosPage implements OnInit {
     } catch (error) {
       console.error('Error al entregar el pedido:', error);
     }
+  }
+
+  async verDetalles(id: string) {
+    // Navega a la página de detalles del pedido
+    this.router.navigate(['conductor-menu/detalles-pedido', id]);
   }
 
   filterPedidos() {

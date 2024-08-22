@@ -8,25 +8,39 @@
   <ion-card>
     <ion-img class="responsive-img" src="assets/img/lastdon-logo.png"></ion-img>
     <ion-card-header>
-      <ion-card-title class="ion-text-center">Registro</ion-card-title>
+      <ion-card-title class="ion-text-center">Crear Cuenta</ion-card-title>
+      <ion-card-subtitle class="ion-text-center">
+        Rellena los campos para crear tu cuenta
+      </ion-card-subtitle>
     </ion-card-header>
     <ion-card-content>
       <ion-item>
-        <ion-label position="floating">Correo Electrónico</ion-label>
-        <ion-input [(ngModel)]="email" type="email" required></ion-input>
+        <ion-label position="stacked">Correo Electrónico</ion-label>
+        <ion-input [(ngModel)]="email" type="email" inputmode="email" placeholder="usuario@ejemplo.com" required></ion-input>
+        <ion-icon name="mail-outline" slot="end"></ion-icon>
       </ion-item>
       <ion-item>
-        <ion-label position="floating">Contraseña</ion-label>
-        <ion-input [(ngModel)]="password" type="password" required></ion-input>
+        <ion-label position="stacked">Contraseña</ion-label>
+        <ion-input [(ngModel)]="password" type="password" placeholder="Mínimo 8 caracteres" required></ion-input>
+        <ion-icon name="lock-closed-outline" slot="end"></ion-icon>
       </ion-item>
+
       <ion-item>
         <ion-label>Tipo de Usuario</ion-label>
-        <ion-select [(ngModel)]="userType" name="userType" required>
-          <ion-select-option value="normal">Usuario Normal</ion-select-option>
-          <ion-select-option value="conductor">Conductor</ion-select-option>
-        </ion-select>
       </ion-item>
-      <ion-button expand="full" (click)="register()">Registrar</ion-button>
+      <ion-radio-group [(ngModel)]="userType">
+        <ion-item>
+          <ion-label>Usuario Normal</ion-label>
+          <ion-radio slot="start" value="normal"></ion-radio>
+        </ion-item>
+        <ion-item>
+          <ion-label>Conductor</ion-label>
+          <ion-radio slot="start" value="conductor"></ion-radio>
+        </ion-item>
+      </ion-radio-group>
+      <ion-note slot="end">Selecciona un tipo de usuario</ion-note>
+
+      <ion-button expand="full" color="primary" (click)="register()">Crear Cuenta</ion-button>
       <ion-text color="danger" *ngIf="errorMessage">
         <p>{{ errorMessage }}</p>
       </ion-text>

@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Mis Pedidos</ion-title>
+    <ion-title>Mis Entregas</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -17,7 +17,7 @@
 
   <!-- Lista de pedidos -->
   <ion-list>
-    <ion-item *ngFor="let pedido of pedidos">
+    <ion-item *ngFor="let pedido of pedidos" (click)="verDetalles(pedido.id)">
       <ion-label>
         <h2>{{ pedido.nombre_pedido }}</h2>
         <p>{{ pedido.descripcion_pedido }}</p>
