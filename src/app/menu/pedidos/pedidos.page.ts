@@ -2,6 +2,7 @@
 import { Component, OnInit } from '@angular/core';
 import { SupabaseService } from 'src/app/services/supabase.service';
 import { ToastController } from '@ionic/angular';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-pedidos',
@@ -13,7 +14,7 @@ export class PedidosPage implements OnInit {
   usuario: any = this.supabaseService.getCurrentUser();
   dimensiones: any = ''
 
-  constructor(private supabaseService: SupabaseService, private toastController: ToastController) { }
+  constructor(private supabaseService: SupabaseService, private toastController: ToastController, private router: Router) { }
 
   ngOnInit() {
     this.loadPedidos();
@@ -35,6 +36,10 @@ export class PedidosPage implements OnInit {
       this.showToast('Error al cargar los pedidos.');
       console.error('Error al cargar los pedidos:', error);
     }
+  }
+  async verDetalles(id: string) {
+    // Navega a la página de detalles del pedido
+    this.router.navigate(['menu/detalles-pedido', id]);
   }
 
   async showToast(message: string) {
