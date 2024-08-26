@@ -146,39 +146,63 @@ export class SupabaseService {
   }
   
   
-  // Registrar usuario
-  async registerUser(email: string, password: string, userType: string): Promise<any> {
-    try {
-      const salt = crypto.randomUUID(); // Genera una sal usando una función disponible en la Web Crypto API
-      const hashedPassword = await this.hashingService.hashPassword(password, salt); // Hashea la contraseña con la sal
+// Función para validar el formato del correo electrónico
+private validateEmailFormat(email: string): boolean {
+  // Expresión regular para validar correos electrónicos
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
 
-      const response = await fetch(this.apiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': this.apiKey,
-          'Authorization': `Bearer ${this.apiKey}`
-        },
-        body: JSON.stringify({
-          email: email,
-          password: hashedPassword,
-          salt: salt, // También almacena la sal en la base de datos
-          user_type: userType
-        })
-      });
+// Función para validar el formato de la contraseña
+private validatePassword(password: string): boolean {
+  // Expresión regular para validar contraseñas
+  const passwordRegex = /^(?=.*[A-Z])(?=.*[\W_])(?=.{8,})/;
+  return passwordRegex.test(password);
+}
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error('Error en la respuesta del servidor:', errorData);
-        throw new Error(errorData.message || 'Error en el registro');
-      }
-
-      return { success: true };
-    } catch (error) {
-      console.error('Error al registrar usuario:', error);
-      throw error;
+// Registrar usuario
+async registerUser(email: string, password: string, userType: string): Promise<any> {
+  try {
+    // Validar formato del correo electrónico
+    if (!this.validateEmailFormat(email)) {
+      throw new Error('Formato de correo electrónico inválido');
     }
+
+    // Validar formato de la contraseña
+    if (!this.validatePassword(password)) {
+      throw new Error('La contraseña debe tener al menos 8 caracteres, incluir una letra mayúscula y un carácter especial');
+    }
+
+    const salt = crypto.randomUUID(); // Genera una sal usando una función disponible en la Web Crypto API
+    const hashedPassword = await this.hashingService.hashPassword(password, salt); // Hashea la contraseña con la sal
+
+    const response = await fetch(this.apiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': this.apiKey,
+        'Authorization': `Bearer ${this.apiKey}`
+      },
+      body: JSON.stringify({
+        email: email,
+        password: hashedPassword,
+        salt: salt, // También almacena la sal en la base de datos
+        user_type: userType
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Error en la respuesta del servidor:', errorData);
+      throw new Error(errorData.message || 'Error en el registro');
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error('Error al registrar usuario:', error);
+    throw error;
   }
+}
 
   // Obtener el token desde la base de datos
 async getToken(): Promise<any> {
