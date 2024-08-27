@@ -161,7 +161,7 @@ private validatePassword(password: string): boolean {
 }
 
 // Registrar usuario
-async registerUser(email: string, password: string, userType: string): Promise<any> {
+async registerUser(email: string, password: string, userType: string, verificado: boolean): Promise<any> {
   try {
     // Validar formato del correo electrónico
     if (!this.validateEmailFormat(email)) {
@@ -187,7 +187,8 @@ async registerUser(email: string, password: string, userType: string): Promise<a
         email: email,
         password: hashedPassword,
         salt: salt, // También almacena la sal en la base de datos
-        user_type: userType
+        user_type: userType,
+        verificado: verificado
       })
     });
 

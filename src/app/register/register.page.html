@@ -21,7 +21,7 @@
       </ion-item>
       <ion-item>
         <ion-label position="stacked">Contraseña</ion-label>
-        <ion-input [(ngModel)]="password" type="password" placeholder="Debe incluye letras mayúsculas, un carácter especial" required></ion-input>
+        <ion-input [(ngModel)]="password" type="password" placeholder="8 caracteres mínimos" required></ion-input>
         <ion-icon name="lock-closed-outline" slot="end"></ion-icon>
       </ion-item>
 
@@ -41,6 +41,7 @@
       <ion-note slot="end">Selecciona un tipo de usuario</ion-note>
 
       <ion-button expand="full" color="primary" (click)="register()">Crear Cuenta</ion-button>
+      <ion-button expand="full" color="primary" (click)="goBack()" >Volver</ion-button>
       <ion-text color="danger" *ngIf="errorMessage">
         <p>{{ errorMessage }}</p>
       </ion-text>

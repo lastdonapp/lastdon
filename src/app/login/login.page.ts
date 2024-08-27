@@ -55,7 +55,10 @@ export class LoginPage {
         } else if (userType === 'conductor') {
           await this.showToast('Inicio de sesión exitoso', 'success');
           this.router.navigate(['/conductor-menu']);
-        }
+        }} else if (userType === 'admin') {
+          await this.showToast('Inicio de sesión exitoso', 'success');
+          this.router.navigate(['/admin-menu']);
+        
       } else {
         console.error('Login failed:', session.error.message);
         await this.showToast('Correo o contraseña incorrectos', 'danger');
