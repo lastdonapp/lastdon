@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { SupabaseService } from 'src/app/services/supabase.service';
 import { ToastController } from '@ionic/angular';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-pagos',
@@ -13,7 +14,7 @@ export class PagosPage implements OnInit {
   totalCosto: number = 0;// Nueva propiedad para almacenar el costo total
   usuario: any = this.supabaseService.getCurrentUser(); 
 
-  constructor(private supabaseService: SupabaseService, private toastController: ToastController) {}
+  constructor(private supabaseService: SupabaseService, private toastController: ToastController, private router: Router) {}
 
   ngOnInit() {
     this.loadPedidos();
@@ -65,4 +66,15 @@ export class PagosPage implements OnInit {
       console.error('Error al tomar el pedido:', error);
     }
   }
+  
+
+ goBack() { 
+ this.router.navigate(['/menu']);
+}
+
+
+
+
+
+
 }

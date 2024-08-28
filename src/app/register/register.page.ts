@@ -73,4 +73,7 @@ export class RegisterPage {
   async goBack(){
     this.router.navigate(['/login']);
   }
+
+
+  
 }

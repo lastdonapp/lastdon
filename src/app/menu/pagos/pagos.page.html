@@ -32,6 +32,7 @@
         <p>Estado: {{ pedido.pagado }}</p>
         <h3>costo: {{ pedido.costo | currency }}</h3>
         <ion-button (click)="pagarPedido(pedido.id)" color="primary">Pagar</ion-button>
+        <ion-button expand="full" color="primary" (click)="goBack()" >Volver</ion-button>
       </ion-label>
     </ion-item>
   </ion-list>

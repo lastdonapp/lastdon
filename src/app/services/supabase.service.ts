@@ -517,7 +517,7 @@ async getToken(): Promise<any> {
           cambio: pedido.cambio,
           excede_10_kilos: pedido.excede10Kilos,
           fecha: pedido.fecha,
-          costo: pedido.costo,
+          costo: pedido.costo * pedido.cantidadPaquetes,
           estado: pedido.estado,
           fecha_tomado: pedido.fechaTomado,
           conductor: pedido.conductor,

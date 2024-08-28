@@ -180,26 +180,29 @@ export class AgregarPedidosPage implements OnInit {
   }
 
   calculateCost() {
-    let cost = 1000; // Costo base
+    let cost = 1000; // Costo base por paquete
+  
     if (this.pedido.excede10Kilos) {
-      cost += 2000;
+      cost += 2000; // Costo adicional por exceder 10 kilos
     }
     if (this.pedido.fragil) {
-      cost += 1000;
+      cost += 1000; // Costo adicional por ser frágil
     }
-    // Puedes agregar más lógica para calcular el costo basado en dimensiones y cantidad de paquetes
-    return cost;
+    if (this.pedido.cambio) {
+      cost += 500; // Costo adicional por requerir cambio
+    }
+  
+    return cost; // Retorna el costo calculado por paquete
   }
 
   updateCosto() {
-    // Lógica para actualizar el costo basado en las dimensiones y cantidad de paquetes
-    let baseCost = 1000; // Costo base
-    let dimensionCost = this.pedido.dimensiones.valor * (this.pedido.dimensiones.unidad === 'metros' ? 1000 : 10); // Ajusta la fórmula según tus necesidades
-
-    // Ejemplo: incrementar costo por cantidad de paquetes
-    let totalCost = baseCost + (this.pedido.cantidadPaquetes * dimensionCost);
-
-    // Ajustar costo final
+    let baseCost = this.calculateCost(); // Costo base calculado por paquete
+    let dimensionCost = this.pedido.dimensiones.valor * (this.pedido.dimensiones.unidad === 'metros' ? 1000 : 10); // Costo por dimensiones
+  
+    // Cálculo del costo total considerando la cantidad de paquetes
+    let totalCost = (baseCost + dimensionCost) * this.pedido.cantidadPaquetes;
+  
+    // Asigna el costo calculado al pedido
     this.pedido.costo = totalCost;
   }
 
