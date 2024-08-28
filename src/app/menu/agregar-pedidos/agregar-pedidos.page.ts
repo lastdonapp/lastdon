@@ -45,9 +45,18 @@ export class AgregarPedidosPage implements OnInit {
   };
 
   comunas: string[] = [
-    'Santiago', 'Las Condes', 'Providencia', 'Ñuñoa', 'La Florida', 
-    'Puente Alto', 'Maipú', 'San Bernardo', 'La Reina', 'Vitacura'
-  ];
+    'Alhué', 'Buin', 'Calera de Tango', 'Cerrillos', 'Cerro Navia',
+    'Colina', 'Conchalí', 'Curacaví', 'El Bosque', 'Estación Central',
+    'Huechuraba', 'Independencia', 'Isla de Maipo', 'La Cisterna', 'La Florida', 
+    'La Granja', 'La Pintana', 'La Reina', 'Lampa', 'Las Condes', 
+    'Lo Barnechea', 'Lo Espejo', 'Lo Prado', 'Macul', 'Maipú', 
+    'María Pinto', 'Melipilla', 'Ñuñoa', 'Padre Hurtado', 'Paine', 
+    'Pedro Aguirre Cerda', 'Peñaflor', 'Peñalolén', 'Pirque', 'Providencia', 
+    'Pudahuel', 'Puente Alto', 'Quilicura', 'Quinta Normal', 'Recoleta', 
+    'Renca', 'San Bernardo', 'San Joaquín', 'San José de Maipo', 'San Miguel', 
+    'San Pedro', 'San Ramón', 'Santiago', 'Talagante', 'Tiltil', 
+    'Vitacura'
+];
 
   telefonoInput: string = ''; // Input del teléfono sin el prefijo
   capturedPhoto: string = ''; // Variable para almacenar la URL de la foto capturada
@@ -235,6 +244,11 @@ export class AgregarPedidosPage implements OnInit {
   seleccionarDireccionEntrega(sugerencia: any) {
     this.pedido.direccionEntrega = sugerencia.properties.name;
     this.sugerenciasEntrega = [];
+  }
+
+
+  goBack() {
+    this.router.navigate(['/menu']);
   }
 
 }

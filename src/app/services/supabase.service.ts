@@ -377,9 +377,9 @@ async getToken(): Promise<any> {
     }
   }
 
-  // Iniciar sesión - consulta por correo electrónico y contraseña
   public async signIn(email: string, password: string): Promise<any> {
     try {
+      // Consulta por correo electrónico
       const response = await fetch(`${this.apiUrl}?email=eq.${encodeURIComponent(email)}`, {
         method: 'GET',
         headers: {
@@ -398,21 +398,24 @@ async getToken(): Promise<any> {
       const users = await response.json();
       const user = users[0]; // Asumimos que solo hay un usuario por email
   
-      if (user && await this.hashingService.verifyPassword(password, user.salt, user.password)) { // Verifica la contraseña hasheada
+      if (user && await this.hashingService.verifyPassword(password, user.salt, user.password)) {
         // Obtener el token desde la tabla de tokens
         const tokens = await this.getToken();
-        console.log('Tokens from database:', tokens); // Verificar qué se está recuperando
+        console.log('Tokens from database:', tokens); 
   
-        // Verifica si tokens es válido
         if (!tokens || !tokens['refresh_token']) {
           console.error('No refresh token found in database');
           throw new Error('Refresh token no encontrado en la base de datos');
         }
   
+        // Guardar el usuario en el almacenamiento local
         localStorage.setItem('currentUser', JSON.stringify(user));
+  
+        // Retornar el session, userType, y verificado
         return {
           session: { user, tokens },
-          userType: user.user_type
+          userType: user.user_type,
+          verificado: user.verificado  // Asegurarse de que el campo verificado exista en la base de datos
         };
       } else {
         return {
@@ -805,4 +808,37 @@ async getToken(): Promise<any> {
       return throwError(() => new Error(errorMessage));
     };
   }
+
+// método para actualizar el estado de verificado del usuario, se utilizará en la administración de usuarios
+  public async updateVerificado(userId: string, verificado: boolean): Promise<void> {
+    try {
+      const response = await fetch(`${this.apiUrl}/${userId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': this.apiKey,
+          'Authorization': `Bearer ${this.apiKey}`
+        },
+        body: JSON.stringify({ verificado })
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Error al actualizar el estado de verificado:', errorData);
+        throw new Error(errorData.message || 'No se pudo actualizar el estado de verificado');
+      }
+  
+      console.log(`Estado de verificado actualizado correctamente para el usuario con ID: ${userId}`);
+    } catch (error) {
+      console.error('Error en la actualización de verificado:', error);
+      throw error;
+    }
+  }
+
+
+
+
+
+
+
 }
