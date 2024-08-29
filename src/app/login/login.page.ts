@@ -56,6 +56,9 @@ export class LoginPage {
         console.log('Access token:', session.tokens.access_token); 
         console.log('Current refresh token from session:', session.tokens.refresh_token);
         console.log('User type:', userType);
+
+           // Almacenar el userType en localStorage
+      localStorage.setItem('userType', userType);
   
         if (this.email === 'admin@gmail.com') {
           if (session.tokens.refresh_token) {

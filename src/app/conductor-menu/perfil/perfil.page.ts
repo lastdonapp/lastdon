@@ -71,6 +71,7 @@ export class PerfilPage implements OnInit {
   async logout() {
     try {
       const { error } = await this.supabaseService.signOut();
+      localStorage.removeItem('userType');
       if (error) {
         alert('Error al cerrar sesión');
       } else {
