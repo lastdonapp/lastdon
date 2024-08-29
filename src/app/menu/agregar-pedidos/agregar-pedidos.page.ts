@@ -122,10 +122,12 @@ export class AgregarPedidosPage implements OnInit {
     // Asegura que solo se ingresen 8 dígitos
     if (/^\d{0,8}$/.test(value)) {
       this.telefonoInput = value;
-      this.pedido.telefono = '+569' + value;
+      this.pedido.telefono = '+569' + value;  // Actualiza el pedido con el nuevo número
     }
+    console.log('Número de teléfono actualizado:', value);
+    console.log('Número de teléfono actualizado:', this.telefonoInput);
   }
-
+  
   onDimensionesChange() {
     // Actualiza el costo cuando se cambian las dimensiones o la unidad
     this.updateCosto();
@@ -165,6 +167,7 @@ export class AgregarPedidosPage implements OnInit {
       }
 
       this.pedido.costo = this.calculateCost();
+      this.onTelefonoChange(this.telefonoInput);
       const { data, error } = await this.supabaseService.addPedido(this.pedido);
       if (error) {
         console.error('Error al agregar pedido:', error);
