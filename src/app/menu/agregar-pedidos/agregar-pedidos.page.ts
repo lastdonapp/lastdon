@@ -5,6 +5,7 @@ import { ToastController } from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-agregar-pedidos',
@@ -66,7 +67,8 @@ export class AgregarPedidosPage implements OnInit {
     private http: HttpClient,
     private supabaseService: SupabaseService,
     private router: Router,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private alertController: AlertController
   ) {}
 
   ngOnInit() {
@@ -133,54 +135,78 @@ export class AgregarPedidosPage implements OnInit {
     this.updateCosto();
   }
 
+
+
   async onSubmit() {
     try {
-      if (this.capturedPhoto) {
-        // Genera un nombre único para el archivo usando un timestamp
-        const timestamp = new Date().getTime();
-        const filePath = `photos/photo-${timestamp}.jpeg`;
-
-        // Convertir el Data URL a un blob
-        const blob = await fetch(this.capturedPhoto).then(res => res.blob());
-
-        // Convertir el blob en un archivo
-        const file = await this.convertBlobToFile(blob, filePath);
-
-        // Subir la foto al bucket de Supabase
-        const { error: uploadError } = await this.supabaseService.uploadImage(file, filePath);
-
-        if (uploadError) {
-          throw new Error(`Upload error: ${uploadError.message}`);
-        }
-
-        // Obtener la URL de la foto subida
-        const { publicURL, error: urlError } = await this.supabaseService.getImageUrl(filePath);
-
-        if (urlError) {
-          throw new Error(`URL fetch error: ${urlError}`);
-        }
-
-        // Guardar la URL de la foto
-        this.photoUrl = publicURL || '';
-        this.pedido.image_url = this.photoUrl; // Guarda la URL en el objeto pedido
-        console.log('imagen url ',this.pedido.image_url)
-      }
-
-      this.pedido.costo = this.calculateCost();
-      this.onTelefonoChange(this.telefonoInput);
-      const { data, error } = await this.supabaseService.addPedido(this.pedido);
-      if (error) {
-        console.error('Error al agregar pedido:', error);
-      } else {
-        console.log('Pedido agregado:', data);
-        await this.showToast('Pedido agregado exitosamente', 'success');
-        this.capturedPhoto = ''; // Limpiar la variable de la foto capturada
-        this.router.navigate(['/menu']);
-      }
+      const alert = await this.alertController.create({
+        header: 'Confirmar Acción',
+        message: '¿Está seguro de confirmar esta acción?',
+        buttons: [
+          {
+            text: 'Cancelar',
+            role: 'cancel',
+            handler: () => {
+              console.log('Pedido cancelado por el usuario');
+            }
+          },
+          {
+            text: 'Confirmar',
+            handler: async () => {
+              if (this.capturedPhoto) {
+                // Genera un nombre único para el archivo usando un timestamp
+                const timestamp = new Date().getTime();
+                const filePath = `photos/photo-${timestamp}.jpeg`;
+  
+                // Convertir el Data URL a un blob
+                const blob = await fetch(this.capturedPhoto).then(res => res.blob());
+  
+                // Convertir el blob en un archivo
+                const file = await this.convertBlobToFile(blob, filePath);
+  
+                // Subir la foto al bucket de Supabase
+                const { error: uploadError } = await this.supabaseService.uploadImage(file, filePath);
+  
+                if (uploadError) {
+                  throw new Error(`Upload error: ${uploadError.message}`);
+                }
+  
+                // Obtener la URL de la foto subida
+                const { publicURL, error: urlError } = await this.supabaseService.getImageUrl(filePath);
+  
+                if (urlError) {
+                  throw new Error(`URL fetch error: ${urlError}`);
+                }
+  
+                // Guardar la URL de la foto
+                this.photoUrl = publicURL || '';
+                this.pedido.image_url = this.photoUrl; // Guarda la URL en el objeto pedido
+                console.log('imagen url ', this.pedido.image_url);
+              }
+  
+              this.pedido.costo = this.calculateCost();
+              this.onTelefonoChange(this.telefonoInput);
+              const { data, error } = await this.supabaseService.addPedido(this.pedido);
+              if (error) {
+                console.error('Error al agregar pedido:', error);
+              } else {
+                console.log('Pedido agregado:', data);
+                await this.showToast('Pedido agregado exitosamente', 'success');
+                this.capturedPhoto = ''; // Limpiar la variable de la foto capturada
+                this.router.navigate(['/menu']);
+              }
+            }
+          }
+        ]
+      });
+  
+      await alert.present();
     } catch (error) {
       console.error('Error inesperado:', error);
     }
   }
+
+
 
   calculateCost() {
     let cost = 1000; // Costo base por paquete
@@ -258,8 +284,5 @@ export class AgregarPedidosPage implements OnInit {
   
 
 
-  goBack() {
-    this.router.navigate(['/menu']);
-  }
 
 }

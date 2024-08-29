@@ -68,10 +68,6 @@ export class PagosPage implements OnInit {
   }
   
 
- goBack() { 
- this.router.navigate(['/menu']);
-}
-
 
 
 

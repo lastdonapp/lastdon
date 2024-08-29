@@ -50,10 +50,6 @@ export class PedidosPage implements OnInit {
     });
     toast.present();
   }
-  goBack() {
-    this.router.navigate(['/menu']);
-  }
-
 
 
 }

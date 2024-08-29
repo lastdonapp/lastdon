@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { SupabaseService } from 'src/app/services/supabase.service';// Asegúrate de ajustar la ruta según tu estructura
 import { ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
+import { AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-mis-pedidos',
@@ -12,7 +13,7 @@ export class MisPedidosPage implements OnInit {
   pedidos: any[] = [];
   selectedState: string = ''; // Valor para filtrar pedidos
 
-  constructor(private supabaseService: SupabaseService, private toastController: ToastController, private router: Router) {}
+  constructor(private supabaseService: SupabaseService, private toastController: ToastController, private router: Router, private alertController: AlertController) {}
 
   ngOnInit() {
     this.loadPedidos();
@@ -42,14 +43,34 @@ export class MisPedidosPage implements OnInit {
 
   async entregarPedido(pedidoId: string) {
     try {
-      await this.supabaseService.entregarPedido(pedidoId);
-      const toast = await this.toastController.create({
-        message: 'Pedido marcado como entregado',
-        duration: 2000,
-        color: 'success'
+      const alert = await this.alertController.create({
+        header: 'Confirmar Entrega',
+        message: '¿Está seguro de marcar este pedido como entregado?',
+        buttons: [
+          {
+            text: 'Cancelar',
+            role: 'cancel',
+            handler: () => {
+              console.log('Entrega cancelada por el usuario');
+            }
+          },
+          {
+            text: 'Confirmar',
+            handler: async () => {
+              await this.supabaseService.entregarPedido(pedidoId);
+              const toast = await this.toastController.create({
+                message: 'Pedido marcado como entregado',
+                duration: 2000,
+                color: 'success'
+              });
+              await toast.present();
+              this.loadPedidos(); // Recargar la lista de pedidos
+            }
+          }
+        ]
       });
-      await toast.present();
-      this.loadPedidos(); // Recargar la lista de pedidos
+  
+      await alert.present();
     } catch (error) {
       console.error('Error al entregar el pedido:', error);
     }
