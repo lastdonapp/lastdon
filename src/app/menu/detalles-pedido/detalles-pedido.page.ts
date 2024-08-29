@@ -28,6 +28,7 @@ export class DetallesPedidoPage implements OnInit {
           throw new Error(error.message);
         }
         this.pedido = data;
+        this.pedido.dimensiones = JSON.parse(this.pedido.dimensiones);
       } catch (error) {
         console.error('Error al cargar el pedido:', error);
       }

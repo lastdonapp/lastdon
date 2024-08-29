@@ -27,7 +27,9 @@ export class AgregarPedidosPage implements OnInit {
     telefono: '+569',
     cantidadPaquetes: 0,
     dimensiones: {
-      valor: 0,
+      alto: 0,
+      ancho: 0,
+      largo: 0,
       unidad: 'metros'
     },
     fragil: false,
@@ -40,7 +42,7 @@ export class AgregarPedidosPage implements OnInit {
     conductor: '',
     usuario: '',
     codigo: '',
-    image_url: '', // Asegúrate de incluir esta propiedad para la URL de la foto
+    image_url: '',
     pagado: false
   };
 
@@ -132,40 +134,31 @@ export class AgregarPedidosPage implements OnInit {
     // Actualiza el costo cuando se cambian las dimensiones o la unidad
     this.updateCosto();
   }
-
+  
   async onSubmit() {
     try {
       if (this.capturedPhoto) {
-        // Genera un nombre único para el archivo usando un timestamp
         const timestamp = new Date().getTime();
         const filePath = `photos/photo-${timestamp}.jpeg`;
-
-        // Convertir el Data URL a un blob
+  
         const blob = await fetch(this.capturedPhoto).then(res => res.blob());
-
-        // Convertir el blob en un archivo
         const file = await this.convertBlobToFile(blob, filePath);
-
-        // Subir la foto al bucket de Supabase
+  
         const { error: uploadError } = await this.supabaseService.uploadImage(file, filePath);
-
         if (uploadError) {
           throw new Error(`Upload error: ${uploadError.message}`);
         }
-
-        // Obtener la URL de la foto subida
+  
         const { publicURL, error: urlError } = await this.supabaseService.getImageUrl(filePath);
-
         if (urlError) {
           throw new Error(`URL fetch error: ${urlError}`);
         }
-
-        // Guardar la URL de la foto
+  
         this.photoUrl = publicURL || '';
-        this.pedido.image_url = this.photoUrl; // Guarda la URL en el objeto pedido
-        console.log('imagen url ',this.pedido.image_url)
+        this.pedido.image_url = this.photoUrl;
+        console.log('imagen url ', this.pedido.image_url);
       }
-
+  
       this.pedido.costo = this.calculateCost();
       this.onTelefonoChange(this.telefonoInput);
       const { data, error } = await this.supabaseService.addPedido(this.pedido);
@@ -181,7 +174,7 @@ export class AgregarPedidosPage implements OnInit {
       console.error('Error inesperado:', error);
     }
   }
-
+  
   calculateCost() {
     let cost = 1000; // Costo base por paquete
   
@@ -195,12 +188,21 @@ export class AgregarPedidosPage implements OnInit {
       cost += 500; // Costo adicional por requerir cambio
     }
   
-    return cost; // Retorna el costo calculado por paquete
+    return cost;
   }
-
+  
   updateCosto() {
-    let baseCost = this.calculateCost(); // Costo base calculado por paquete
-    let dimensionCost = this.pedido.dimensiones.valor * (this.pedido.dimensiones.unidad === 'metros' ? 1000 : 10); // Costo por dimensiones
+    let baseCost = this.calculateCost();
+  
+    // Calcular el volumen en metros cúbicos
+    let volumen = this.pedido.dimensiones.alto * this.pedido.dimensiones.ancho * this.pedido.dimensiones.largo;
+  
+    // Ajustar el volumen según la unidad
+    if (this.pedido.dimensiones.unidad === 'centimetros') {
+      volumen /= 1000000; // Convertir cm³ a m³
+    }
+  
+    let dimensionCost = volumen * 5000; // Costo por volumen (ajustar según necesidad)
   
     // Cálculo del costo total considerando la cantidad de paquetes
     let totalCost = (baseCost + dimensionCost) * this.pedido.cantidadPaquetes;
@@ -208,7 +210,7 @@ export class AgregarPedidosPage implements OnInit {
     // Asigna el costo calculado al pedido
     this.pedido.costo = totalCost;
   }
-
+  
   generateUniqueCode() {
     return 'PED-' + Math.random().toString(36).substr(2, 9).toUpperCase();
   }

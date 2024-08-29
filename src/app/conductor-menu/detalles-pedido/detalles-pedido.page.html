@@ -20,7 +20,12 @@
       <p><strong>Comuna:</strong> {{ pedido.comuna }}</p>
       <p><strong>Teléfono:</strong> {{ pedido.telefono }}</p>
       <p><strong>Cantidad de Paquetes:</strong> {{ pedido.cantidad_paquetes }}</p>
-      <p><strong>Dimensiones:</strong> {{ pedido.dimensiones.valor }} {{ pedido.dimensiones.unidad }}</p>
+      <p><strong>Dimensiones:</strong></p>
+  <ul>
+    <li><strong>Alto:</strong> {{ pedido.dimensiones.alto }} {{ pedido.dimensiones.unidad }}</li>
+    <li><strong>Ancho:</strong> {{ pedido.dimensiones.ancho }} {{ pedido.dimensiones.unidad }}</li>
+    <li><strong>Largo:</strong> {{ pedido.dimensiones.largo }} {{ pedido.dimensiones.unidad }}</li>
+  </ul>
       <p><strong>Fragil:</strong> {{ pedido.fragil ? 'Sí' : 'No' }}</p>
       <p><strong>Cambio:</strong> {{ pedido.cambio ? 'Sí' : 'No' }}</p>
       <p><strong>Excede 10 Kilos:</strong> {{ pedido.excede_10_kilos ? 'Sí' : 'No' }}</p>
