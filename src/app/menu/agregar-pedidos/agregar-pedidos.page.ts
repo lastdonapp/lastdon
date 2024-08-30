@@ -184,7 +184,7 @@ export class AgregarPedidosPage implements OnInit {
                 console.log('imagen url ', this.pedido.image_url);
               }
   
-              this.pedido.costo = this.calculateCost();
+              this.pedido.costo 
               this.onTelefonoChange(this.telefonoInput);
               const { data, error } = await this.supabaseService.addPedido(this.pedido);
               if (error) {
@@ -225,8 +225,17 @@ export class AgregarPedidosPage implements OnInit {
   }
 
   updateCosto() {
-    let baseCost = this.calculateCost(); // Costo base calculado por paquete
-    let dimensionCost = this.pedido.dimensiones.valor * (this.pedido.dimensiones.unidad === 'metros' ? 1000 : 10); // Costo por dimensiones
+    let baseCost = this.calculateCost();
+  
+    // Calcular el volumen en metros cúbicos
+    let volumen = this.pedido.dimensiones.alto * this.pedido.dimensiones.ancho * this.pedido.dimensiones.largo;
+  
+    // Ajustar el volumen según la unidad
+    if (this.pedido.dimensiones.unidad === 'centimetros') {
+      volumen /= 1000000; // Convertir cm³ a m³
+    }
+  
+    let dimensionCost = volumen * 5000; // Costo por volumen (ajustar según necesidad)
   
     // Cálculo del costo total considerando la cantidad de paquetes
     let totalCost = (baseCost + dimensionCost) * this.pedido.cantidadPaquetes;

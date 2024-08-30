@@ -13,8 +13,5 @@ export class InformacionPage implements OnInit {
   ngOnInit() {
   }
 
-  goBack() {
-    this.router.navigate(['/menu']);
-  }
 
 }
