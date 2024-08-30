@@ -13,5 +13,24 @@ export class MenuPage implements OnInit {
   ngOnInit() {
     // Redirigir a la página de información por defecto
     this.router.navigate(['/menu/informacion']);
+
+
+      // vista solo accesible para user normal
+      const userStorage = localStorage.getItem('userType');
+      if (userStorage !== 'normal') {
+        this.router.navigate(['/login']);
+      }
+
+
+
+
   }
+
+
+
+
+
+
+
+
 }

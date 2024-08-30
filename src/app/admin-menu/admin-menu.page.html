@@ -1,13 +1,109 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>admin-menu</ion-title>
-  </ion-toolbar>
-</ion-header>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - App de Transporte</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ionic/core/css/ionic.bundle.css">
+</head>
+<body>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">admin-menu</ion-title>
-    </ion-toolbar>
-  </ion-header>
-</ion-content>
+    <ion-app>
+        <!-- Encabezado de la página -->
+        <ion-header>
+            <ion-toolbar color="primary">
+                <ion-title>Panel de Administración</ion-title>
+            </ion-toolbar>
+        </ion-header>
+
+        <!-- Contenido principal -->
+        <ion-content>
+            <!-- Sección de Clientes -->
+            <ion-card>
+                <ion-card-header>
+                    <ion-card-title>Administrar Clientes</ion-card-title>
+                </ion-card-header>
+                <ion-card-content>
+                    <ion-button expand="full" color="secondary">Agregar Cliente</ion-button>
+                    <ion-list>
+                        <ion-item>
+                            <ion-label>
+                                <h2>Juan Pérez</h2>
+                                <p>juan.perez&#64;email.com</p>
+                            </ion-label>
+                            <ion-button color="tertiary">Editar</ion-button>
+                            <ion-button color="danger">Eliminar</ion-button>
+                        </ion-item>
+                        <ion-item>
+                            <ion-label>
+                                <h2>María García</h2>
+                                <p>maria.&#64;garciaemail.com</p>
+                            </ion-label>
+                            <ion-button color="tertiary">Editar</ion-button>
+                            <ion-button color="danger">Eliminar</ion-button>
+                        </ion-item>
+                    </ion-list>
+                </ion-card-content>
+            </ion-card>
+
+            <!-- Sección de Conductores -->
+            <ion-card>
+                <ion-card-header>
+                    <ion-card-title>Administrar Conductores</ion-card-title>
+                </ion-card-header>
+                <ion-card-content>
+                    <ion-button expand="full" color="secondary">Agregar Conductor</ion-button>
+                    <ion-list>
+                        <ion-item>
+                            <ion-label>
+                                <h2>Carlos Rodríguez</h2>
+                                <p>Vehículo: ABC-123</p>
+                            </ion-label>
+                            <ion-button color="tertiary">Editar</ion-button>
+                            <ion-button color="danger">Eliminar</ion-button>
+                        </ion-item>
+                        <ion-item>
+                            <ion-label>
+                                <h2>Ana Gómez</h2>
+                                <p>Vehículo: XYZ-789</p>
+                            </ion-label>
+                            <ion-button color="tertiary">Editar</ion-button>
+                            <ion-button color="danger">Eliminar</ion-button>
+                        </ion-item>
+                    </ion-list>
+                </ion-card-content>
+            </ion-card>
+
+            <!-- Sección de Paquetes -->
+            <ion-card>
+                <ion-card-header>
+                    <ion-card-title>Administrar Paquetes</ion-card-title>
+                </ion-card-header>
+                <ion-card-content>
+                    <ion-button expand="full" color="secondary">Agregar Paquete</ion-button>
+                    <ion-list>
+                        <ion-item>
+                            <ion-label>
+                                <h2>Paquete #001</h2>
+                                <p>Estado: En tránsito</p>
+                            </ion-label>
+                            <ion-button color="tertiary">Editar</ion-button>
+                            <ion-button color="danger">Eliminar</ion-button>
+                        </ion-item>
+                        <ion-item>
+                            <ion-label>
+                                <h2>Paquete #002</h2>
+                                <p>Estado: Entregado</p>
+                            </ion-label>
+                            <ion-button color="tertiary">Editar</ion-button>
+                            <ion-button color="danger">Eliminar</ion-button>
+                        </ion-item>
+                    </ion-list>
+                </ion-card-content>
+            </ion-card>
+        </ion-content>
+    </ion-app>
+
+    <script src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.js"></script>
+</body>
+</html>

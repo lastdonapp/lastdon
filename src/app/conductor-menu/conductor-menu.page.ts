@@ -13,5 +13,17 @@ export class ConductorMenuPage implements OnInit {
   ngOnInit() {
     // Redirigir a la página de "Mis Pedidos" por defecto
     this.router.navigate(['/conductor-menu/mis-pedidos']);
+
+          // vista solo accesible para user conductor
+          const userStorage = localStorage.getItem('userType');
+          if (userStorage !== 'conductor') {
+            this.router.navigate(['/login']);
+          }
+    
+
+
+
+
+
   }
 }
