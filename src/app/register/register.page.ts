@@ -11,6 +11,7 @@ import { ToastController } from '@ionic/angular';
 export class RegisterPage {
   email: string = "";
   password: string = "";
+  confirmPassword: string = "";  // Nuevo campo
   userType: string = "";
   verificado: boolean = false;
   errorMessage: string | null = null;
@@ -22,14 +23,19 @@ export class RegisterPage {
   ) {}
 
   async register() {
-    if (!this.email || !this.password || !this.userType) {
+    if (!this.email || !this.password || !this.confirmPassword || !this.userType) {
       this.errorMessage = 'Todos los campos son requeridos.';
+      return;
+    }
+
+    if (this.password !== this.confirmPassword) {
+      this.errorMessage = 'Las contraseñas no coinciden.';
       return;
     }
 
     try {
       // Registro de usuario en la tabla personalizada
-      const response = await this.supabaseService.registerUser(this.email, this.password, this.userType,this.verificado);
+      const response = await this.supabaseService.registerUser(this.email, this.password, this.userType, this.verificado);
       console.log('Usuario registrado:', response);
 
       if (response.success) {
@@ -70,10 +76,8 @@ export class RegisterPage {
       await toast.present();
     }
   }
+
   async goBack(){
     this.router.navigate(['/login']);
   }
-
-
-  
 }
