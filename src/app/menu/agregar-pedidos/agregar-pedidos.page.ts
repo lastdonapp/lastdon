@@ -126,8 +126,6 @@ export class AgregarPedidosPage implements OnInit {
       this.telefonoInput = value;
       this.pedido.telefono = '+569' + value;  // Actualiza el pedido con el nuevo número
     }
-    console.log('Número de teléfono actualizado:', value);
-    console.log('Número de teléfono actualizado:', this.telefonoInput);
   }
   
   onDimensionesChange() {
@@ -235,7 +233,7 @@ export class AgregarPedidosPage implements OnInit {
       volumen /= 1000000; // Convertir cm³ a m³
     }
   
-    let dimensionCost = volumen * 5000; // Costo por volumen (ajustar según necesidad)
+    let dimensionCost = volumen * 20; // Costo por volumen (ajustar según necesidad)
   
     // Cálculo del costo total considerando la cantidad de paquetes
     let totalCost = (baseCost + dimensionCost) * this.pedido.cantidadPaquetes;

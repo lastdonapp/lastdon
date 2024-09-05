@@ -18,7 +18,7 @@
 
   <!-- Mostrar el costo total de pedidos no pagados -->
   <ion-item>
-    <ion-label>Total: {{ totalCosto | currency }}</ion-label>
+    <ion-label>Total: {{ totalCosto | currency :'CLP $':'symbol':'1.0-0' }}</ion-label>
   </ion-item>
 
   <!-- Lista de pedidos -->
@@ -30,8 +30,15 @@
         <p>Estado: {{ pedido.estado }}</p>
         <p>Fecha tomado: {{ pedido.fecha_tomado | date }}</p>
         <p>Estado: {{ pedido.pagado }}</p>
-        <h3>costo: {{ pedido.costo | currency }}</h3>
+        <h3>costo: {{ pedido.costo | currency:'CLP $':'symbol':'1.0-0' }}</h3>
+
+
+        <ion-item>
+
+          <ion-input [value]="pedido.costo | currency:'CLP $ ':'symbol':'1.0-0'" readonly></ion-input>
+        </ion-item>
         <ion-button (click)="pagarPedido(pedido.id)" color="primary">Pagar</ion-button>
+ 
       </ion-label>
     </ion-item>
   </ion-list>

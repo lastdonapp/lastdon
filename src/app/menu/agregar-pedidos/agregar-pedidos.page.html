@@ -276,7 +276,7 @@
         <!-- Costo -->
         <ion-item>
           <ion-label>CLP$ </ion-label>
-          <ion-input [(ngModel)]="pedido.costo" name="costo" readonly></ion-input>
+          <ion-input [value]="pedido.costo | currency:'CLP':'symbol':'1.0-0'" name="costo" readonly></ion-input>
         </ion-item>
 
         <!-- Botón de Envío -->
