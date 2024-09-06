@@ -70,7 +70,7 @@ export class PagosPage implements OnInit {
         name : pedido.nombrePedido,
         quantity: 1,
         currency_id: 'CLP',
-        unit_price: Number(pedido.costo)
+        unit_price: Math.round(Number(pedido.costo))
       }];
   
       // Aquí se pasa el pedidoId además de los items
