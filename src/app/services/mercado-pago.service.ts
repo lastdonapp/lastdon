@@ -4,6 +4,7 @@ import { catchError } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
+
 @Injectable({
   providedIn: 'root'
 })
@@ -20,9 +21,9 @@ export class MercadoPagoService {
     return this.http.post(url, {
       items: items,
       back_urls: {
-        success: `http://www.tu-sitio.com/success?pedidoId=${pedidoId}`,
-        failure: `http://www.tu-sitio.com/failure?pedidoId=${pedidoId}`,
-        pending: `http://www.tu-sitio.com/pending?pedidoId=${pedidoId}`
+        success: `http://localhost:8100/pago-aprobado?pedidoId=${pedidoId}`,
+        failure: `http://localhost:8100/pago-fallido?pedidoId=${pedidoId}`,
+        pending: `http://localhost:8100/pago-pendiente?pedidoId=${pedidoId}`
       }
     }).pipe(
       catchError((error) => {

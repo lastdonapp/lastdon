@@ -1,0 +1,26 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>pagoFallido</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">El pago no se completó</ion-title>
+    </ion-toolbar>
+
+
+
+    <div class="content-wrapper">
+      <ion-icon name="alert-circle" size="large" color="danger"></ion-icon>
+      <h2>El pago no se completó</h2>
+      <p>
+        Lo sentimos, pero el proceso de pago no se ha completado correctamente. 
+        Por favor, intente nuevamente o póngase en contacto con nuestro soporte si el problema persiste.
+      </p>
+  
+      <ion-button expand="full" (click)="goBack()">Volver al Inicio</ion-button>
+    </div>
+  </ion-header>
+</ion-content>

@@ -1,0 +1,18 @@
+
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Pago Aprobado</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="content-wrapper">
+  <div class="success-message">
+    <ion-icon name="checkmark-circle" size="large" color="success"></ion-icon>
+    <h2>¡Pago Aprobado!</h2>
+    <p>
+      Su pago se ha completado exitosamente. Gracias por su compra. 
+      Recibirá una confirmación por correo electrónico y podrá ver el estado de su pedido en su cuenta.
+    </p>
+    <ion-button expand="full" (click)="goBack()">Volver al Inicio</ion-button>
+  </div>
+</ion-content>

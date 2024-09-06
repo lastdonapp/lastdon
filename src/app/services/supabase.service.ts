@@ -656,23 +656,20 @@ async getToken(): Promise<any> {
           'Authorization': `Bearer ${this.apiKey}`
         },
         body: JSON.stringify({
-          pagado: true,
+          pagado: true, // Solo actualiza el estado a pagado después de la confirmación
           conductor: usuario,
           fecha_tomado: new Date().toISOString() // Fecha actual en formato ISO
         })
       });
   
-      // Verificar si la respuesta no es un JSON
       if (!response.ok) {
-        const errorText = await response.text(); // Obtener el texto de error
+        const errorText = await response.text();
         console.error('Error al actualizar el pedido:', errorText);
         throw new Error(errorText || 'Error al actualizar el pedido');
       }
   
-      // Intentar analizar la respuesta JSON solo si el cuerpo no está vacío
       const responseText = await response.text();
       if (responseText.trim() === '') {
-        // Respuesta vacía, podemos asumir que la actualización fue exitosa
         console.log('Pedido actualizado con éxito, pero sin respuesta JSON');
         return { success: true };
       }
@@ -686,6 +683,12 @@ async getToken(): Promise<any> {
       throw error;
     }
   }
+
+
+
+
+
+ 
   async getPedidosPorConductor(email: string, estado: string): Promise<any[]> {
     try {
       const query = estado ? `?conductor=eq.${encodeURIComponent(email)}&estado=eq.${encodeURIComponent(estado)}` : `?conductor=eq.${encodeURIComponent(email)}`;

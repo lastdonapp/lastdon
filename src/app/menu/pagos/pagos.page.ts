@@ -67,38 +67,22 @@ export class PagosPage implements OnInit {
       // Crear la preferencia de Mercado Pago
       const items = [{
         title: 'Servicio de Envío',
-        name : pedido.nombrePedido,
+        name: pedido.nombrePedido,
         quantity: 1,
         currency_id: 'CLP',
         unit_price: Math.round(Number(pedido.costo))
       }];
   
-      // Aquí se pasa el pedidoId además de los items
+      // Crear la preferencia de Mercado Pago y pasar el pedidoId
       const response = await this.mercadoPagoService.createPreference(items, pedidoId).toPromise();
       const preferenceId = response.id;
-      console.log('Preference ID:', preferenceId);
   
-      // Redirigir al usuario a la página de pago de Mercado Pago
-      window.location.href = window.location.href = `https://www.mercadopago.cl/checkout/v1/redirect?preference-id=${preferenceId}`;
-  
-      // Actualizar el estado del pedido en el backend
-      await this.supabaseService.pagarPedido(pedidoId, this.usuario.email);
-  
-      // Mostrar mensaje de éxito
-      const toast = await this.toastController.create({
-        message: 'Pedido pagado con éxito',
-        duration: 2000,
-        color: 'success'
-      });
-      await toast.present();
-      
-      // Recargar los pedidos después de tomar uno
-      this.loadPedidos();
+      // Redirigir a la página de pago de Mercado Pago
+      window.location.href = `https://www.mercadopago.cl/checkout/v1/redirect?preference-id=${preferenceId}`;
     } catch (error) {
-      console.error('Error al pagar el pedido:', error);
+      console.error('Error al procesar el pago:', error);
     }
   }
-
 
 
 

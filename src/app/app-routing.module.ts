@@ -22,8 +22,20 @@ const routes: Routes = [
     loadChildren: () => import('./admin-menu/admin-menu.module').then(m => m.AdminMenuPageModule),
     canActivate: [demonGuard] 
   },
+  {
+    path: 'pago-aprobado',
+    loadChildren: () => import('./pago-aprobado/pago-aprobado.module').then( m => m.PagoAprobadoPageModule)
+  },
+  {
+    path: 'pago-fallido',
+    loadChildren: () => import('./pago-fallido/pago-fallido.module').then( m => m.PagoFallidoPageModule)
+  },
+  {
+    path: 'pago-pendiente',
+    loadChildren: () => import('./pago-pendiente/pago-pendiente.module').then( m => m.PagoPendientePageModule)
+  },
   { path: '', redirectTo: '/login', pathMatch: 'full' },
-  { path: '**', redirectTo: '/login' }
+  { path: '**', redirectTo: '/login' } // Esta línea redirige cualquier ruta no definida al login
 ];
 
 @NgModule({
