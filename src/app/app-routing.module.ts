@@ -3,10 +3,12 @@ import { RouterModule, Routes } from '@angular/router';
 import { LoginPage } from './login/login.page';
 import { RegisterPage } from './register/register.page';
 import { demonGuard } from './guard/authguard';
+import { MapPage } from './map/map.page';
 
 const routes: Routes = [
   { path: 'login', component: LoginPage },
   { path: 'register', component: RegisterPage },
+    { path: 'maps', component: MapPage }, // Agrega la ruta para la nueva página de mapa
   { 
     path: 'menu', 
     loadChildren: () => import('./menu/menu.module').then(m => m.MenuPageModule), 
@@ -35,7 +37,11 @@ const routes: Routes = [
     loadChildren: () => import('./pago-pendiente/pago-pendiente.module').then( m => m.PagoPendientePageModule)
   },
   { path: '', redirectTo: '/login', pathMatch: 'full' },
-  { path: '**', redirectTo: '/login' } // Esta línea redirige cualquier ruta no definida al login
+  { //path: '**', redirectTo: '/login' },   {
+    path: 'map',
+    loadChildren: () => import('./map/map.module').then( m => m.MapPageModule)
+  }
+// Esta línea redirige cualquier ruta no definida al login
 ];
 
 @NgModule({

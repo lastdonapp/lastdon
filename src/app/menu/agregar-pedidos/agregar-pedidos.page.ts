@@ -46,17 +46,7 @@ export class AgregarPedidosPage implements OnInit {
   };
 
   comunas: string[] = [
-    'Alhué', 'Buin', 'Calera de Tango', 'Cerrillos', 'Cerro Navia',
-    'Colina', 'Conchalí', 'Curacaví', 'El Bosque', 'Estación Central',
-    'Huechuraba', 'Independencia', 'Isla de Maipo', 'La Cisterna', 'La Florida', 
-    'La Granja', 'La Pintana', 'La Reina', 'Lampa', 'Las Condes', 
-    'Lo Barnechea', 'Lo Espejo', 'Lo Prado', 'Macul', 'Maipú', 
-    'María Pinto', 'Melipilla', 'Ñuñoa', 'Padre Hurtado', 'Paine', 
-    'Pedro Aguirre Cerda', 'Peñaflor', 'Peñalolén', 'Pirque', 'Providencia', 
-    'Pudahuel', 'Puente Alto', 'Quilicura', 'Quinta Normal', 'Recoleta', 
-    'Renca', 'San Bernardo', 'San Joaquín', 'San José de Maipo', 'San Miguel', 
-    'San Pedro', 'San Ramón', 'Santiago', 'Talagante', 'Tiltil', 
-    'Vitacura'
+  'La cisterna', 'Ñuñoa', 'Providencia','Pedro Aguirre Cerda', 'Santiago','San Miguel','San Joaquín'
 ];
 
   telefonoInput: string = ''; // Input del teléfono sin el prefijo
