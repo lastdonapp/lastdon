@@ -58,10 +58,13 @@ Sigue estos pasos para instalar el proyecto:
    npm install
 
 3.  variables de entorno node.js :
- 
-- `npm install mercadopago`) // para utilizar bandeja de pago y la API de MercadoPago (no crítica)
-- `npm install @capacitor/geolocation`) // habilita el uso de GPS nativo en dispositivos móviles (crítico)
+# Para utilizar la bandeja de pago y la API de MercadoPago (no crítica)
 
+npm install mercadopago
+
+# Para habilitar el uso de GPS nativo en dispositivos móviles (crítico)
+
+npm install @capacitor/geolocation
 
 1. Para iniciar el proyecto en modo de desarrollo, utiliza el siguiente comando:
     ```bash
