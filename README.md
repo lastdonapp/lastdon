@@ -57,9 +57,16 @@ Sigue estos pasos para instalar el proyecto:
    cd lastdon
    npm install
 
-4. Configura las variables de entorno según sea necesario.
+3.  variables de entorno node.js :
 
-## Uso
+```bash
+
+  npm install mercadopago
+  npm install @capacitor/geolocation
+
+
+```
+
 
 1. Para iniciar el proyecto en modo de desarrollo, utiliza el siguiente comando:
     ```bash
