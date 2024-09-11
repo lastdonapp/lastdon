@@ -57,9 +57,10 @@ Sigue estos pasos para instalar el proyecto:
    cd lastdon
    npm install
 
-4.  variables de entorno node.js
-   npm install mercadopago // para utilizar bandeja de pago y la api de mercadopago (no crítica)
-  npm install @capacitor/geolocation // habilita el uso de gps nativo en dispositivos moviles (crítico)
+4.  variables de entorno node.js :
+   #-
+  - npm install mercadopago // para utilizar bandeja de pago y la api de mercadopago (no crítica)
+  - npm install @capacitor/geolocation // habilita el uso de gps nativo en dispositivos moviles (crítico)
    
 
 
