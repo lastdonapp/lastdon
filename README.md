@@ -63,6 +63,7 @@ Sigue estos pasos para instalar el proyecto:
 
   npm install mercadopago
   npm install @capacitor/geolocation
+  npm install @types/google.maps --save-dev
 
 
 ```
