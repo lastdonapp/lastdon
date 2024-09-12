@@ -32,6 +32,15 @@
       <p><strong>Costo:</strong> {{ pedido.costo }}</p>
       <p><strong>Estado:</strong> {{ pedido.estado }}</p>
       <ion-img *ngIf="pedido.image_url" [src]="pedido.image_url" alt="Foto del pedido"></ion-img>
+
+    
+      <!-- Botón para mostrar el mapa -->
+      <ion-button expand="block" (click)="toggleMapa()">
+        {{ mostrarMapa ? 'Ocultar Referencia de Trayecto' : 'Mostrar Referencia de Trayecto' }}
+      </ion-button>
+
+      <!-- Contenedor del mapa que se mostrará u ocultará dinámicamente -->
+      <div id="map" *ngIf="mostrarMapa" style="width: 100%; height: 300px;"></div>
     </ion-card-content>
   </ion-card>
 </ion-content>

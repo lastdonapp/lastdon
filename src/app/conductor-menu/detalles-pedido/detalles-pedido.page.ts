@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { SupabaseService } from '../../services/supabase.service';
+import { GoogleMapsService } from '../../services/google-maps.service';
+import { GeolocationService } from '../../services/geolocation.service';
 
 @Component({
   selector: 'app-detalles-pedido',
@@ -9,10 +11,14 @@ import { SupabaseService } from '../../services/supabase.service';
 })
 export class DetallesPedidoPage implements OnInit {
   pedido: any;
+  mostrarMapa: boolean = false; // Para mostrar u ocultar el mapa
+  currentLocation: { lat: number, lng: number } | undefined; // localización actual del mapa
 
   constructor(
     private route: ActivatedRoute,
-    private supabaseService: SupabaseService
+    private supabaseService: SupabaseService,
+    private googleMapsService: GoogleMapsService,
+    private geolocationService: GeolocationService
   ) {}
 
   ngOnInit() {
@@ -32,6 +38,44 @@ export class DetallesPedidoPage implements OnInit {
       } catch (error) {
         console.error('Error al cargar el pedido:', error);
       }
+    }
+  }
+
+  async toggleMapa() {
+    this.mostrarMapa = !this.mostrarMapa;
+    if (this.mostrarMapa) {
+      await this.initializeMap();
+    }
+  }
+
+  async initializeMap() {
+    // Obtenemos la ubicación actual
+    const coords = await this.geolocationService.getCurrentPosition();
+    this.currentLocation = { lat: coords.latitude, lng: coords.longitude };
+
+    // Inicializamos el mapa solo si hay un elemento de mapa disponible
+    const mapElement = document.getElementById('map');
+    if (mapElement) {
+      this.googleMapsService.initMap(mapElement, this.currentLocation.lat, this.currentLocation.lng);
+
+      // Agregar marcador para la ubicación actual
+      this.googleMapsService.addMarker(this.currentLocation.lat, this.currentLocation.lng, 'Ubicación Actual');
+
+      // Geocodificar y agregar marcador para la dirección del pedido
+      this.googleMapsService.geocodeAddress(this.pedido.direccion_pedido).then(pedidoCoords => {
+        this.googleMapsService.addMarker(pedidoCoords.latitude, pedidoCoords.longitude, 'Dirección del Pedido');
+      }).catch(error => {
+        console.error('Error al obtener la ubicación del pedido:', error);
+      });
+
+      // Geocodificar y agregar marcador para la dirección de entrega
+      this.googleMapsService.geocodeAddress(this.pedido.direccion_entrega).then(entregaCoords => {
+        this.googleMapsService.addMarker(entregaCoords.latitude, entregaCoords.longitude, 'Dirección de Entrega');
+      }).catch(error => {
+        console.error('Error al obtener la ubicación de entrega:', error);
+      });
+    } else {
+      console.error('No se pudo encontrar el elemento del mapa.');
     }
   }
 }
