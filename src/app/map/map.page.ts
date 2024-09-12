@@ -9,8 +9,8 @@ import { GeolocationService } from '../services/geolocation.service';
 })
 export class MapPage implements OnInit {
 
-  pickupAddress: string = 'Dirección de recogida'; // Dirección de ejemplo
-  deliveryAddress: string = 'Dirección de entrega'; // Dirección de ejemplo
+  pickupAddress: string = 'Galeria eurocentro'; // Dirección de ejemplo
+  deliveryAddress: string = 'Plaza de armas Santiago'; // Dirección de ejemplo
 
   constructor(
     private googleMapsService: GoogleMapsService,
@@ -52,6 +52,7 @@ export class MapPage implements OnInit {
       this.initializeMap(37.7749, -122.4194); // San Francisco por defecto
     });
   }
+
   // Método para inicializar el mapa
   initializeMap(latitude: number, longitude: number) {
     const mapElement = document.getElementById('map'); // Asegúrate de que el ID coincide con tu elemento HTML
