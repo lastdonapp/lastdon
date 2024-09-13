@@ -71,7 +71,7 @@ export class PagosPage implements OnInit {
         name: pedido.nombrePedido,
         quantity: 1,
         currency_id: 'CLP',
-        unit_price: Math.round(Number(pedido.costo))
+        unit_price: pedido.costo
       }];
   
       // Crear la preferencia de Mercado Pago y pasar el pedidoId

@@ -493,6 +493,8 @@ async getToken(): Promise<any> {
   }
   
   async addPedido(pedido: any): Promise<any> {
+    // Redondear el costo a un número entero
+    const roundedCosto = Math.round(pedido.costo);
     try {
       const response = await fetch(`${this.pedidos}`, { // Ajusta la URL si es necesario
         method: 'POST',
@@ -517,7 +519,7 @@ async getToken(): Promise<any> {
           cambio: pedido.cambio,
           excede_10_kilos: pedido.excede10Kilos,
           fecha: pedido.fecha,
-          costo: pedido.costo,
+          costo: roundedCosto,
           estado: pedido.estado,
           fecha_tomado: pedido.fechaTomado,
           conductor: pedido.conductor,
@@ -647,35 +649,35 @@ async getToken(): Promise<any> {
   }
 
   async pagarPedido(pedidoId: string): Promise<any> {
-    try {
-      const response = await fetch(`${this.pedidos}?id=eq.${encodeURIComponent(pedidoId)}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': this.apiKey,
-          'Authorization': `Bearer ${this.apiKey}`
-        },
-        body: JSON.stringify({
-          pagado: true // Solo actualizamos el estado pagado
-        })
-      });
-  
-      // Depuración: verificar la respuesta del servidor
-      const responseData = await response.json();
-      console.log('Respuesta del servidor:', responseData);
-  
-      if (!response.ok) {
-        console.error('Error en la respuesta de Supabase:', responseData);
-        throw new Error('Error en la actualización de Supabase');
-      }
-  
-      return responseData;
-  
-    } catch (error) {
-      console.error('Error al actualizar el pedido:', error);
-      throw error;
+  try {
+    const response = await fetch(`${this.pedidos}?id=eq.${encodeURIComponent(pedidoId)}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': this.apiKey,
+        'Authorization': `Bearer ${this.apiKey}`
+      },
+      body: JSON.stringify({
+        pagado: true // Solo actualizamos el estado pagado
+      })
+    });
+
+    // Depuración: verificar la respuesta del servidor
+    const responseData = await response.json();
+    console.log('Respuesta del servidor:', responseData);
+
+    if (!response.ok) {
+      console.error('Error en la respuesta de Supabase:', responseData);
+      throw new Error('Error en la actualización de Supabase');
     }
+
+    return responseData;
+
+  } catch (error) {
+    console.error('Error al actualizar el pedido:', error);
+    throw error;
   }
+}
  
   async getPedidosPorConductor(email: string, estado: string): Promise<any[]> {
     try {
@@ -766,7 +768,8 @@ async getToken(): Promise<any> {
           'Authorization': `Bearer ${this.apiKey}`
         },
         body: JSON.stringify({
-          estado: 'entregado'
+          estado: 'entregado',
+          fecha_entrega: new Date().toISOString()
         })
       });
 
@@ -780,6 +783,43 @@ async getToken(): Promise<any> {
       throw error;
     }
   }
+
+
+
+
+  async recepcionarPedido(pedidoId: string): Promise<void> {
+    try {
+      const response = await fetch(`${this.pedidos}?id=eq.${encodeURIComponent(pedidoId)}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': this.apiKey,
+          'Authorization': `Bearer ${this.apiKey}`
+        },
+        body: JSON.stringify({
+          estado: 'recepcionado'
+        })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error al actualizar el pedido:', errorText);
+        throw new Error(errorText || 'Error al actualizar el pedido');
+      }
+    } catch (error) {
+      console.error('Error al entregar el pedido:', error);
+      throw error;
+    }
+  }
+
+
+
+
+
+
+
+
+
 
 
 

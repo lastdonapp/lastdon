@@ -41,6 +41,14 @@ export class MisPedidosPage implements OnInit {
     }
   }
 
+
+
+
+
+
+
+
+
   async entregarPedido(pedidoId: string) {
     try {
       const alert = await this.alertController.create({
@@ -75,6 +83,56 @@ export class MisPedidosPage implements OnInit {
       console.error('Error al entregar el pedido:', error);
     }
   }
+
+
+
+
+  async recepcionar(pedidoId: string) {
+    try {
+      const alert = await this.alertController.create({
+        header: 'Confirmar Entrega',
+        message: '¿Está seguro de que desea marcar este pedido como recibido?',
+        buttons: [
+          {
+            text: 'Cancelar',
+            role: 'cancel',
+            handler: () => {
+              console.log('recepción cancelada por el usuario');
+            }
+          },
+          {
+            text: 'Confirmar',
+            handler: async () => {
+              await this.supabaseService.recepcionarPedido(pedidoId);
+              const toast = await this.toastController.create({
+                message: 'Pedido marcado como recepcionado',
+                duration: 2000,
+                color: 'success'
+              });
+              await toast.present();
+              this.loadPedidos(); // Recargar la lista de pedidos
+            }
+          }
+        ]
+      });
+  
+      await alert.present();
+    } catch (error) {
+      console.error('Error al entregar el pedido:', error);
+    }
+  }
+
+
+
+
+
+
+
+
+
+
+
+
 
   async verDetalles(id: string) {
     // Navega a la página de detalles del pedido

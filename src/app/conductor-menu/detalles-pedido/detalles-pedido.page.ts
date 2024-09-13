@@ -13,6 +13,7 @@ export class DetallesPedidoPage implements OnInit {
   pedido: any;
   mostrarMapa: boolean = false; // Para mostrar u ocultar el mapa
   currentLocation: { lat: number, lng: number } | undefined; // localización actual del mapa
+  botonDeshabilitado: boolean = false;  // Variable para deshabilitar el botón
 
   constructor(
     private route: ActivatedRoute,
@@ -35,6 +36,13 @@ export class DetallesPedidoPage implements OnInit {
         }
         this.pedido = data;
         this.pedido.dimensiones = JSON.parse(this.pedido.dimensiones);
+
+        // Verificar si el estado es 'entregado'
+        if (this.pedido.estado === 'entregado') {
+          this.botonDeshabilitado = true;
+          this.mostrarMapa = false; // Asegura que el mapa esté cerrado si ya estaba abierto
+        }
+
       } catch (error) {
         console.error('Error al cargar el pedido:', error);
       }
@@ -42,9 +50,11 @@ export class DetallesPedidoPage implements OnInit {
   }
 
   async toggleMapa() {
-    this.mostrarMapa = !this.mostrarMapa;
-    if (this.mostrarMapa) {
-      await this.initializeMap();
+    if (this.pedido.estado !== 'entregado') {
+      this.mostrarMapa = !this.mostrarMapa;
+      if (this.mostrarMapa) {
+        await this.initializeMap();
+      }
     }
   }
 

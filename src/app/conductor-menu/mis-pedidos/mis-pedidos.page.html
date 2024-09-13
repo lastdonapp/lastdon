@@ -11,6 +11,7 @@
     <ion-select [(ngModel)]="selectedState" (ionChange)="filterPedidos()">
       <ion-select-option value="">Todos</ion-select-option>
       <ion-select-option value="tomado">Tomado</ion-select-option>
+      <ion-select-option value="recepcionado">Recepcionado</ion-select-option>
       <ion-select-option value="entregado">Entregado</ion-select-option>
     </ion-select>
   </ion-item>
@@ -24,7 +25,20 @@
         <p>Estado: {{ pedido.estado }}</p>
         <p>Fecha tomado: {{ pedido.fecha_tomado | date }}</p>
       </ion-label>
-      <ion-button (click)="entregarPedido(pedido.id)" *ngIf="pedido.estado === 'tomado'" color="primary">
+
+      <!-- Botón "Recepcionado" solo si el pedido está en estado "tomado" -->
+      <ion-button 
+        (click)="recepcionar(pedido.id)"
+        *ngIf="pedido.estado === 'tomado'" 
+        color="secondary">
+        Recepcionado
+      </ion-button>
+
+      <!-- Botón "Entregado" solo si el pedido está en estado "recepcionado" -->
+      <ion-button 
+        (click)="entregarPedido(pedido.id)" 
+        *ngIf="pedido.estado === 'recepcionado'" 
+        color="primary">
         Entregado
       </ion-button>
     </ion-item>
