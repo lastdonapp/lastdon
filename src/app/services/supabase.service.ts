@@ -646,7 +646,7 @@ async getToken(): Promise<any> {
     }
   }
 
-  async pagarPedido(pedidoId: string, usuario: string): Promise<any> {
+  async pagarPedido(pedidoId: string): Promise<any> {
     try {
       const response = await fetch(`${this.pedidos}?id=eq.${encodeURIComponent(pedidoId)}`, {
         method: 'PATCH',
@@ -656,38 +656,26 @@ async getToken(): Promise<any> {
           'Authorization': `Bearer ${this.apiKey}`
         },
         body: JSON.stringify({
-          pagado: true, // Solo actualiza el estado a pagado después de la confirmación
-          conductor: usuario,
-          fecha_tomado: new Date().toISOString() // Fecha actual en formato ISO
+          pagado: true // Solo actualizamos el estado pagado
         })
       });
   
+      // Depuración: verificar la respuesta del servidor
+      const responseData = await response.json();
+      console.log('Respuesta del servidor:', responseData);
+  
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Error al actualizar el pedido:', errorText);
-        throw new Error(errorText || 'Error al actualizar el pedido');
+        console.error('Error en la respuesta de Supabase:', responseData);
+        throw new Error('Error en la actualización de Supabase');
       }
   
-      const responseText = await response.text();
-      if (responseText.trim() === '') {
-        console.log('Pedido actualizado con éxito, pero sin respuesta JSON');
-        return { success: true };
-      }
-  
-      const updatedPedido = JSON.parse(responseText);
-      console.log('Pedido actualizado:', updatedPedido);
-      return updatedPedido;
+      return responseData;
   
     } catch (error) {
       console.error('Error al actualizar el pedido:', error);
       throw error;
     }
   }
-
-
-
-
-
  
   async getPedidosPorConductor(email: string, estado: string): Promise<any[]> {
     try {

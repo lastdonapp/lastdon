@@ -20,17 +20,26 @@ export class PagoAprobadoPage implements OnInit {
     private router: Router
   ) { }
 
+ 
+  goBack() {
+    this.router.navigate(['/menu']);
+  }
+
+
+
   async ngOnInit() {
     this.route.queryParams.subscribe(async params => {
       const pedidoId = params['pedidoId'];
-      const paymentStatus = params['collection_status']; // Verifica el estado del pago
-      const usuario = 'correoUsuario@example.com'; // Pasa el correo del usuario
-
-      // Si el pago fue aprobado, actualiza el pedido en Supabase
+      const paymentStatus = params['collection_status'];
+  
+      // Verificar que estamos recibiendo los valores esperados
+      console.log('Pedido ID:', pedidoId);
+      console.log('Estado del pago:', paymentStatus);
+  
       if (pedidoId && paymentStatus === 'approved') {
         try {
-          await this.supabaseService.pagarPedido(pedidoId, usuario);
-          console.log('Pedido actualizado después de la confirmación de pago.');
+          await this.supabaseService.pagarPedido(pedidoId);
+          console.log('Pedido actualizado correctamente');
         } catch (error) {
           console.error('Error al actualizar el pedido:', error);
         }
@@ -40,12 +49,8 @@ export class PagoAprobadoPage implements OnInit {
     });
   }
 
-  goBack() {
-    this.router.navigate(['/menu']);
-  }
 
 
-
-
+ 
 
 }
