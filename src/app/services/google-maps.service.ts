@@ -45,6 +45,25 @@ export class GoogleMapsService {
         console.warn('El título del marcador está vacío o indefinido');
       }
     }
+
+
+    updateMarker(lat: number, lng: number, title: string) {
+      // Suponiendo que solo tienes un marcador para la ubicación actual
+      if (this.markers.length > 0) {
+        const marker = this.markers[0];
+        marker.setPosition({ lat, lng });
+        marker.setTitle(title);
+      }
+    }
+
+
+
+
+
+
+
+
+
   
     // Método para eliminar todos los marcadores
     clearMarkers(): void {

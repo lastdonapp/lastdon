@@ -868,6 +868,86 @@ async getToken(): Promise<any> {
 
 
 
+  async iniciarTracking(trackingData: any) {
+    const { data, error } = await this.supabase
+      .from('tracking')
+      .insert([trackingData]);
+  
+    if (error) {
+      throw new Error(`Error al iniciar el tracking: ${error.message}`);
+    }
+    return data;
+  }
+
+
+
+  async obtenerEstadoPedido(pedidoId: string): Promise<string> {
+    try {
+      const response = await fetch(`${this.pedidos}?id=eq.${encodeURIComponent(pedidoId)}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': this.apiKey,
+          'Authorization': `Bearer ${this.apiKey}`
+        }
+      });
+  
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error al obtener el estado del pedido:', errorText);
+        throw new Error(errorText || 'Error al obtener el estado del pedido');
+      }
+  
+      const [pedido] = await response.json();
+      return pedido.estado;
+    } catch (error) {
+      console.error('Error al obtener el estado del pedido:', error);
+      throw error;
+    }
+  }
+
+
+
+  async getTrackingByPedidoId(pedidoId: string): Promise<{ data: any[], error: any }> {
+    try {
+      const { data, error } = await this.supabase
+        .from('tracking')
+        .select('estado_tracking')
+        .eq('pedido_id', pedidoId)
+        .order('timestamp', { ascending: false })  // Asegura que obtengas el estado más reciente
+        .limit(1); // Solo necesitas el estado más reciente
+  
+      if (error) {
+        throw error;
+      }
+  
+      return { data, error };
+    } catch (error) {
+      console.error('Error al obtener el estado del tracking:', error);
+      return { data: [], error };
+    }
+  }
+
+
+
+
+  async updateTrackingLocation(trackingId: string, latitud: number, longitud: number): Promise<void> {
+    const { data, error } = await this.supabase
+      .from('tracking')
+      .update({ latitud, longitud })
+      .eq('id', trackingId);
+
+    if (error) {
+      console.error('Error al actualizar la ubicación del tracking:', error);
+      throw error;
+    }
+
+    console.log('Ubicación del tracking actualizada con éxito:', data);
+  }
+
+
+
+
 
 
 
