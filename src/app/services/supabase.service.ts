@@ -948,6 +948,24 @@ async getToken(): Promise<any> {
 
 
 
+  async getTracking(pedidoId: string) {
+    const { data, error } = await this.supabase
+      .from('tracking')
+      .select('*')
+      .eq('pedido_id', pedidoId);
+  
+    if (error) {
+      throw error;
+    }
+  
+    return data;
+  }
+
+
+
+
+
+
 
 
 
