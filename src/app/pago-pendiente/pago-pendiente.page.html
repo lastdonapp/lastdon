@@ -1,0 +1,17 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Pago Pendiente</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="content-wrapper">
+  <div class="pending-message">
+    <ion-icon name="hourglass" size="large" color="warning"></ion-icon>
+    <h2>Pago Pendiente</h2>
+    <p>
+      Su pago está en proceso. Recibirá una notificación cuando el estado del pago cambie. 
+      Por favor, revise su correo electrónico para obtener más información y actualizaciones.
+    </p>
+    <ion-button expand="full" (click)="goBack()">Volver al Inicio</ion-button>
+  </div>
+</ion-content>

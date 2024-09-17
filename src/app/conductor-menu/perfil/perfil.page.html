@@ -1,0 +1,59 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Perfil</ion-title>
+    <ion-buttons slot="end">
+      <ion-toggle [(ngModel)]="isDayMode" (ionChange)="toggleMode()"></ion-toggle>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-button expand="block" (click)="openChangePasswordModal()">Cambiar Contraseña</ion-button>
+  <ion-button expand="block" color="danger" (click)="logout()">Cerrar Sesión</ion-button>
+
+  <ion-card *ngIf="currentUser">
+    <ion-card-header>
+      <ion-card-title>Información del Usuario</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p><strong>Email:</strong> {{ currentUser.email }}</p>
+      <p><strong>Fecha de Registro:</strong> {{ currentUser.created_at }}</p>
+      <p><strong>Tipo de Usuario:</strong> {{ currentUser.user_type }}</p>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card *ngIf="userInfo">
+    <ion-card-header>
+      <ion-card-title>Información del Usuario de Mercado Libre</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p><strong>ID:</strong> {{ userInfo.id }}</p>
+      <p><strong>Nickname:</strong> {{ userInfo.nickname }}</p>
+      <p><strong>Registration Date:</strong> {{ userInfo.registration_date }}</p>
+      <p><strong>First Name:</strong> {{ userInfo.first_name }}</p>
+      <p><strong>Last Name:</strong> {{ userInfo.last_name }}</p>
+      <p><strong>Gender:</strong> {{ userInfo.gender }}</p>
+      <p><strong>Country ID:</strong> {{ userInfo.country_id }}</p>
+      <p><strong>Email:</strong> {{ userInfo.email }}</p>
+      <p><strong>Identification Number:</strong> {{ userInfo.identification.number }}</p>
+      <p><strong>Identification Type:</strong> {{ userInfo.identification.type }}</p>
+      <p><strong>Address:</strong> {{ userInfo.address.address }}</p>
+      <p><strong>City:</strong> {{ userInfo.address.city }}</p>
+      <p><strong>State:</strong> {{ userInfo.address.state }}</p>
+      <p><strong>Zip Code:</strong> {{ userInfo.address.zip_code }}</p>
+      <p><strong>Phone Number:</strong> {{ userInfo.phone.number }}</p>
+      <p><strong>Alternative Phone Number:</strong> {{ userInfo.alternative_phone.number }}</p>
+      <p><strong>User Type:</strong> {{ userInfo.user_type }}</p>
+      <p><strong>Tags:</strong> {{ userInfo.tags.join(', ') }}</p>
+      <p><strong>Points:</strong> {{ userInfo.points }}</p>
+      <p><strong>Site ID:</strong> {{ userInfo.site_id }}</p>
+      <p><strong>Permalink:</strong> <a [href]="userInfo.permalink" target="_blank">{{ userInfo.permalink }}</a></p>
+      <p><strong>Seller Experience:</strong> {{ userInfo.seller_experience }}</p>
+      <!-- Agrega más campos según sea necesario -->
+    </ion-card-content>
+  </ion-card>
+
+  <div *ngIf="!userInfo">
+    <p>No se pudo cargar la información del usuario de Mercado Libre.</p>
+  </div>
+</ion-content>

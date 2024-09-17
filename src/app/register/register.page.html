@@ -1,0 +1,55 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Registro</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-card>
+    <ion-img class="responsive-img" src="assets/img/lastdon-logo.png"></ion-img>
+    <ion-card-header>
+      <ion-card-title class="ion-text-center">Crear Cuenta</ion-card-title>
+      <ion-card-subtitle class="ion-text-center">
+        Rellena los campos para crear tu cuenta
+      </ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item>
+        <ion-label position="stacked">Correo Electrónico</ion-label>
+        <ion-input [(ngModel)]="email" type="email" inputmode="email" placeholder="usuario@ejemplo.com" required></ion-input>
+        <ion-icon name="mail-outline" slot="end"></ion-icon>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Contraseña</ion-label>
+        <ion-input [(ngModel)]="password" type="password" placeholder="8 caracteres mínimos" required></ion-input>
+        <ion-icon name="lock-closed-outline" slot="end"></ion-icon>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Confirmar Contraseña</ion-label>
+        <ion-input [(ngModel)]="confirmPassword" type="password" placeholder="Confirmar contraseña" required></ion-input>
+        <ion-icon name="lock-closed-outline" slot="end"></ion-icon>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Tipo de Usuario</ion-label>
+      </ion-item>
+      <ion-radio-group [(ngModel)]="userType">
+        <ion-item>
+          <ion-label>Usuario Normal</ion-label>
+          <ion-radio slot="start" value="normal"></ion-radio>
+        </ion-item>
+        <ion-item>
+          <ion-label>Conductor</ion-label>
+          <ion-radio slot="start" value="conductor"></ion-radio>
+        </ion-item>
+      </ion-radio-group>
+      <ion-note slot="end">Selecciona un tipo de usuario</ion-note>
+
+      <ion-button expand="full" color="primary" (click)="register()">Crear Cuenta</ion-button>
+      <ion-button expand="full" color="primary" (click)="goBack()">Volver</ion-button>
+      <ion-text color="danger" *ngIf="errorMessage">
+        <p>{{ errorMessage }}</p>
+      </ion-text>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

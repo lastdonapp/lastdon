@@ -1,0 +1,32 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Mis Entregas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- Filtro de estado -->
+  <ion-item>
+    <ion-label>Filtrar por estado</ion-label>
+    <ion-select [(ngModel)]="selectedState" (ionChange)="filterPedidos()">
+      <ion-select-option value="">Todos</ion-select-option>
+      <ion-select-option value="tomado">Tomado</ion-select-option>
+      <ion-select-option value="entregado">Entregado</ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <!-- Lista de pedidos -->
+  <ion-list>
+    <ion-item *ngFor="let pedido of pedidos" (click)="verDetalles(pedido.id)">
+      <ion-label>
+        <h2>{{ pedido.nombre_pedido }}</h2>
+        <p>{{ pedido.descripcion_pedido }}</p>
+        <p>Estado: {{ pedido.estado }}</p>
+        <p>Fecha tomado: {{ pedido.fecha_tomado | date }}</p>
+      </ion-label>
+      <ion-button (click)="entregarPedido(pedido.id)" *ngIf="pedido.estado === 'tomado'" color="primary">
+        Entregado
+      </ion-button>
+    </ion-item>
+  </ion-list>
+</ion-content>
