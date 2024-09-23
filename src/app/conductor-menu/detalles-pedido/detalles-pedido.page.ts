@@ -153,48 +153,54 @@ export class DetallesPedidoPage implements OnInit {
 
   async iniciarTracking(pedidoId: string) {
     try {
-      // Verificar el estado del pedido
-      const estadoPedido = await this.supabaseService.obtenerEstadoPedido(pedidoId);
-      console.log('ID del pedido:', pedidoId);
+        // Verificar el estado del pedido
+        const estadoPedido = await this.supabaseService.obtenerEstadoPedido(pedidoId);
+        console.log('ID del pedido:', pedidoId);
   
-      if (estadoPedido !== 'recepcionado') {
-        console.error('El pedido no está en el estado correcto para iniciar el tracking.');
-        return;
-      }
+        if (estadoPedido !== 'recepcionado') {
+            console.error('El pedido no está en el estado correcto para iniciar el tracking.');
+            return;
+        }
   
-      // Verificar si el tracking ya ha sido iniciado
-      const trackingIniciado = await this.verificarTrackingIniciado(pedidoId);
-      if (trackingIniciado) {
-        console.warn('El tracking ya ha sido iniciado para este pedido.');
-        return;
-      }
+        // Verificar si el tracking ya ha sido iniciado
+        const trackingIniciado = await this.verificarTrackingIniciado(pedidoId);
+        if (trackingIniciado) {
+            console.warn('El tracking ya ha sido iniciado para este pedido.');
+            return;
+        }
   
-      // Obtener la ubicación actual del conductor
-      const coords = await this.geolocationService.getCurrentPosition();
+        // Obtener la ubicación actual del conductor
+        const coords = await this.geolocationService.getCurrentPosition();
   
-      // Obtener detalles del pedido, incluyendo los correos del conductor y cliente
-      const pedidoDetails = await this.supabaseService.obtenerDetallesPedido(pedidoId);
-      
-      const conductorEmail = pedidoDetails.conductor_email; // Correos obtenidos
-      const clienteEmail = pedidoDetails.cliente_email;
+        // Obtener detalles del pedido, incluyendo los correos del conductor y cliente
+        const pedidoDetails = await this.supabaseService.obtenerDetallesPedido(pedidoId);
+        
+        // Asegúrate de que estas propiedades existen en el objeto pedidoDetails
+        const conductorEmail = pedidoDetails.conductor; // Correo del conductor
+        console.log('Correo del conductor:', conductorEmail);
+        const clienteEmail = pedidoDetails.usuario; // Correo del cliente
+        console.log('Correo del cliente:', clienteEmail);
   
-      const trackingData = {
-        pedido_id: pedidoId,
-        conductor_email: conductorEmail,
-        cliente_email: clienteEmail,
-        latitud: coords.latitude,
-        longitud: coords.longitude,
-        estado_tracking: 'iniciado'
-      };
+        const trackingData = {
+            pedido_id: pedidoId,
+            conductor_email: conductorEmail,
+            cliente_email: clienteEmail,
+            latitud: coords.latitude,
+            longitud: coords.longitude,
+            estado_tracking: 'iniciado'
+        };
   
-      // Llamada al servicio Supabase para crear el registro en la tabla tracking
-      await this.supabaseService.iniciarTracking(trackingData);
-      
-      console.log('Tracking iniciado con éxito', trackingData);
+        // Llamada al servicio Supabase para crear el registro en la tabla tracking
+        await this.supabaseService.iniciarTracking(trackingData);
+        
+        console.log('Tracking iniciado con éxito', trackingData);
     } catch (error) {
-      console.error('Error al iniciar el tracking:', error);
+        console.error('Error al iniciar el tracking:', error);
     }
-  }
+}
+
+
+
   
   // Método para verificar si el tracking ya ha sido iniciado
 async verificarTrackingIniciado(pedidoId: string): Promise<boolean> {

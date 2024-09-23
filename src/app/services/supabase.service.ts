@@ -1004,8 +1004,8 @@ async getToken(): Promise<any> {
   
       const [pedido] = await response.json();
       return {
-        conductor_email: pedido.conductor_email, // Asegúrate de que estos campos existen en tu tabla
-        cliente_email: pedido.cliente_email,
+        conductor: pedido.conductor, // Asegúrate de que estos campos existen en tu tabla
+        usuario: pedido.usuario,
         estado: pedido.estado
       };
     } catch (error) {
