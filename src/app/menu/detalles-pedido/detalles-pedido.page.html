@@ -37,10 +37,15 @@
         Seguir mi paquete
       </ion-button>
 
-      <!-- Mostrar el mapa si el tracking está activo y se ha activado -->
+      <!-- Mostrar el mapa solo si el tracking está activo y no ha finalizado -->
       <div *ngIf="mostrarMapa">
         <div id="map" style="width: 100%; height: 400px;"></div>
       </div>
+
+      <!-- Mensaje si el tracking ha finalizado -->
+      <p *ngIf="!trackingActivo && pedido.estado === 'entregado'">
+        El seguimiento del paquete ha finalizado.
+      </p>
     </ion-card-content>
   </ion-card>
 </ion-content>

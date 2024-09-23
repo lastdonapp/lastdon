@@ -155,7 +155,7 @@ export class DetallesPedidoPage implements OnInit {
     try {
       // Verificar el estado del pedido
       const estadoPedido = await this.supabaseService.obtenerEstadoPedido(pedidoId);
-      console.log('ID del pedido:', this.pedido.id);
+      console.log('ID del pedido:', pedidoId);
   
       if (estadoPedido !== 'recepcionado') {
         console.error('El pedido no está en el estado correcto para iniciar el tracking.');
@@ -171,10 +171,12 @@ export class DetallesPedidoPage implements OnInit {
   
       // Obtener la ubicación actual del conductor
       const coords = await this.geolocationService.getCurrentPosition();
+  
+      // Obtener detalles del pedido, incluyendo los correos del conductor y cliente
+      const pedidoDetails = await this.supabaseService.obtenerDetallesPedido(pedidoId);
       
-      // Obtener correos del conductor y cliente desde los detalles del pedido
-      const conductorEmail = this.conductorEmail; // Asegúrate de que estas propiedades están definidas
-      const clienteEmail = this.userEmail;
+      const conductorEmail = pedidoDetails.conductor_email; // Correos obtenidos
+      const clienteEmail = pedidoDetails.cliente_email;
   
       const trackingData = {
         pedido_id: pedidoId,
@@ -193,7 +195,7 @@ export class DetallesPedidoPage implements OnInit {
       console.error('Error al iniciar el tracking:', error);
     }
   }
-
+  
   // Método para verificar si el tracking ya ha sido iniciado
 async verificarTrackingIniciado(pedidoId: string): Promise<boolean> {
   try {

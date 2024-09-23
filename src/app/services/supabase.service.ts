@@ -19,6 +19,7 @@ export class SupabaseService {
   private apiKey = environment.apiKey; // Usa la API Key del entorno
   private pedidos = environment.pedUrl;
   private URL = environment.URL; // url base
+  private tracking = environment.trackUrl;
   private hashingService = new HashingService();
   private supabase = createClient(this.URL, this.apiKey);
 
@@ -760,6 +761,7 @@ async getToken(): Promise<any> {
 
   async entregarPedido(pedidoId: string): Promise<void> {
     try {
+      // Actualizar el estado del pedido a 'entregado'
       const response = await fetch(`${this.pedidos}?id=eq.${encodeURIComponent(pedidoId)}`, {
         method: 'PATCH',
         headers: {
@@ -772,18 +774,38 @@ async getToken(): Promise<any> {
           fecha_entrega: new Date().toISOString()
         })
       });
-
+  
       if (!response.ok) {
         const errorText = await response.text();
         console.error('Error al actualizar el pedido:', errorText);
         throw new Error(errorText || 'Error al actualizar el pedido');
       }
+  
+      // Actualizar el estado del tracking a 'finalizado'
+      const trackingResponse = await fetch(`${this.tracking}?pedido_id=eq.${encodeURIComponent(pedidoId)}`, { // Cambiado a pedido_id
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': this.apiKey,
+          'Authorization': `Bearer ${this.apiKey}`
+        },
+        body: JSON.stringify({
+          estado_tracking: 'finalizado', // Se usa estado_tracking, ya que es la columna correcta
+          timestamp: new Date().toISOString() // Actualiza el timestamp de finalización
+        })
+      });
+  
+      if (!trackingResponse.ok) {
+        const trackingErrorText = await trackingResponse.text();
+        console.error('Error al actualizar el tracking:', trackingErrorText);
+        throw new Error(trackingErrorText || 'Error al actualizar el tracking');
+      }
+  
     } catch (error) {
       console.error('Error al entregar el pedido:', error);
       throw error;
     }
   }
-
 
 
 
@@ -959,6 +981,37 @@ async getToken(): Promise<any> {
     }
   
     return data;
+  }
+
+
+
+  async obtenerDetallesPedido(pedidoId: string): Promise<any> {
+    try {
+      const response = await fetch(`${this.pedidos}?id=eq.${encodeURIComponent(pedidoId)}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': this.apiKey,
+          'Authorization': `Bearer ${this.apiKey}`
+        }
+      });
+  
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error al obtener los detalles del pedido:', errorText);
+        throw new Error(errorText || 'Error al obtener los detalles del pedido');
+      }
+  
+      const [pedido] = await response.json();
+      return {
+        conductor_email: pedido.conductor_email, // Asegúrate de que estos campos existen en tu tabla
+        cliente_email: pedido.cliente_email,
+        estado: pedido.estado
+      };
+    } catch (error) {
+      console.error('Error al obtener los detalles del pedido:', error);
+      throw error;
+    }
   }
 
 

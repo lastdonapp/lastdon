@@ -45,12 +45,20 @@ export class DetallesPedidoPage implements OnInit {
     }
   }
 
+
+  
   async verificarTrackingActivo() {
     if (this.pedido && this.pedido.id) {
       try {
         const trackingData = await this.supabaseService.getTracking(this.pedido.id);
-        if (trackingData && trackingData.length > 0 && trackingData[0].estado_tracking === 'iniciado') {
-          this.trackingActivo = true; // Si el tracking está activo
+        if (trackingData && trackingData.length > 0) {
+          // Verificar si el estado del tracking es 'iniciado'
+          if (trackingData[0].estado_tracking === 'iniciado') {
+            this.trackingActivo = true;
+          } else if (trackingData[0].estado_tracking === 'finalizado') {
+            this.trackingActivo = false;
+            this.mostrarMapa = false; // Ocultar el mapa si el tracking ha finalizado
+          }
         }
       } catch (error) {
         console.error('Error al verificar el estado del tracking:', error);
