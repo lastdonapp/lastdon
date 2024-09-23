@@ -1,7 +1,7 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { SupabaseService } from '../services/supabase.service';
-import { ToastController, AlertController, IonModal } from '@ionic/angular';
+import { ToastController, AlertController } from '@ionic/angular';
 import { AuthService } from '../services/auth.service';
 
 @Component({
@@ -16,8 +16,6 @@ export class LoginPage {
   verificado: boolean = false;
   errorMessage: string | null = null;
 
-  @ViewChild('modal')
-  modal!: IonModal;
 
   user:any;
 
@@ -84,18 +82,14 @@ export class LoginPage {
     }
   }
 
-  async presentUserTypeSelection() {
-    await this.modal.present();
-  }
-
+ 
   async registerUserWithGoogle() {
     try {
-      const response = await this.supabaseService.registerUser(this.user.email, this.user.password, this.userType, this.verificado);
+      const response = await this.supabaseService.registerGoogleUser(this.user.email, this.user.password, this.userType, this.verificado);
       console.log('Usuario registrado con Google:', response);
 
       if (response.success) {
         localStorage.setItem('userType', this.userType);
-        this.modal.dismiss();
         this.router.navigate(['/map']);
       } else {
         await this.showToast('Error en el registro. Intenta nuevamente.', 'danger');
@@ -131,7 +125,4 @@ export class LoginPage {
     this.password = '';
   }
 
-  dismissModal() {
-    this.modal.dismiss();
-  }
 }

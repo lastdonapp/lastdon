@@ -29,40 +29,9 @@
     </ion-card-content>
   </ion-card>
 
-  <ion-button id="open-modal" expand="full" (click)="signIn()">
-    Ingresar con Google
+  <ion-button id="open-modal" expand="full" routerLink="/register-google" >
+    Inicar con Google
   </ion-button>
 
-  <ion-button id="open-modal" expand="full" (click)="presentUserTypeSelection()">
-    Continuar con Google
-  </ion-button>
-
-  <ion-modal #modal>
-    <ng-template>
-      <ion-header>
-        <ion-toolbar>
-          <ion-buttons slot="end">
-            <ion-button (click)="dismissModal()">Volver</ion-button>
-          </ion-buttons>
-          <ion-title>Registro Con Google</ion-title>
-        </ion-toolbar>
-      </ion-header>
-      <ion-content class="ion-padding">
-        <ion-item>
-          <ion-label>Tipo de Usuario</ion-label>
-        </ion-item>
-        <ion-radio-group [(ngModel)]="userType">
-          <ion-item>
-            <ion-label>Usuario Normal</ion-label>
-            <ion-radio slot="start" value="normal"></ion-radio>
-          </ion-item>
-          <ion-item>
-            <ion-label>Conductor</ion-label>
-            <ion-radio slot="start" value="conductor"></ion-radio>
-          </ion-item>
-        </ion-radio-group>
-        <ion-button expand="full" (click)="registerUserWithGoogle()">Registrar</ion-button>
-      </ion-content>
-    </ng-template>
-  </ion-modal>
+ 
 </ion-content>

@@ -6,6 +6,7 @@ import { HashingService } from './hashing.service';
 import { environment } from 'src/environments/environment.prod';
 import { createClient } from '@supabase/supabase-js';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+import emailjs from 'emailjs-com';
 
 
 
@@ -162,8 +163,6 @@ private validatePassword(password: string): boolean {
 
 // Registrar usuario
 
-// SupabaseService
-
 async registerUser(email: string, password: string, userType: string, verificado: boolean): Promise<any> {
   try {
     // Validar formato del correo electrónico
@@ -171,8 +170,15 @@ async registerUser(email: string, password: string, userType: string, verificado
       throw new Error('Formato de correo electrónico inválido');
     }
 
-    // Aquí, no necesitas hashear la contraseña ya que el usuario se autentica a través de Google
-    const response = await fetch(`${this.apiUrl}`, {
+    // Validar formato de la contraseña
+    if (!this.validatePassword(password)) {
+      throw new Error('La contraseña debe tener al menos 8 caracteres, incluir una letra mayúscula y un carácter especial');
+    }
+
+    const salt = crypto.randomUUID(); // Genera una sal usando una función disponible en la Web Crypto API
+    const hashedPassword = await this.hashingService.hashPassword(password, salt); // Hashea la contraseña con la sal
+
+    const response = await fetch(this.apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -181,7 +187,8 @@ async registerUser(email: string, password: string, userType: string, verificado
       },
       body: JSON.stringify({
         email: email,
-        password: password,
+        password: hashedPassword,
+        salt: salt, // También almacena la sal en la base de datos
         user_type: userType,
         verificado: verificado
       })
@@ -199,6 +206,61 @@ async registerUser(email: string, password: string, userType: string, verificado
     throw error;
   }
 }
+
+
+//Google
+
+
+ async checkUserExists(email: string): Promise<boolean> {
+    const { data, error } = await this.supabase
+      .from('users')
+      .select('email')
+      .eq('email', email)
+      .single();
+
+    if (error && error.code === 'PGRST116') {
+      return false; // El usuario no existe
+    }
+
+    if (data) {
+      return true; // El usuario ya está registrado
+    }
+
+    throw new Error('Error al verificar el usuario');
+  }
+
+  // Registrar un usuario con Google
+  async registerGoogleUser(email: string, password: string, userType: string, verificado: boolean): Promise<any> {
+    const { data, error } = await this.supabase
+      .from('users')
+      .insert([
+        { email: email, password: password, user_type: userType, verificado: verificado }
+      ]);
+
+    if (error) {
+      throw new Error('Error al registrar usuario: ' + error.message);
+    }
+    // Enviar correo con la contraseña generada
+    await this.sendEmail(email, password);
+
+    return { success: true, data };
+  }
+
+ // Método para enviar el correo usando EmailJS
+  async sendEmail(email: string, password: string): Promise<void> {
+    const templateParams = {
+      to_name: email,
+      password: password,
+    };
+
+    try {
+      const response = await emailjs.send('service_z9qtwmo', 'template_9i5xk9a', templateParams, 'myh6jilHRl1Qg8DMJ');
+      console.log('Email sent successfully:', response);
+    } catch (error) {
+      console.error('Failed to send email:', error);
+      // Aquí puedes hacer un manejo adicional del error
+    }
+  }
 
 
   // Obtener el token desde la base de datos
