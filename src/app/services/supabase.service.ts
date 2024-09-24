@@ -1017,6 +1017,33 @@ async getToken(): Promise<any> {
 
 
 
+  async verificarTrackingIniciado(pedidoId: string): Promise<boolean> {
+    try {
+        const response = await fetch(`${this.tracking}?pedido_id=eq.${encodeURIComponent(pedidoId)}&estado_tracking=eq.iniciado`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'apikey': this.apiKey,
+                'Authorization': `Bearer ${this.apiKey}`
+            }
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Error al verificar el tracking:', errorText);
+            throw new Error(errorText || 'Error al verificar el tracking');
+        }
+
+        const trackingData = await response.json();
+        return trackingData.length > 0; // Retorna verdadero si hay tracking iniciado
+    } catch (error) {
+        console.error('Error al verificar el tracking:', error);
+        throw error;
+    }
+}
+
+
+
 
 
 

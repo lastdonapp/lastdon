@@ -51,38 +51,52 @@ export class MisPedidosPage implements OnInit {
 
   async entregarPedido(pedidoId: string) {
     try {
-      const alert = await this.alertController.create({
-        header: 'Confirmar Entrega',
-        message: '¿Está seguro de marcar este pedido como entregado?',
-        buttons: [
-          {
-            text: 'Cancelar',
-            role: 'cancel',
-            handler: () => {
-              console.log('Entrega cancelada por el usuario');
-            }
-          },
-          {
-            text: 'Confirmar',
-            handler: async () => {
-              await this.supabaseService.entregarPedido(pedidoId);
-              const toast = await this.toastController.create({
-                message: 'Pedido marcado como entregado',
-                duration: 2000,
-                color: 'success'
-              });
-              await toast.present();
-              this.loadPedidos(); // Recargar la lista de pedidos
-            }
-          }
-        ]
-      });
-  
-      await alert.present();
+        // Verificar si el tracking ha sido iniciado
+        const trackingIniciado = await this.supabaseService.verificarTrackingIniciado(pedidoId);
+        
+        if (!trackingIniciado) {
+            const alertTracking = await this.alertController.create({
+                header: 'Tracking no iniciado',
+                message: 'Debe iniciar el tracking antes de entregar el pedido.',
+                buttons: ['Aceptar']
+            });
+            await alertTracking.present();
+            return; // Detener la ejecución si el tracking no ha sido iniciado
+        }
+
+        // Continuar con la entrega si el tracking ya fue iniciado
+        const alert = await this.alertController.create({
+            header: 'Confirmar Entrega',
+            message: '¿Está seguro de marcar este pedido como entregado?',
+            buttons: [
+                {
+                    text: 'Cancelar',
+                    role: 'cancel',
+                    handler: () => {
+                        console.log('Entrega cancelada por el usuario');
+                    }
+                },
+                {
+                    text: 'Confirmar',
+                    handler: async () => {
+                        await this.supabaseService.entregarPedido(pedidoId);
+                        const toast = await this.toastController.create({
+                            message: 'Pedido marcado como entregado',
+                            duration: 2000,
+                            color: 'success'
+                        });
+                        await toast.present();
+                        this.loadPedidos(); // Recargar la lista de pedidos
+                    }
+                }
+            ]
+        });
+
+        await alert.present();
     } catch (error) {
-      console.error('Error al entregar el pedido:', error);
+        console.error('Error al entregar el pedido:', error);
     }
-  }
+}
 
 
 
