@@ -15,6 +15,7 @@ export class LoginPage {
   userType: string = ""; // Solo usado para Google sign-in
   verificado: boolean = false;
   errorMessage: string | null = null;
+  
 
 
   user:any;
@@ -33,8 +34,18 @@ export class LoginPage {
 
   async login() {
     try {
-      const { session, userType, verificado } = await this.supabaseService.signIn(this.email, this.password);
-
+      let session;
+      let userType;
+      let verificado;
+  
+      if (this.password) {
+        // Si se proporciona una contraseña, intenta el inicio de sesión con email/contraseña
+        ({ session, userType, verificado } = await this.supabaseService.signIn(this.email, this.password));
+      } else {
+        // Si no hay contraseña, probablemente sea un usuario de Google
+        ({ session, userType, verificado } = await this.supabaseService.signIn(this.email, ''));
+      }
+  
       if (session) {
         localStorage.setItem('userType', userType);
         if (userType === 'normal') {
@@ -55,51 +66,16 @@ export class LoginPage {
         this.resetForm();
       } else {
         await this.showToast('Correo o contraseña incorrectos', 'danger');
+        console.log(session)
+        console.log(userType)
+
       }
     } catch (error) {
       console.error('Login error:', error);
       await this.showToast('Ocurrió un error durante el inicio de sesión.', 'danger');
     }
   }
-
-  async signIn() {
-    try {
-      const result = await this.authService.googleSignIn();
-      console.log(result);
-      console.log(result.email);
-      console.log(result.authentication);
-
-
-
-      if (result.user) {
-        this.user = result.user;
-      } else {
-        await this.showToast('Error en la autenticación con Google', 'danger');
-      }
-    } catch (error) {
-      console.error('Error al iniciar sesión con Google:', error);
-      await this.showToast('Error en la autenticación con Google', 'danger');
-    }
-  }
-
- 
-  async registerUserWithGoogle() {
-    try {
-      const response = await this.supabaseService.registerGoogleUser(this.user.email, this.user.password, this.userType, this.verificado);
-      console.log('Usuario registrado con Google:', response);
-
-      if (response.success) {
-        localStorage.setItem('userType', this.userType);
-        this.router.navigate(['/map']);
-      } else {
-        await this.showToast('Error en el registro. Intenta nuevamente.', 'danger');
-      }
-    } catch (error) {
-      console.error('Error al registrar usuario con Google:', error);
-      await this.showToast('Error en el registro. Intenta nuevamente.', 'danger');
-    }
-  }
-
+   
   private async showPopup(title: string, message: string) {
     const alert = await this.alertController.create({
       header: title,

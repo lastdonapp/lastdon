@@ -30,7 +30,8 @@
       </ion-radio-group>
       <ion-note slot="end">Selecciona un tipo de usuario</ion-note>
 
-      <ion-button id="open-modal" expand="full" (click)="signIn()">Iniciar con Google</ion-button>
+      <ion-button id="open-modal" expand="full" (click)="RegisterGoogle()">Iniciar con Google</ion-button>
+      <ion-button id="open-modal" expand="full" (click)="goBack()">Volver</ion-button>
       <ion-text color="danger" *ngIf="errorMessage">
         <p>{{ errorMessage }}</p>
       </ion-text>
