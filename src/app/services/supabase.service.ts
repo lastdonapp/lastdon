@@ -954,18 +954,25 @@ async getToken(): Promise<any> {
 
 
   async updateTrackingLocation(trackingId: string, latitud: number, longitud: number): Promise<void> {
+    console.log(`Actualizando tracking con ID: ${trackingId}, Latitud: ${latitud}, Longitud: ${longitud}`);
+    
     const { data, error } = await this.supabase
       .from('tracking')
-      .update({ latitud, longitud })
+      .update({ 
+        latitud, 
+        longitud, 
+        timestamp: new Date()  // Actualiza el timestamp
+      })
       .eq('id', trackingId);
-
+  
     if (error) {
       console.error('Error al actualizar la ubicación del tracking:', error);
       throw error;
     }
-
+  
     console.log('Ubicación del tracking actualizada con éxito:', data);
   }
+  
 
 
 

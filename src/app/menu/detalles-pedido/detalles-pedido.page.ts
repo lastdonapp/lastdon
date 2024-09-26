@@ -22,6 +22,12 @@ export class DetallesPedidoPage implements OnInit {
 
   ngOnInit() {
     this.loadPedido();
+
+
+    this.verificarTrackingActivo();
+    setInterval(() => {
+      this.verificarTrackingActivo();
+    }, 20000); // Ejecutar cada 20 segundos
   }
 
 
@@ -94,6 +100,10 @@ export class DetallesPedidoPage implements OnInit {
       console.error('No se pudo inicializar el mapa o no hay ubicación del paquete');
     }
   }
+
+
+
+  
 
 
 

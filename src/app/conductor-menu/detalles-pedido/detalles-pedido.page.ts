@@ -124,13 +124,19 @@ export class DetallesPedidoPage implements OnInit {
   }
   
   private watchPosition() {
+    let moveStep = 0.0001; // Valor pequeño para simular el movimiento
+  
     this.watchId = navigator.geolocation.watchPosition(
       async (position) => {
-        this.currentLocation = { lat: position.coords.latitude, lng: position.coords.longitude };
-
+        // Simulación del movimiento añadiendo pequeños cambios a las coordenadas
+        const newLat = position.coords.latitude + (Math.random() * moveStep - moveStep / 2);
+        const newLng = position.coords.longitude + (Math.random() * moveStep - moveStep / 2);
+        
+        this.currentLocation = { lat: newLat, lng: newLng };
+  
         // Actualizar el marcador en el mapa
         this.googleMapsService.updateMarker(this.currentLocation.lat, this.currentLocation.lng, 'Ubicación Actual');
-
+  
         // Actualizar la ubicación del tracking en la base de datos
         if (this.trackingId) {
           try {
@@ -144,12 +150,13 @@ export class DetallesPedidoPage implements OnInit {
         console.error('Error al obtener la ubicación en tiempo real:', error);
       },
       {
-        enableHighAccuracy: true, // Puedes ajustar las opciones según sea necesario
-        timeout: 20000, // Tiempo máximo en milisegundos para obtener la ubicación
-        maximumAge: 1000 // Tiempo máximo en milisegundos para considerar la ubicación en caché
+        enableHighAccuracy: true,
+        timeout: 20000,
+        maximumAge: 1000
       }
     );
   }
+  
 
   async iniciarTracking(pedidoId: string) {
     try {

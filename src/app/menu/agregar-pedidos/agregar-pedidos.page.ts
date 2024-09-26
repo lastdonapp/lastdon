@@ -46,8 +46,89 @@ export class AgregarPedidosPage implements OnInit {
   };
 
   comunas: string[] = [
-  'La cisterna', 'Ñuñoa', 'Providencia','Pedro Aguirre Cerda', 'Santiago','San Miguel','San Joaquín'
-];
+    'La Cisterna', 
+    'Ñuñoa', 
+    'Providencia', 
+    'Pedro Aguirre Cerda', 
+    'Santiago', 
+    'San Miguel', 
+    'San Joaquín',
+    'Cerrillos',
+    'Cerro Navia',
+    'Colina',
+    'Conchalí',
+    'El Bosque',
+    'Huechuraba',
+    'Independencia',
+    'La Florida',
+    'La Granja',
+    'La Pintana',
+    'La Reina',
+    'Las Condes',
+    'Lo Barnechea',
+    'Lo Espejo',
+    'Lo Prado',
+    'Macul',
+    'Maipú',
+    'Padre Hurtado',
+    'Peñalolén',
+    'Pudahuel',
+    'Puente Alto',
+    'Quilicura',
+    'Quinta Normal',
+    'Recoleta',
+    'Renca',
+    'San Bernardo',
+    'San Ramón',
+    'Vitacura',
+    'Estación Central'
+  ];
+
+  // Costos por comuna
+  costosPorComuna: { [key: string]: number } = {
+    'La Cisterna': 3500,
+    'Ñuñoa': 2990,
+    'Providencia': 3500,
+    'Pedro Aguirre Cerda': 2500,
+    'Santiago': 2990,
+    'San Miguel': 2990,
+    'San Joaquín': 2990,
+    'Cerrillos': 3500,
+    'Cerro Navia': 3500,
+    'Colina': 4000,
+    'Conchalí': 2990,
+    'El Bosque': 3500,
+    'Estación Central': 3500,
+    'Huechuraba': 3500,
+    'Independencia': 2990,
+    'La florida': 3500,
+    'La Granja': 2990,
+    'La pintana': 3500,
+    'La reina': 3500,
+    'Las Condes': 3500,
+    'Lo Barnechea': 4000,
+    'Lo Espejo': 3500,
+    'Lo Prado': 3500,
+    'Macul': 2990,
+    'Maipú': 4000,
+    'Pedro Hurtado': 4000,
+    'Peñalolén': 3500,
+    'Pudahuel': 4000,
+    'Puente Alto': 4000,
+    'Quilicura': 3500,
+    'Quinta Normal': 3500,
+    'Recoleta': 2990,
+    'Renca': 3500,
+    'San Bernardo': 4000,
+    'San Ramón': 3500,
+    'Vitacura': 3500,
+
+  
+  };
+
+
+
+
 
   telefonoInput: string = ''; // Input del teléfono sin el prefijo
   capturedPhoto: string = ''; // Variable para almacenar la URL de la foto capturada
@@ -67,6 +148,23 @@ export class AgregarPedidosPage implements OnInit {
     this.pedido.codigo = this.generateUniqueCode();
     this.pedido.fecha = new Date().toISOString();
   }
+
+
+
+    // Método para actualizar el costo cuando cambia la comuna
+    onComunaChange(comuna: string) {
+      if (this.costosPorComuna[comuna]) {
+        this.pedido.costo = this.costosPorComuna[comuna];
+        console.log('Costo actualizado según comuna:', this.pedido.costo);
+        this.updateCosto(); // Llama a la función para actualizar el costo
+
+      }
+    }
+
+
+
+
+
 
   async takePhoto() {
     try {
@@ -213,24 +311,48 @@ export class AgregarPedidosPage implements OnInit {
   }
 
   updateCosto() {
+    // Costo base
     let baseCost = this.calculateCost();
   
-    // Calcular el volumen en metros cúbicos
-    let volumen = this.pedido.dimensiones.alto * this.pedido.dimensiones.ancho * this.pedido.dimensiones.largo;
+    // Verificar el costo de la comuna
+    let costoComuna = this.costosPorComuna[this.pedido.comuna];
   
-    // Ajustar el volumen según la unidad
-    if (this.pedido.dimensiones.unidad === 'centimetros') {
-      volumen /= 1000000; // Convertir cm³ a m³
+    if (typeof costoComuna !== 'number') {
+      console.error('El costo de la comuna no es un número. Se establecerá en 0.');
+      costoComuna = 0; // Asignar 0 si no se encuentra un valor numérico
     }
   
-    let dimensionCost = volumen * 20; // Costo por volumen (ajustar según necesidad)
+    // Verificar dimensiones
+    if (!this.pedido.dimensiones.alto || !this.pedido.dimensiones.ancho || !this.pedido.dimensiones.largo) {
+      console.error('Las dimensiones deben ser valores válidos');
+      return; // Salir si hay un error
+    }
   
-    // Cálculo del costo total considerando la cantidad de paquetes
-    let totalCost = (baseCost + dimensionCost) * this.pedido.cantidadPaquetes;
+    // Calcular el volumen
+    let volumen = this.pedido.dimensiones.alto * this.pedido.dimensiones.ancho * this.pedido.dimensiones.largo;
+    
+    // Ajustar el volumen según la unidad
+    if (this.pedido.dimensiones.unidad === 'centimetros') {
+      if (volumen === 0) {
+        console.error('El volumen no puede ser cero');
+        return; // Salir si el volumen es cero
+      }
+      volumen /= 1000000; // Convertir cm³ a m³
+    }
+    
+    // Costo basado en volumen
+    let dimensionCost = volumen * 20; // Ajustar según necesidad
   
-    // Asigna el costo calculado al pedido
+    // Calcular el costo total
+    let totalCost = (baseCost + dimensionCost + costoComuna) * this.pedido.cantidadPaquetes;
+  
+    // Asignar el costo calculado al pedido
     this.pedido.costo = totalCost;
+  
+    console.log(`Costo actualizado: ${this.pedido.costo}, para la comuna: ${this.pedido.comuna}`);
   }
+  
+  
 
   generateUniqueCode() {
     return 'PED-' + Math.random().toString(36).substr(2, 9).toUpperCase();
@@ -242,6 +364,8 @@ export class AgregarPedidosPage implements OnInit {
       map((response: any) => response.features)
     );
   }
+  
+
 
   onDireccionPedidoChange(event: any) {
     const value = event.target.value;

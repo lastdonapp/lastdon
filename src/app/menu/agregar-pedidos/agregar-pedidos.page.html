@@ -138,10 +138,13 @@
             name="comuna"
             #comuna="ngModel"
             required
+            (ionChange)="onComunaChange($event.detail.value)"
           >
             <ion-select-option *ngFor="let comuna of comunas" [value]="comuna">{{comuna}}</ion-select-option>
           </ion-select>
         </ion-item>
+        
+        
         <ion-text color="danger" *ngIf="comuna.invalid && (comuna.dirty || comuna.touched)">
           <p *ngIf="comuna.errors?.['required']">La comuna es requerida.</p>
         </ion-text>
@@ -275,8 +278,8 @@
 
         <!-- Costo -->
         <ion-item>
-          <ion-label>CLP$ </ion-label>
-          <ion-input [value]="pedido.costo | currency:'CLP':'symbol':'1.0-0'" name="costo" readonly></ion-input>
+          <ion-label> </ion-label>
+          <ion-input [value]="pedido.costo | currency:' total a pagar : CLP $ ':'symbol':'1.0-0'" name="costo" readonly></ion-input>
         </ion-item>
 
         <!-- Botón de Envío -->
