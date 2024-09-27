@@ -139,10 +139,51 @@ export class MisPedidosPage implements OnInit {
 
 
 
+  async ingresarCentroDistribucion(pedidoId: string) {
+    try {
+        const trackingIniciado = await this.supabaseService.verificarTrackingIniciado(pedidoId);
+        if (!trackingIniciado) {
+            const alert = await this.alertController.create({
+                header: 'Tracking no iniciado',
+                message: 'Debe iniciar el tracking antes de marcar este pedido como ingresado a centro de distribución.',
+                buttons: ['Aceptar']
+            });
+            await alert.present();
+            return; // Detener la ejecución si el tracking no ha sido iniciado
+        }
 
+        const alert = await this.alertController.create({
+            header: '¿ Confirmar el ingreso a centro de distribución ?',
+            message: '¿Está seguro de que desea marcar este pedido como ingresado a centro de distribución?',
+            buttons: [
+                {
+                    text: 'Cancelar',
+                    role: 'cancel',
+                    handler: () => {
+                        console.log('Cambio de estado cancelado por el usuario');
+                    }
+                },
+                {
+                    text: 'Confirmar',
+                    handler: async () => {
+                        await this.supabaseService.almacenarPedido(pedidoId);
+                        const toast = await this.toastController.create({
+                            message: 'Pedido marcado como ingresado a centro de distribución',
+                            duration: 2000,
+                            color: 'success'
+                        });
+                        await toast.present();
+                        this.loadPedidos(); // Recargar la lista de pedidos
+                    }
+                }
+            ]
+        });
 
-
-
+        await alert.present();
+    } catch (error) {
+        console.error('Error al cambiar el estado del pedido:', error);
+    }
+}
 
 
 

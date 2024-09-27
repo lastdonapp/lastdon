@@ -837,6 +837,34 @@ async getToken(): Promise<any> {
 
 
 
+  async almacenarPedido(pedidoId: string): Promise<void> {
+    try {
+      const response = await fetch(`${this.pedidos}?id=eq.${encodeURIComponent(pedidoId)}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': this.apiKey,
+          'Authorization': `Bearer ${this.apiKey}`
+        },
+        body: JSON.stringify({
+          estado: 'Ingresado a centro de distribución'
+        })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error al actualizar el pedido:', errorText);
+        throw new Error(errorText || 'Error al actualizar el pedido');
+      }
+    } catch (error) {
+      console.error('Error al almacenar el pedido:', error);
+      throw error;
+    }
+  }
+
+
+
+
 
 
 
@@ -889,18 +917,22 @@ async getToken(): Promise<any> {
   }
 
 
-
-  async iniciarTracking(trackingData: any) {
+  async iniciarTracking(trackingData: any): Promise<string> {
     const { data, error } = await this.supabase
       .from('tracking')
-      .insert([trackingData]);
-  
+      .insert(trackingData)
+      .select('id')  // Recupera el ID del nuevo registro insertado
+      .single();     // Asegúrate de obtener solo un registro
+    
     if (error) {
-      throw new Error(`Error al iniciar el tracking: ${error.message}`);
+      console.error('Error al iniciar el tracking en Supabase:', error);
+      throw error;   // Lanza el error para manejarlo en otro lugar
     }
-    return data;
+  
+    console.log('Tracking iniciado con éxito:', data);
+    return data.id;  // Retorna el ID del nuevo registro de tracking
   }
-
+  
 
 
   async obtenerEstadoPedido(pedidoId: string): Promise<string> {
@@ -952,29 +984,32 @@ async getToken(): Promise<any> {
 
 
 
-
   async updateTrackingLocation(trackingId: string, latitud: number, longitud: number): Promise<void> {
-    console.log(`Actualizando tracking con ID: ${trackingId}, Latitud: ${latitud}, Longitud: ${longitud}`);
+    try {
+      console.log(`Actualizando tracking con ID: ${trackingId}, Latitud: ${latitud}, Longitud: ${longitud}`);
+      
+      const { data, error } = await this.supabase
+        .from('tracking')
+        .update({ 
+          latitud, 
+          longitud, 
+          timestamp: new Date()  // Actualiza el timestamp
+        })
+        .eq('id', trackingId);
     
-    const { data, error } = await this.supabase
-      .from('tracking')
-      .update({ 
-        latitud, 
-        longitud, 
-        timestamp: new Date()  // Actualiza el timestamp
-      })
-      .eq('id', trackingId);
-  
-    if (error) {
-      console.error('Error al actualizar la ubicación del tracking:', error);
-      throw error;
+      if (error) {
+        console.error('Error al actualizar la ubicación del tracking:', error);
+        throw error;  // Lanza el error para que pueda ser manejado por el llamador
+      }
+    
+      console.log('Ubicación del tracking actualizada con éxito:', data);
+    } catch (error) {
+      console.error('Ocurrió un error al intentar actualizar la ubicación del tracking:', error);
+      // Aquí puedes manejar el error de manera adicional si es necesario
+      throw error;  // Vuelve a lanzar el error para que pueda ser manejado en otro lugar
     }
-  
-    console.log('Ubicación del tracking actualizada con éxito:', data);
   }
   
-
-
 
 
   async getTracking(pedidoId: string) {
@@ -1048,6 +1083,61 @@ async getToken(): Promise<any> {
         throw error;
     }
 }
+
+
+
+
+async liberarConductor(pedidoId: string): Promise<void> {
+  try {
+    const response = await fetch(`${this.pedidos}?id=eq.${encodeURIComponent(pedidoId)}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': this.apiKey,
+        'Authorization': `Bearer ${this.apiKey}`
+      },
+      body: JSON.stringify({
+        conductor: ''
+      })
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Error al desligar conductor:', errorText);
+      throw new Error(errorText || 'Error al actualizar el pedido');
+    }
+  } catch (error) {
+    console.error('Error al desligar conductor:', error);
+    throw error;
+  }
+}
+
+
+
+async getTrackingById(pedidoId: string): Promise<string | null> {
+  try {
+      const { data, error } = await this.supabase
+          .from('tracking')
+          .select('id')
+          .eq('pedido_id', pedidoId)
+          .single();  // Suponiendo que hay solo un tracking por pedido
+
+      if (error) {
+          console.error('Error al obtener el trackingId:', error);
+          return null;
+      }
+
+      return data ? data.id : null;
+  } catch (error) {
+      console.error('Error en getTrackingById:', error);
+      return null;
+  }
+}
+
+
+
+
+
 
 
 

@@ -117,94 +117,99 @@ export class DetallesPedidoPage implements OnInit {
       });
   
       // Iniciar la vigilancia de la ubicación actual
-      this.watchPosition();
+      this.watchPosition(this.pedido.id);
     } else {
       console.error('No se pudo encontrar el elemento del mapa.');
     }
   }
   
-  private watchPosition() {
-    let moveStep = 0.0001; // Valor pequeño para simular el movimiento
-  
+  private async watchPosition(pedidoId: string) {
+    let moveStep = 0.0001;  // Simulación de movimiento pequeño
+
+    // Obtener el trackingId antes de comenzar a seguir la ubicación
+    const trackingId = await this.supabaseService.getTrackingById(pedidoId);
+    
+    if (!trackingId) {
+        console.error('No se ha encontrado un tracking activo para este pedido.');
+        return;  // Salir si no hay trackingId
+    }
+
+    // Asignar el trackingId si es válido
+    this.trackingId = trackingId;
+
+    console.log('Tracking ID obtenido:', this.trackingId);
+
     this.watchId = navigator.geolocation.watchPosition(
-      async (position) => {
-        // Simulación del movimiento añadiendo pequeños cambios a las coordenadas
-        const newLat = position.coords.latitude + (Math.random() * moveStep - moveStep / 2);
-        const newLng = position.coords.longitude + (Math.random() * moveStep - moveStep / 2);
-        
-        this.currentLocation = { lat: newLat, lng: newLng };
-  
-        // Actualizar el marcador en el mapa
-        this.googleMapsService.updateMarker(this.currentLocation.lat, this.currentLocation.lng, 'Ubicación Actual');
-  
-        // Actualizar la ubicación del tracking en la base de datos
-        if (this.trackingId) {
-          try {
-            await this.supabaseService.updateTrackingLocation(this.trackingId, this.currentLocation.lat, this.currentLocation.lng);
-          } catch (error) {
-            console.error('Error al actualizar la ubicación del tracking:', error);
-          }
+        async (position) => {
+            const newLat = position.coords.latitude + (Math.random() * moveStep - moveStep / 2);
+            const newLng = position.coords.longitude + (Math.random() * moveStep - moveStep / 2);
+
+            this.currentLocation = { lat: newLat, lng: newLng };
+
+            // Actualizar el marcador en el mapa
+            this.googleMapsService.updateMarker(this.currentLocation.lat, this.currentLocation.lng, 'Ubicación Actual');
+
+            // Actualizar la ubicación del tracking en la base de datos
+            try {
+                await this.supabaseService.updateTrackingLocation(this.trackingId, this.currentLocation.lat, this.currentLocation.lng);
+            } catch (error) {
+                console.error('Error al actualizar la ubicación del tracking:', error);
+            }
+        },
+        (error) => {
+            console.error('Error al obtener la ubicación en tiempo real:', error);
+        },
+        {
+            enableHighAccuracy: true,
+            timeout: 20000,
+            maximumAge: 1000
         }
-      },
-      (error) => {
-        console.error('Error al obtener la ubicación en tiempo real:', error);
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 20000,
-        maximumAge: 1000
-      }
     );
-  }
+}
+
+
   
 
   async iniciarTracking(pedidoId: string) {
     try {
-        // Verificar el estado del pedido
-        const estadoPedido = await this.supabaseService.obtenerEstadoPedido(pedidoId);
-        console.log('ID del pedido:', pedidoId);
+      // Verificar el estado del pedido
+      const estadoPedido = await this.supabaseService.obtenerEstadoPedido(pedidoId);
+      if (estadoPedido !== 'recepcionado') {
+        console.error('El pedido no está en el estado correcto para iniciar el tracking.');
+        return;
+      }
   
-        if (estadoPedido !== 'recepcionado') {
-            console.error('El pedido no está en el estado correcto para iniciar el tracking.');
-            return;
-        }
+      // Verificar si el tracking ya ha sido iniciado
+      const trackingIniciado = await this.verificarTrackingIniciado(pedidoId);
+      if (trackingIniciado) {
+        console.warn('El tracking ya ha sido iniciado para este pedido.');
+        return;
+      }
   
-        // Verificar si el tracking ya ha sido iniciado
-        const trackingIniciado = await this.verificarTrackingIniciado(pedidoId);
-        if (trackingIniciado) {
-            console.warn('El tracking ya ha sido iniciado para este pedido.');
-            return;
-        }
+      // Obtener la ubicación actual del conductor
+      const coords = await this.geolocationService.getCurrentPosition();
+      const pedidoDetails = await this.supabaseService.obtenerDetallesPedido(pedidoId);
+      const conductorEmail = pedidoDetails.conductor;
+      const clienteEmail = pedidoDetails.usuario;
   
-        // Obtener la ubicación actual del conductor
-        const coords = await this.geolocationService.getCurrentPosition();
+      const trackingData = {
+        pedido_id: pedidoId,
+        conductor_email: conductorEmail,
+        cliente_email: clienteEmail,
+        latitud: coords.latitude,
+        longitud: coords.longitude,
+        estado_tracking: 'iniciado'
+      };
   
-        // Obtener detalles del pedido, incluyendo los correos del conductor y cliente
-        const pedidoDetails = await this.supabaseService.obtenerDetallesPedido(pedidoId);
-        
-        // Asegúrate de que estas propiedades existen en el objeto pedidoDetails
-        const conductorEmail = pedidoDetails.conductor; // Correo del conductor
-        console.log('Correo del conductor:', conductorEmail);
-        const clienteEmail = pedidoDetails.usuario; // Correo del cliente
-        console.log('Correo del cliente:', clienteEmail);
+      // Iniciar tracking y obtener el trackingId
+      this.trackingId = await this.supabaseService.iniciarTracking(trackingData);
   
-        const trackingData = {
-            pedido_id: pedidoId,
-            conductor_email: conductorEmail,
-            cliente_email: clienteEmail,
-            latitud: coords.latitude,
-            longitud: coords.longitude,
-            estado_tracking: 'iniciado'
-        };
-  
-        // Llamada al servicio Supabase para crear el registro en la tabla tracking
-        await this.supabaseService.iniciarTracking(trackingData);
-        
-        console.log('Tracking iniciado con éxito', trackingData);
+      console.log('Tracking iniciado con ID:', this.trackingId);
     } catch (error) {
-        console.error('Error al iniciar el tracking:', error);
+      console.error('Error al iniciar el tracking:', error);
     }
-}
+  }
+  
 
 
 

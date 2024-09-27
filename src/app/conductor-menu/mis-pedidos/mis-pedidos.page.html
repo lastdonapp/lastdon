@@ -41,6 +41,14 @@
         color="primary">
         Entregado
       </ion-button>
+
+      <!-- Botón "Ingresar a Centro de Distribución" solo si el pedido está en estado "recepcionado" -->
+      <ion-button 
+        (click)="ingresarCentroDistribucion(pedido.id)"
+        *ngIf="pedido.estado === 'recepcionado'" 
+        color="primary">
+        Ingresar a Centro de Distribución
+      </ion-button>
     </ion-item>
   </ion-list>
 </ion-content>
