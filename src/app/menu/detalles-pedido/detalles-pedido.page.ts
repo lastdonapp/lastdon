@@ -57,13 +57,20 @@ export class DetallesPedidoPage implements OnInit {
     if (this.pedido && this.pedido.id) {
       try {
         const trackingData = await this.supabaseService.getTracking(this.pedido.id);
+        
         if (trackingData && trackingData.length > 0) {
-          // Verificar si el estado del tracking es 'iniciado'
-          if (trackingData[0].estado_tracking === 'iniciado') {
-            this.trackingActivo = true;
-          } else if (trackingData[0].estado_tracking === 'finalizado') {
-            this.trackingActivo = false;
-            this.mostrarMapa = false; // Ocultar el mapa si el tracking ha finalizado
+          // Verificar el estado del tracking
+          const estadoTracking = trackingData[0].estado_tracking;
+          
+          if (estadoTracking === 'iniciado') {
+            this.trackingActivo = true;  // El tracking está activo
+          } else if (estadoTracking === 'finalizado' || estadoTracking === 'En pausa') {
+            this.trackingActivo = false;  // El tracking no está activo
+            this.mostrarMapa = false;     // Ocultar el mapa si el tracking ha finalizado o está en pausa
+            
+            if (estadoTracking === 'En pausa') {
+              console.log('El tracking está en pausa. No se está realizando seguimiento activo.');
+            }
           }
         }
       } catch (error) {
@@ -71,6 +78,7 @@ export class DetallesPedidoPage implements OnInit {
       }
     }
   }
+  
 
   // Función para mostrar el mapa con la ubicación del conductor
   async mostrarUbicacionConductor() {

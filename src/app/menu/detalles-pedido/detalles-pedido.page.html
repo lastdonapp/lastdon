@@ -46,6 +46,15 @@
       <p *ngIf="!trackingActivo && pedido.estado === 'entregado'">
         El seguimiento del paquete ha finalizado.
       </p>
+
+
+
+         <!-- Mensaje si el tracking esta en pausa -->
+         <p *ngIf="!trackingActivo && pedido.estado === 'En centro de Distribución'">
+          El paquete está en el centro de distribución, a la brevedad se le notificará cuando se inicie el seguimiento.
+        </p>
+
+
     </ion-card-content>
   </ion-card>
 </ion-content>

@@ -130,7 +130,7 @@ export class DetallesPedidoPage implements OnInit {
     const trackingId = await this.supabaseService.getTrackingById(pedidoId);
     
     if (!trackingId) {
-        console.error('No se ha encontrado un tracking activo para este pedido.');
+        console.error('');
         return;  // Salir si no hay trackingId
     }
 

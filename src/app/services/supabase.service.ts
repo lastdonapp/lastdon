@@ -839,36 +839,52 @@ async getToken(): Promise<any> {
 
   async almacenarPedido(pedidoId: string): Promise<void> {
     try {
-      const response = await fetch(`${this.pedidos}?id=eq.${encodeURIComponent(pedidoId)}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': this.apiKey,
-          'Authorization': `Bearer ${this.apiKey}`
-        },
-        body: JSON.stringify({
-          estado: 'Ingresado a centro de distribución'
-        })
-      });
+        // Actualizar el estado del pedido a 'En centro de Distribución'
+        const response = await fetch(`${this.pedidos}?id=eq.${encodeURIComponent(pedidoId)}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'apikey': this.apiKey,
+                'Authorization': `Bearer ${this.apiKey}`
+            },
+            body: JSON.stringify({
+                estado: 'En centro de Distribución'
+            })
+        });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Error al actualizar el pedido:', errorText);
-        throw new Error(errorText || 'Error al actualizar el pedido');
-      }
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Error al actualizar el pedido:', errorText);
+            throw new Error(errorText || 'Error al actualizar el pedido');
+        }
+
+        // Actualizar el estado del tracking a 'En pausa'
+        const trackingResponse = await fetch(`${this.tracking}?pedido_id=eq.${encodeURIComponent(pedidoId)}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'apikey': this.apiKey,
+                'Authorization': `Bearer ${this.apiKey}`
+            },
+            body: JSON.stringify({
+                estado_tracking: 'En pausa',  // Se actualiza el estado del tracking
+                timestamp: new Date().toISOString() // Actualiza el timestamp
+            })
+        });
+
+        if (!trackingResponse.ok) {
+            const trackingErrorText = await trackingResponse.text();
+            console.error('Error al actualizar el tracking:', trackingErrorText);
+            throw new Error(trackingErrorText || 'Error al actualizar el tracking');
+        }
+
+        console.log('Pedido y tracking actualizados exitosamente.');
+
     } catch (error) {
-      console.error('Error al almacenar el pedido:', error);
-      throw error;
+        console.error('Error al almacenar el pedido:', error);
+        throw error;
     }
-  }
-
-
-
-
-
-
-
-
+}
 
 
 
@@ -1133,6 +1149,8 @@ async getTrackingById(pedidoId: string): Promise<string | null> {
       return null;
   }
 }
+
+
 
 
 
