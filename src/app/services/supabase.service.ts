@@ -1130,6 +1130,46 @@ async liberarConductor(pedidoId: string): Promise<void> {
 
 
 
+
+async liberarTrackingConductor(trackingId: string): Promise<void> {
+  try {
+    // Realizar el PATCH utilizando el trackingId como referencia
+    const response = await fetch(`${this.tracking}?id=eq.${trackingId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': this.apiKey,
+        'Authorization': `Bearer ${this.apiKey}`
+      },
+      body: JSON.stringify({
+        conductor_email: ''  // Vaciar el campo del conductor
+      })
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Error al liberar conductor de tracking:', errorText);
+      throw new Error(errorText || 'Error al actualizar tracking');
+    }
+
+    console.log('Conductor liberado correctamente del tracking');
+
+  } catch (error) {
+    console.error('Error al liberar conductor de tracking:', error);
+    throw error;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
 async getTrackingById(pedidoId: string): Promise<string | null> {
   try {
       const { data, error } = await this.supabase
@@ -1153,14 +1193,73 @@ async getTrackingById(pedidoId: string): Promise<string | null> {
 
 
 
+async getPedidosReanudar(): Promise<any> {
+  try {
+    const response = await fetch(`${this.pedidos}?estado=eq.En centro de Distribución`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': this.apiKey,
+        'Authorization': `Bearer ${this.apiKey}`
+      }
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Error al obtener los pedidos:', errorData);
+      throw new Error(errorData.message || 'Error al obtener los pedidos');
+    }
+
+    const pedidos = await response.json();
+    console.log('Pedidos por reanudar:', pedidos);
+    return pedidos;
+  } catch (error) {
+    console.error('Error al obtener los pedidos:', error);
+    throw error;
+  }
+}
 
 
-
-
-
-
-
-
+  async tomarPedidoIngresado(pedidoId: string, conductor: string): Promise<any> {
+    try {
+      const response = await fetch(`${this.pedidos}?id=eq.${encodeURIComponent(pedidoId)}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': this.apiKey,
+          'Authorization': `Bearer ${this.apiKey}`
+        },
+        body: JSON.stringify({
+          estado: 'reaunudado',
+          conductor: conductor,
+          fecha_tomado: new Date().toISOString() // Fecha actual en formato ISO
+        })
+      });
+  
+      // Verificar si la respuesta no es un JSON
+      if (!response.ok) {
+        const errorText = await response.text(); // Obtener el texto de error
+        console.error('Error al actualizar el pedido:', errorText);
+        throw new Error(errorText || 'Error al actualizar el pedido');
+      }
+  
+      // Intentar analizar la respuesta JSON solo si el cuerpo no está vacío
+      const responseText = await response.text();
+      if (responseText.trim() === '') {
+        // Respuesta vacía, podemos asumir que la actualización fue exitosa
+        console.log('Pedido actualizado con éxito, pero sin respuesta JSON');
+        return { success: true };
+      }
+  
+      const updatedPedido = JSON.parse(responseText);
+      console.log('Pedido actualizado:', updatedPedido);
+      return updatedPedido;
+  
+    } catch (error) {
+      console.error('Error al actualizar el pedido:', error);
+      throw error;
+    }
+  }
 
 
 

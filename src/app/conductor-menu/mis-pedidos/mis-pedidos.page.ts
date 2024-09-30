@@ -137,53 +137,85 @@ export class MisPedidosPage implements OnInit {
   }
 
 
-
-
   async ingresarCentroDistribucion(pedidoId: string) {
     try {
-        const trackingIniciado = await this.supabaseService.verificarTrackingIniciado(pedidoId);
-        if (!trackingIniciado) {
-            const alert = await this.alertController.create({
-                header: 'Tracking no iniciado',
-                message: 'Debe iniciar el tracking antes de marcar este pedido como ingresado a centro de distribución.',
-                buttons: ['Aceptar']
-            });
-            await alert.present();
-            return; // Detener la ejecución si el tracking no ha sido iniciado
-        }
-
+      // Obtener el trackingId basado en el pedidoId
+      const trackingId = await this.supabaseService.getTrackingById(pedidoId);
+  
+      if (!trackingId) {
         const alert = await this.alertController.create({
-            header: '¿ Confirmar el ingreso a centro de distribución ?',
-            message: '¿Está seguro de que desea marcar este pedido como ingresado a centro de distribución?',
-            buttons: [
-                {
-                    text: 'Cancelar',
-                    role: 'cancel',
-                    handler: () => {
-                        console.log('Cambio de estado cancelado por el usuario');
-                    }
-                },
-                {
-                    text: 'Confirmar',
-                    handler: async () => {
-                        await this.supabaseService.almacenarPedido(pedidoId);
-                        const toast = await this.toastController.create({
-                            message: 'Pedido marcado como ingresado a centro de distribución',
-                            duration: 2000,
-                            color: 'success'
-                        });
-                        await toast.present();
-                        this.loadPedidos(); // Recargar la lista de pedidos
-                    }
-                }
-            ]
+          header: 'Error',
+          message: 'No se pudo obtener el tracking del pedido.',
+          buttons: ['Aceptar']
         });
-
         await alert.present();
+        return; // Detener la ejecución si no se encuentra el tracking
+      }
+  
+      const trackingIniciado = await this.supabaseService.verificarTrackingIniciado(pedidoId);
+  
+      if (!trackingIniciado) {
+        const alert = await this.alertController.create({
+          header: 'Tracking no iniciado',
+          message: 'Debe iniciar el tracking antes de marcar este pedido como ingresado a centro de distribución.',
+          buttons: ['Aceptar']
+        });
+        await alert.present();
+        return; // Detener la ejecución si el tracking no ha sido iniciado
+      }
+  
+      const alert = await this.alertController.create({
+        header: '¿Confirmar el ingreso a centro de distribución?',
+        message: '¿Está seguro de que desea marcar este pedido como ingresado a centro de distribución?',
+        buttons: [
+          {
+            text: 'Cancelar',
+            role: 'cancel',
+            handler: () => {
+              console.log('Cambio de estado cancelado por el usuario');
+            }
+          },
+          {
+            text: 'Confirmar',
+            handler: async () => {
+              try {
+                // Marcar el pedido como ingresado al centro de distribución
+                await this.supabaseService.almacenarPedido(pedidoId);
+  
+                // Liberar conductor del pedido
+                await this.supabaseService.liberarConductor(pedidoId);
+  
+                // Vaciar el conductor de la tabla de tracking usando trackingId
+                await this.supabaseService.liberarTrackingConductor(trackingId);
+  
+                const toast = await this.toastController.create({
+                  message: 'Pedido marcado como ingresado a centro de distribución y conductor liberado',
+                  duration: 2000,
+                  color: 'success'
+                });
+                await toast.present();
+  
+                this.loadPedidos(); // Recargar la lista de pedidos
+              } catch (error) {
+                console.error('Error al almacenar pedido o liberar conductor:', error);
+                const toast = await this.toastController.create({
+                  message: 'Error al ingresar pedido o liberar conductor',
+                  duration: 2000,
+                  color: 'danger'
+                });
+                await toast.present();
+              }
+            }
+          }
+        ]
+      });
+  
+      await alert.present();
     } catch (error) {
-        console.error('Error al cambiar el estado del pedido:', error);
+      console.error('Error al cambiar el estado del pedido:', error);
     }
-}
+  }
+  
 
 
 
