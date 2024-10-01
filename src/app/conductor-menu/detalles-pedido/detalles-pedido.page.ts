@@ -21,6 +21,7 @@ export class DetallesPedidoPage implements OnInit {
   trackingIniciado: boolean = false; // Indica si el tracking ha sido iniciado
   private watchId: number | undefined; // Almacena el ID de vigilancia de geolocalización
   private trackingId: string = ''; // Asigna el ID del tracking iniciado
+  pedidoMarker: any; // Marcador del pedido
 
 
   constructor(
@@ -89,37 +90,50 @@ export class DetallesPedidoPage implements OnInit {
     }
   }
 
+
   async initializeMap() {
-    // Obtenemos la ubicación actual
-    const coords = await this.geolocationService.getCurrentPosition();
-    this.currentLocation = { lat: coords.latitude, lng: coords.longitude };
-  
-    // Inicializamos el mapa solo si hay un elemento de mapa disponible
-    const mapElement = document.getElementById('map');
-    if (mapElement) {
-      this.googleMapsService.initMap(mapElement, this.currentLocation.lat, this.currentLocation.lng);
-  
-      // Agregar marcador para la ubicación actual
-      this.googleMapsService.addMarker(this.currentLocation.lat, this.currentLocation.lng, 'Ubicación Actual');
-  
-      // Geocodificar y agregar marcador para la dirección del pedido
-      this.googleMapsService.geocodeAddress(this.pedido.direccion_pedido).then(pedidoCoords => {
-        this.googleMapsService.addMarker(pedidoCoords.latitude, pedidoCoords.longitude, 'Dirección del Pedido');
-      }).catch(error => {
-        console.error('Error al obtener la ubicación del pedido:', error);
-      });
-  
-      // Geocodificar y agregar marcador para la dirección de entrega
-      this.googleMapsService.geocodeAddress(this.pedido.direccion_entrega).then(entregaCoords => {
-        this.googleMapsService.addMarker(entregaCoords.latitude, entregaCoords.longitude, 'Dirección de Entrega');
-      }).catch(error => {
-        console.error('Error al obtener la ubicación de entrega:', error);
-      });
-  
-      // Iniciar la vigilancia de la ubicación actual
-      this.watchPosition(this.pedido.id);
-    } else {
-      console.error('No se pudo encontrar el elemento del mapa.');
+    try {
+      // Obtener el estado del pedido antes de inicializar el mapa
+      const estadoPedido = await this.supabaseService.obtenerEstadoPedido(this.pedido.id);
+
+      // Obtener la ubicación actual
+      const coords = await this.geolocationService.getCurrentPosition();
+      this.currentLocation = { lat: coords.latitude, lng: coords.longitude };
+
+      // Inicializar el mapa
+      const mapElement = document.getElementById('map');
+      if (mapElement) {
+        this.googleMapsService.initMap(mapElement, this.currentLocation.lat, this.currentLocation.lng);
+
+        // Agregar marcador de ubicación actual
+        this.googleMapsService.addMarker(this.currentLocation.lat, this.currentLocation.lng, 'Ubicación Actual');
+
+        // Verificar si el estado es uno de los que requiere ocultar el marcador
+        const estadosParaOcultarMarcador = ['recepcionado', 'en centro de distribución', 'reanudado'];
+        
+        if (!estadosParaOcultarMarcador.includes(estadoPedido)) {
+          // Geocodificar y agregar marcador para la dirección del pedido solo si no está en los estados definidos
+          this.googleMapsService.geocodeAddress(this.pedido.direccion_pedido).then(pedidoCoords => {
+            this.pedidoMarker = this.googleMapsService.addMarker(pedidoCoords.latitude, pedidoCoords.longitude, 'Dirección del Pedido');
+          }).catch(error => {
+            console.error('Error al obtener la ubicación del pedido:', error);
+          });
+        }
+
+        // Geocodificar y agregar marcador para la dirección de entrega
+        this.googleMapsService.geocodeAddress(this.pedido.direccion_entrega).then(entregaCoords => {
+          this.googleMapsService.addMarker(entregaCoords.latitude, entregaCoords.longitude, 'Dirección de Entrega');
+        }).catch(error => {
+          console.error('Error al obtener la ubicación de entrega:', error);
+        });
+
+        // Iniciar la vigilancia de la ubicación actual y el tracking del pedido
+        this.watchPosition(this.pedido.id);
+      } else {
+        console.error('No se pudo encontrar el elemento del mapa.');
+      }
+    } catch (error) {
+      console.error('Error al inicializar el mapa:', error);
     }
   }
   
