@@ -62,7 +62,7 @@ export class DetallesPedidoPage implements OnInit {
           // Verificar el estado del tracking
           const estadoTracking = trackingData[0].estado_tracking;
           
-          if (estadoTracking === 'iniciado') {
+          if (estadoTracking === 'iniciado' || estadoTracking === 'reanudado') {
             this.trackingActivo = true;  // El tracking está activo
           } else if (estadoTracking === 'finalizado' || estadoTracking === 'En pausa') {
             this.trackingActivo = false;  // El tracking no está activo

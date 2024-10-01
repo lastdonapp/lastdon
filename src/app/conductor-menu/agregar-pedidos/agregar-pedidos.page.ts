@@ -119,13 +119,31 @@ export class AgregarPedidosPage implements OnInit {
           {
             text: 'Confirmar',
             handler: async () => {
+              // Reasignar el pedido
               await this.supabaseService.tomarPedidoIngresado(pedidoId, this.usuario.email);
+  
+              // Obtener el trackingId asociado al pedido
+              const trackingId = await this.supabaseService.getTrackingById(pedidoId);
+  
+              if (trackingId) {
+                // Actualizar conductor en la tabla tracking
+                await this.supabaseService.nuevoConductorTracking(trackingId, this.usuario.email);
+  
+                // Actualizar estado del tracking a 'reanudar'
+                await this.supabaseService.reanudarTracking(trackingId);
+              } else {
+                console.warn('No se encontró tracking para el pedido', pedidoId);
+              }
+  
+              // Mostrar confirmación al usuario
               const toast = await this.toastController.create({
-                message: 'Pedido reasignado con éxito',
+                message: 'Pedido reasignado y tracking actualizado con éxito',
                 duration: 2000,
                 color: 'success'
               });
               await toast.present();
+  
+              // Recargar la lista de pedidos
               this.loadPedidosPorTomar();
             }
           }
@@ -137,7 +155,7 @@ export class AgregarPedidosPage implements OnInit {
       console.error('Error al tomar el pedido:', error);
     }
   }
-
+  
 
 
 

@@ -37,7 +37,7 @@
       <!-- Botón "Entregado" solo si el pedido está en estado "Ingresado a centro de distribución" -->
       <ion-button 
         (click)="entregarPedido(pedido.id)" 
-        *ngIf="pedido.estado === 'En centro de Distribución'" 
+        *ngIf="pedido.estado === 'reanudado'" 
         color="primary">
         Entregado
       </ion-button>

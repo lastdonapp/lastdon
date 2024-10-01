@@ -1077,7 +1077,8 @@ async getToken(): Promise<any> {
 
   async verificarTrackingIniciado(pedidoId: string): Promise<boolean> {
     try {
-        const response = await fetch(`${this.tracking}?pedido_id=eq.${encodeURIComponent(pedidoId)}&estado_tracking=eq.iniciado`, {
+        // Actualizamos la URL para buscar tanto "iniciado" como "reanudado"
+        const response = await fetch(`${this.tracking}?pedido_id=eq.${encodeURIComponent(pedidoId)}&estado_tracking=in.(iniciado,reanudado)`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -1093,13 +1094,14 @@ async getToken(): Promise<any> {
         }
 
         const trackingData = await response.json();
-        return trackingData.length > 0; // Retorna verdadero si hay tracking iniciado
+
+        // Retorna verdadero si hay al menos un tracking con estado 'iniciado' o 'reanudado'
+        return trackingData.length > 0;
     } catch (error) {
         console.error('Error al verificar el tracking:', error);
         throw error;
     }
 }
-
 
 
 
@@ -1230,7 +1232,7 @@ async getPedidosReanudar(): Promise<any> {
           'Authorization': `Bearer ${this.apiKey}`
         },
         body: JSON.stringify({
-          estado: 'reaunudado',
+          estado: 'reanudado',
           conductor: conductor,
           fecha_tomado: new Date().toISOString() // Fecha actual en formato ISO
         })
@@ -1262,6 +1264,57 @@ async getPedidosReanudar(): Promise<any> {
   }
 
 
+  async nuevoConductorTracking(trackingId: string, conductor_email: string): Promise<void> {
+    try {
+      const response = await fetch(`${this.tracking}?id=eq.${encodeURIComponent(trackingId)}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': this.apiKey,
+          'Authorization': `Bearer ${this.apiKey}`
+        },
+        body: JSON.stringify({
+          conductor_email: conductor_email
+        })
+      });
+  
+      if (response.ok) {
+        console.log('Conductor anexado correctamente.');
+      } else {
+        throw new Error(`Error al actualizar el conductor: ${response.statusText}`);
+      }
+    } catch (error) {
+      console.error('Error al anexar conductor en la tabla tracking:', error);
+    }
+  }
+  
+
+  async reanudarTracking(trackingId: string): Promise<void> {
+    try {
+      const response = await fetch(`${this.tracking}?id=eq.${encodeURIComponent(trackingId)}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': this.apiKey,
+          'Authorization': `Bearer ${this.apiKey}`
+        },
+        body: JSON.stringify({
+          estado_tracking: 'reanudado'
+        })
+      });
+  
+      if (response.ok) {
+        console.log('Estado del tracking actualizado a "reanudado".');
+      } else {
+        throw new Error(`Error al reanudar el tracking: ${response.statusText}`);
+      }
+    } catch (error) {
+      console.error('Error al reanudar el tracking:', error);
+    }
+  }
+  
 
 
+
+  
 }
