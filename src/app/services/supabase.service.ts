@@ -1317,6 +1317,36 @@ async getPedidosReanudar(): Promise<any> {
 
 
 
+  async getPedidosPorConductorFinal(email: string): Promise<any[]> {
+    try {
+      // Crear la consulta para obtener pedidos donde conductor_final sea igual al email y el estado sea "reanudado"
+      const query = `?conductor_final=eq.${encodeURIComponent(email)}&estado=eq.reanudado`;
+      
+      const response = await fetch(`${this.pedidos}${query}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': this.apiKey,
+          'Authorization': `Bearer ${this.apiKey}`
+        }
+      });
+  
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error al obtener los pedidos:', errorText);
+        throw new Error(errorText || 'Error al obtener los pedidos');
+      }
+  
+      return await response.json();
+    } catch (error) {
+      console.error('Error al obtener los pedidos:', error);
+      throw error;
+    }
+  }
+  
+
+
+
   
 
 

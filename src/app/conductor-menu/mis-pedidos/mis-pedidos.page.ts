@@ -34,13 +34,23 @@ export class MisPedidosPage implements OnInit {
 
   async getPedidos(email: string) {
     try {
-      const pedidos = await this.supabaseService.getPedidosPorConductor(email, this.selectedState);
-      this.pedidos = pedidos;
+      // Aquí, debes verificar si conductor_final tiene un valor o no
+      const conductorFinal = await this.supabaseService.getPedidosPorConductorFinal(email); // Asegúrate de tener este método que obtiene conductor_final
+
+      if (conductorFinal) {
+        // Si hay un conductor_final, usa el método correspondiente
+        const pedidos = await this.supabaseService.getPedidosPorConductorFinal(email);
+        this.pedidos = pedidos;
+      } else {
+        // Si no hay conductor_final, utiliza el método anterior
+        const pedidos = await this.supabaseService.getPedidosPorConductor(email, this.selectedState);
+        this.pedidos = pedidos;
+      }
     } catch (error) {
       console.error('Error al obtener los pedidos:', error);
     }
   }
-
+  
 
 
 
