@@ -1233,7 +1233,7 @@ async getPedidosReanudar(): Promise<any> {
         },
         body: JSON.stringify({
           estado: 'reanudado',
-          conductor: conductor,
+          conductor_final: conductor,
           fecha_tomado: new Date().toISOString() // Fecha actual en formato ISO
         })
       });
@@ -1274,7 +1274,7 @@ async getPedidosReanudar(): Promise<any> {
           'Authorization': `Bearer ${this.apiKey}`
         },
         body: JSON.stringify({
-          conductor_email: conductor_email
+          conductor_final: conductor_email
         })
       });
   
@@ -1312,6 +1312,18 @@ async getPedidosReanudar(): Promise<any> {
       console.error('Error al reanudar el tracking:', error);
     }
   }
+
+
+
+
+
+  
+
+
+
+
+
+  
   
 
 

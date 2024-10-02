@@ -182,14 +182,8 @@ export class MisPedidosPage implements OnInit {
                 // Marcar el pedido como ingresado al centro de distribución
                 await this.supabaseService.almacenarPedido(pedidoId);
   
-                // Liberar conductor del pedido
-                await this.supabaseService.liberarConductor(pedidoId);
-  
-                // Vaciar el conductor de la tabla de tracking usando trackingId
-                await this.supabaseService.liberarTrackingConductor(trackingId);
-  
                 const toast = await this.toastController.create({
-                  message: 'Pedido marcado como ingresado a centro de distribución y conductor liberado',
+                  message: 'Pedido marcado como ingresado a centro de distribución',
                   duration: 2000,
                   color: 'success'
                 });
@@ -197,9 +191,9 @@ export class MisPedidosPage implements OnInit {
   
                 this.loadPedidos(); // Recargar la lista de pedidos
               } catch (error) {
-                console.error('Error al almacenar pedido o liberar conductor:', error);
+                console.error('Error al almacenar pedido:', error);
                 const toast = await this.toastController.create({
-                  message: 'Error al ingresar pedido o liberar conductor',
+                  message: 'Error al ingresar pedido',
                   duration: 2000,
                   color: 'danger'
                 });
@@ -215,6 +209,7 @@ export class MisPedidosPage implements OnInit {
       console.error('Error al cambiar el estado del pedido:', error);
     }
   }
+  
   
 
 
