@@ -14,8 +14,18 @@
     </ion-card-header>
 
     <ion-card-content>
+        
+      <ion-accordion-group>
+
       <form (ngSubmit)="onSubmit()" #pedidoForm="ngForm">
         <!-- Nombre y Descripción -->
+
+        <ion-accordion>
+      <ion-item slot="header">
+        <ion-label>Información del Pedido</ion-label>
+      </ion-item>
+      <ion-list slot="content">
+
         <ion-item>
           <ion-label position="stacked">Nombre del Pedido</ion-label>
           <ion-input
@@ -83,8 +93,16 @@
         <ion-text color="danger" *ngIf="direccionEntrega.invalid && (direccionEntrega.dirty || direccionEntrega.touched)">
           <p *ngIf="direccionEntrega.errors?.['required']">La dirección de entrega es requerida.</p>
         </ion-text>
+        </ion-list>
+        </ion-accordion>
 
         <!-- Información del Destinatario -->
+        <ion-accordion>
+        <ion-item slot="header">
+          <ion-label>Información del Destinatario</ion-label>
+        </ion-item>
+        <ion-list slot="content">
+
         <ion-item>
           <ion-label position="stacked">Nombre del Destinatario</ion-label>
           <ion-input
@@ -167,8 +185,16 @@
           <p *ngIf="telefono.errors?.['required']">El teléfono es requerido.</p>
           <p *ngIf="telefono.errors?.['pattern']">Debe tener 8 dígitos.</p>
         </ion-text>
+        </ion-list>
+        </ion-accordion>
 
         <!-- Cantidad de Paquetes y Dimensiones -->
+        <ion-accordion>
+        <ion-item slot="header">
+          <ion-label>Cantidad de Paquetes y Dimensiones</ion-label>
+        </ion-item>
+        <ion-list slot="content">
+
         <ion-item>
           <ion-label position="stacked">Cantidad de Paquetes</ion-label>
           <ion-input
@@ -281,11 +307,14 @@
           <ion-label> </ion-label>
           <ion-input [value]="pedido.costo | currency:' total a pagar : CLP $ ':'symbol':'1.0-0'" name="costo" readonly></ion-input>
         </ion-item>
+        </ion-list>
+      </ion-accordion>
 
         <!-- Botón de Envío -->
         <ion-button expand="full" type="submit" [disabled]="pedidoForm.form.invalid">Agregar Pedido</ion-button>
 
       </form>
+    </ion-accordion-group>
     </ion-card-content>
   </ion-card>
 </ion-content>
