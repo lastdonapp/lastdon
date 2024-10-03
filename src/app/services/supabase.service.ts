@@ -1233,7 +1233,7 @@ async getPedidosReanudar(): Promise<any> {
         },
         body: JSON.stringify({
           estado: 'reanudado',
-          conductor_final: conductor,
+          conductor: conductor,
           fecha_tomado: new Date().toISOString() // Fecha actual en formato ISO
         })
       });
@@ -1274,7 +1274,7 @@ async getPedidosReanudar(): Promise<any> {
           'Authorization': `Bearer ${this.apiKey}`
         },
         body: JSON.stringify({
-          conductor_final: conductor_email
+          conductor_email: conductor_email
         })
       });
   
@@ -1314,46 +1314,42 @@ async getPedidosReanudar(): Promise<any> {
   }
 
 
-
-
-
-  async getPedidosPorConductorFinal(email: string): Promise<any[]> {
+  async registroPrimerConductor(pedidoId: string, conductor_email: string): Promise<void> {
     try {
-      // Crear la consulta para obtener pedidos donde conductor_final sea igual al email y el estado sea "reanudado"
-      const query = `?conductor_final=eq.${encodeURIComponent(email)}&estado=eq.reanudado`;
-      
-      const response = await fetch(`${this.pedidos}${query}`, {
-        method: 'GET',
+      const response = await fetch(`${this.pedidos}?id=eq.${encodeURIComponent(pedidoId)}`, {
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           'apikey': this.apiKey,
           'Authorization': `Bearer ${this.apiKey}`
-        }
+        },
+        body: JSON.stringify({
+          primer_conductor: conductor_email
+        })
       });
   
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Error al obtener los pedidos:', errorText);
-        throw new Error(errorText || 'Error al obtener los pedidos');
+      if (response.ok) {
+        console.log('Conductor registrado correctamente.');
+      } else {
+        throw new Error(`Error al actualizar el conductor: ${response.statusText}`);
       }
-  
-      return await response.json();
     } catch (error) {
-      console.error('Error al obtener los pedidos:', error);
-      throw error;
+      console.error('Error al registrar conductor en la tabla de pedidos:', error);
     }
   }
+
+
+
+
+    // Método para actualizar la foto de entrega
+    async updatePedidoFotoEnvio(pedidoId: string, fotoUrl: string) {
+      const { data, error } = await this.supabase
+        .from('pedidos') // Tabla de pedidos
+        .update({ fotoEnvio_final: fotoUrl }) // Actualizar la URL de la foto
+        .eq('id', pedidoId); // Filtrar por el ID del pedido
   
-
-
-
-  
-
-
-
-
-
-  
+      return { data, error };
+    }
   
 
 

@@ -49,6 +49,18 @@
         color="primary">
         Ingresar
       </ion-button>
+
+        <!-- Botón "Ingresar a Centro de Distribución" solo si el pedido está en estado "recepcionado" -->
+        <ion-button 
+        (click)="takePhotoAndSave(pedido.id)"
+        *ngIf="pedido.estado === 'reanudado'" 
+        color="primary">
+        Foto de entrega
+      </ion-button>
+
+
+
+
     </ion-item>
   </ion-list>
 </ion-content>

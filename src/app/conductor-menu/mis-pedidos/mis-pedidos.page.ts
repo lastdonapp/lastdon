@@ -12,6 +12,9 @@ import { AlertController } from '@ionic/angular';
 export class MisPedidosPage implements OnInit {
   pedidos: any[] = [];
   selectedState: string = ''; // Valor para filtrar pedidos
+  usuario: any = this.supabaseService.getCurrentUser();
+  capturedPhoto: string = ''; // Variable para almacenar la URL de la foto capturada 
+  photoUrl: string = ''; // URL de la foto del pedido
 
   constructor(private supabaseService: SupabaseService, private toastController: ToastController, private router: Router, private alertController: AlertController) {}
 
@@ -21,39 +24,34 @@ export class MisPedidosPage implements OnInit {
 
   async loadPedidos() {
     try {
-      // Aquí debes obtener el usuario actual  y su email
+      // Aquí debes obtener el usuario actual y su email
       const user = this.supabaseService.getCurrentUser();
+  
+      // Verificar si hay un usuario y su email
+      if (!user || !user.email) {
+        console.error('No se pudo obtener el usuario actual o su email.');
+        return; // Salir si no hay usuario
+      }
+  
       const email = user.email;
-
-      // Obtener pedidos del conductor y aplicar filtro de estado
+  
+      // Obtener pedidos del conductor utilizando solo el filtro por conductor
       await this.getPedidos(email);
     } catch (error) {
       console.error('Error al cargar los pedidos:', error);
     }
   }
-
+  
   async getPedidos(email: string) {
     try {
-      // Aquí, debes verificar si conductor_final tiene un valor o no
-      const conductorFinal = await this.supabaseService.getPedidosPorConductorFinal(email); // Asegúrate de tener este método que obtiene conductor_final
-
-      if (conductorFinal) {
-        // Si hay un conductor_final, usa el método correspondiente
-        const pedidos = await this.supabaseService.getPedidosPorConductorFinal(email);
-        this.pedidos = pedidos;
-      } else {
-        // Si no hay conductor_final, utiliza el método anterior
-        const pedidos = await this.supabaseService.getPedidosPorConductor(email, this.selectedState);
-        this.pedidos = pedidos;
-      }
+      // Obtener pedidos normales utilizando el filtro por conductor
+      const pedidos = await this.supabaseService.getPedidosPorConductor(email, this.selectedState);
+      this.pedidos = pedidos; // Asignar los pedidos obtenidos a la propiedad local
     } catch (error) {
       console.error('Error al obtener los pedidos:', error);
     }
   }
   
-
-
-
 
 
 
@@ -192,6 +190,14 @@ export class MisPedidosPage implements OnInit {
                 // Marcar el pedido como ingresado al centro de distribución
                 await this.supabaseService.almacenarPedido(pedidoId);
   
+                // Registrar al primer conductor
+                await this.supabaseService.registroPrimerConductor(pedidoId, this.usuario.email);
+                
+                // Liberar al conductor
+                await this.supabaseService.liberarConductor(pedidoId);
+                // Liberar el tracking del conductor
+                await this.supabaseService.liberarTrackingConductor(trackingId);
+  
                 const toast = await this.toastController.create({
                   message: 'Pedido marcado como ingresado a centro de distribución',
                   duration: 2000,
@@ -220,8 +226,6 @@ export class MisPedidosPage implements OnInit {
     }
   }
   
-  
-
 
 
 
@@ -235,4 +239,106 @@ export class MisPedidosPage implements OnInit {
     // Aplicar filtro por estado
     this.loadPedidos();
   }
+
+
+
+  async takePhotoAndSave(pedidoId: string) {
+    try {
+      // Captura la foto
+      const photo: any = await this.supabaseService.takePicture();
+      if (photo) {
+        // Genera un nombre único para la foto usando un timestamp
+        const timestamp = new Date().getTime();
+        const filePath = `photos/fotoEnvio_final-${timestamp}.jpeg`;
+  
+        // Convertir el Data URL a un Blob
+        const blob = await fetch(photo.webPath).then((res) => res.blob());
+  
+        // Convertir el blob en un archivo
+        const file = await this.convertBlobToFile(blob, filePath);
+  
+        // Subir la foto al bucket de Supabase
+        const { error: uploadError } = await this.supabaseService.uploadImage(file, filePath);
+  
+        if (uploadError) {
+          throw new Error(`Error al subir la foto: ${uploadError.message}`);
+        }
+  
+        // Obtener la URL pública de la foto
+        const { publicURL, error: urlError } = await this.supabaseService.getImageUrl(filePath);
+  
+        if (urlError) {
+          let errorMessage: string;
+          if (typeof urlError === 'object' && urlError !== null && 'message' in urlError) {
+            errorMessage = (urlError as Error).message;
+          } else {
+            errorMessage = String(urlError); // Convierte cualquier otro valor a string
+          }
+          throw new Error(`Error al obtener la URL de la imagen: ${errorMessage}`);
+        }
+  
+        if (!publicURL) {
+          throw new Error('URL pública es nula');
+        }
+  
+        // Actualizar el pedido en la base de datos con la URL de la foto
+        const { error: updateError } = await this.supabaseService.updatePedidoFotoEnvio(pedidoId, publicURL);
+  
+        if (updateError) {
+          throw new Error(`Error al actualizar el pedido: ${updateError.message}`);
+        }
+  
+        // Mostrar notificación de éxito
+        await this.showToast('Foto de entrega subida correctamente', 'success');
+      }
+    } catch (error) {
+      console.error('Error al capturar o subir la foto:', error);
+      await this.showToast('Error al subir la foto de entrega', 'danger');
+    }
+  }
+  
+  
+
+ 
+
+  private async convertBlobToFile(blob: Blob, fileName: string): Promise<File> {
+    return new Promise<File>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const file = new File([blob], fileName, { type: blob.type });
+        resolve(file);
+      };
+      reader.onerror = reject;
+      reader.readAsArrayBuffer(blob);
+    });
+  }
+
+  async showToast(message: string, color: string) {
+    const toast = await this.toastController.create({
+      message: message,
+      duration: 2000,
+      position: 'top',
+      color: color
+    });
+    toast.present();
+  }
 }
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
