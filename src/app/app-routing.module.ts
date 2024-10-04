@@ -40,7 +40,11 @@ const routes: Routes = [
   { //path: '**', redirectTo: '/login' },   {
     path: 'map',
     loadChildren: () => import('./map/map.module').then( m => m.MapPageModule)
+  },  {
+    path: 'register-google',
+    loadChildren: () => import('./register-google/register-google.module').then( m => m.RegisterGooglePageModule)
   }
+
 // Esta línea redirige cualquier ruta no definida al login
 ];
 
