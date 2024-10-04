@@ -6,6 +6,7 @@ import { HashingService } from './hashing.service';
 import { environment } from 'src/environments/environment.prod';
 import { createClient } from '@supabase/supabase-js';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+import emailjs from '@emailjs/browser';
 
 
 
@@ -206,6 +207,78 @@ async registerUser(email: string, password: string, userType: string, verificado
   }
 }
 
+
+
+
+//Google
+
+
+async checkUserExists(email: string): Promise<boolean> {
+  const { data, error } = await this.supabase
+    .from('users')
+    .select('email')
+    .eq('email', email)
+    .single();
+
+  if (error && error.code === 'PGRST116') {
+    return false; // El usuario no existe
+  }
+
+  if (data) {
+    return true; // El usuario ya está registrado
+  }
+
+  throw new Error('Error al verificar el usuario');
+} 
+
+async registerGoogleUser(email: string, password: string, userType: string, verificado: boolean): Promise<any> {
+  const userExists = await this.checkUserExists(email);
+  if (userExists) {
+    throw new Error('El usuario ya está registrado');
+  }
+
+  // Generar una sal única
+  const salt = crypto.randomUUID(); // Genera una sal usando la Web Crypto API
+
+  // Hashear la contraseña antes de almacenarla
+  const hashedPassword = await this.hashingService.hashPassword(password, salt);
+
+  // Insertar el usuario en la base de datos
+  const { data, error } = await this.supabase
+    .from('users')
+    .insert([
+      { email: email, password: hashedPassword, user_type: userType, verificado: verificado, salt: salt }
+    ]);
+
+  if (error) {
+    throw new Error('Error al registrar usuario: ' + error.message);
+  }
+
+  // Enviar la contraseña sin hashing al correo del usuario
+  await this.sendEmail(email, password);
+
+  return { success: true, data };
+}
+
+
+// Método para enviar el correo usando EmailJS
+async sendEmail(email: string, password: string): Promise<void> {
+  const templateParams = {
+    to_name: email,
+    password: password,
+  };
+
+  try {
+    const response = await emailjs.send('service_z9qtwmo', 'template_9i5xk9a', templateParams, 'myh6jilHRl1Qg8DMJ');
+    console.log('Email sent successfully:', response);
+  } catch (error) {
+    console.error('Failed to send email:', error);
+    // Aquí puedes hacer un manejo adicional del error
+  }
+}
+
+
+
   // Obtener el token desde la base de datos
 async getToken(): Promise<any> {
   try {
@@ -378,7 +451,7 @@ async getToken(): Promise<any> {
     }
   }
 
-  public async signIn(email: string, password: string): Promise<any> {
+  public async signIn(email: string, password?: string): Promise<any> {
     try {
       // Consulta por correo electrónico
       const response = await fetch(`${this.apiUrl}?email=eq.${encodeURIComponent(email)}`, {
@@ -399,31 +472,53 @@ async getToken(): Promise<any> {
       const users = await response.json();
       const user = users[0]; // Asumimos que solo hay un usuario por email
   
-      if (user && await this.hashingService.verifyPassword(password, user.salt, user.password)) {
-        // Obtener el token desde la tabla de tokens
-        const tokens = await this.getToken();
-        console.log('Tokens from database:', tokens); 
+      if (!user) {
+        throw new Error('El usuario no existe');
+      }
   
-        if (!tokens || !tokens['refresh_token']) {
-          console.error('No refresh token found in database');
-          throw new Error('Refresh token no encontrado en la base de datos');
+      // Verificar si el usuario está registrado con Google
+      if (user.google_registered) {
+        // Iniciar sesión con Google (OAuth)
+        const { data, error } = await this.supabase.auth.signInWithOAuth({
+          provider: 'google',
+        });
+  
+        if (error) {
+          console.error('Error al iniciar sesión con Google:', error);
+          throw error;
         }
   
-        // Guardar el usuario en el almacenamiento local
+        // Guardar el usuario en el almacenamiento local (si es necesario)
         localStorage.setItem('currentUser', JSON.stringify(user));
   
-        // Retornar el session, userType, y verificado
         return {
-          session: { user, tokens },
+          session: { user, tokens: data },  // Devuelve los tokens obtenidos del OAuth de Google
           userType: user.user_type,
-          verificado: user.verificado  // Asegurarse de que el campo verificado exista en la base de datos
+          verificado: user.verificado
         };
+  
       } else {
+        // Validación con email y contraseña
+        if (!password) {
+          throw new Error('La contraseña es obligatoria');
+        }
+  
+        // Verificar la contraseña
+        const passwordIsValid = await this.hashingService.verifyPassword(password, user.salt, user.password);
+        if (!passwordIsValid) {
+          throw new Error('Credenciales inválidas');
+        }
+  
+        // Guardar el usuario en el almacenamiento local (si es necesario)
+        localStorage.setItem('currentUser', JSON.stringify(user));
+  
         return {
-          session: null,
-          error: new Error('Credenciales inválidas')
+          session: { user },
+          userType: user.user_type,
+          verificado: user.verificado
         };
       }
+  
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
       throw error;
