@@ -241,80 +241,45 @@ export class MisPedidosPage implements OnInit {
   }
 
 
-
-  async takePhotoAndSave(pedidoId: string) {
+  async tomarFotoEntrega(pedidoId: string) {
     try {
-      // Captura la foto
-      const photo: any = await this.supabaseService.takePicture();
-      if (photo) {
-        // Genera un nombre único para la foto usando un timestamp
-        const timestamp = new Date().getTime();
-        const filePath = `photos/fotoEnvio_final-${timestamp}.jpeg`;
+      // Tomar la foto usando el servicio
+      const foto: File = await this.supabaseService.takePicture();
   
-        // Convertir el Data URL a un Blob
-        const blob = await fetch(photo.webPath).then((res) => res.blob());
+      if (foto) {
+        // Generar el path único para la imagen
+        const path = `pedidos/${pedidoId}/fotoEnvio_final-${new Date().getTime()}.jpeg`;
   
-        // Convertir el blob en un archivo
-        const file = await this.convertBlobToFile(blob, filePath);
+        // Subir la imagen a Supabase
+        const { data, error } = await this.supabaseService.uploadImage(foto, path);
   
-        // Subir la foto al bucket de Supabase
-        const { error: uploadError } = await this.supabaseService.uploadImage(file, filePath);
-        if (uploadError) {
-          throw new Error(`Error al subir la foto: ${uploadError.message}`);
+        if (error) {
+          console.error('Error subiendo la imagen:', error);
+          await this.showToast('Error al subir la foto de entrega', 'danger');
+          return;
         }
   
-        // Obtener la URL pública de la foto
-        const { publicURL, error: urlError } = await this.supabaseService.getImageUrl(filePath);
-        if (urlError) {
-          let errorMessage: string;
-          if (typeof urlError === 'object' && urlError !== null && 'message' in urlError) {
-            errorMessage = (urlError as Error).message;
-          } else {
-            errorMessage = String(urlError);
-          }
-
-          throw new Error(`Error al obtener la URL de la imagen: ${errorMessage}`);
+        // Obtener la URL pública de la imagen
+        const { publicURL, error: urlError } = await this.supabaseService.getImageUrl(path);
+  
+        if (urlError || !publicURL) {
+          console.error('Error obteniendo la URL pública:', urlError);
+          await this.showToast('Error al obtener la URL de la imagen', 'danger');
+          return;
         }
   
-        if (!publicURL) {
-          throw new Error('URL pública es nula');
-        }
+        // Guardar la URL de la imagen en la tabla 'pedidos'
+        await this.supabaseService.updatePedidoFotoEnvio(pedidoId, publicURL);
   
-        // Verificar el publicURL obtenido
-        console.log('URL pública generada:', publicURL);
-  
-        // Actualizar el pedido en la base de datos con la URL de la foto
-        const { error: updateError } = await this.supabaseService.updatePedidoFotoEnvio(pedidoId, publicURL);
-        if (updateError) {
-          throw new Error(`Error al actualizar el pedido: ${updateError.message}`);
-        }
-  
-        // Mostrar notificación de éxito
-        await this.showToast('Foto de entrega subida correctamente', 'success');
+        // Mostrar un mensaje de éxito
+        await this.showToast('Foto de entrega subida con éxito', 'success');
       }
     } catch (error) {
       console.error('Error al capturar o subir la foto:', error);
-      await this.showToast('Error al subir la foto de entrega', 'danger');
+      await this.showToast('Error al procesar la foto de entrega', 'danger');
     }
   }
   
-  
-  
-
- 
-
-  private async convertBlobToFile(blob: Blob, fileName: string): Promise<File> {
-    return new Promise<File>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const file = new File([blob], fileName, { type: blob.type });
-        resolve(file);
-      };
-      reader.onerror = reject;
-      reader.readAsArrayBuffer(blob);
-    });
-  }
-
   async showToast(message: string, color: string) {
     const toast = await this.toastController.create({
       message: message,
@@ -324,6 +289,12 @@ export class MisPedidosPage implements OnInit {
     });
     toast.present();
   }
+  
+  
+
+
+
+
 }
 
 
