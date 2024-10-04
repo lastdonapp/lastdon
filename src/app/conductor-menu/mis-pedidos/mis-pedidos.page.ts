@@ -259,21 +259,20 @@ export class MisPedidosPage implements OnInit {
   
         // Subir la foto al bucket de Supabase
         const { error: uploadError } = await this.supabaseService.uploadImage(file, filePath);
-  
         if (uploadError) {
           throw new Error(`Error al subir la foto: ${uploadError.message}`);
         }
   
         // Obtener la URL pública de la foto
         const { publicURL, error: urlError } = await this.supabaseService.getImageUrl(filePath);
-  
         if (urlError) {
           let errorMessage: string;
           if (typeof urlError === 'object' && urlError !== null && 'message' in urlError) {
             errorMessage = (urlError as Error).message;
           } else {
-            errorMessage = String(urlError); // Convierte cualquier otro valor a string
+            errorMessage = String(urlError);
           }
+
           throw new Error(`Error al obtener la URL de la imagen: ${errorMessage}`);
         }
   
@@ -281,9 +280,11 @@ export class MisPedidosPage implements OnInit {
           throw new Error('URL pública es nula');
         }
   
+        // Verificar el publicURL obtenido
+        console.log('URL pública generada:', publicURL);
+  
         // Actualizar el pedido en la base de datos con la URL de la foto
         const { error: updateError } = await this.supabaseService.updatePedidoFotoEnvio(pedidoId, publicURL);
-  
         if (updateError) {
           throw new Error(`Error al actualizar el pedido: ${updateError.message}`);
         }
@@ -296,6 +297,7 @@ export class MisPedidosPage implements OnInit {
       await this.showToast('Error al subir la foto de entrega', 'danger');
     }
   }
+  
   
   
 

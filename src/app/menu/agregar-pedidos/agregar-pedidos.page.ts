@@ -295,7 +295,7 @@ export class AgregarPedidosPage implements OnInit {
 
 
   calculateCost() {
-    let cost = 1000; // Costo base por paquete
+    let cost = 0; // Costo base por paquete
   
     if (this.pedido.excede10Kilos) {
       cost += 2000; // Costo adicional por exceder 10 kilos
