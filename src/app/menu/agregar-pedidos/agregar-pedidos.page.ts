@@ -311,45 +311,48 @@ export class AgregarPedidosPage implements OnInit {
   }
 
   updateCosto() {
-    // Costo base
-    let baseCost = this.calculateCost();
-  
-    // Verificar el costo de la comuna
-    let costoComuna = this.costosPorComuna[this.pedido.comuna];
-  
-    if (typeof costoComuna !== 'number') {
-      console.error('El costo de la comuna no es un número. Se establecerá en 0.');
-      costoComuna = 0; // Asignar 0 si no se encuentra un valor numérico
+    // Validar que se haya ingresado al menos un paquete
+    if (this.pedido.cantidadPaquetes <= 0) {
+      console.error('Debe ingresar al menos un paquete');
+      return; // Salir si la cantidad de paquetes es inválida
     }
   
-    // Verificar dimensiones
-    if (!this.pedido.dimensiones.alto || !this.pedido.dimensiones.ancho || !this.pedido.dimensiones.largo) {
-      console.error('Las dimensiones deben ser valores válidos');
-      return; // Salir si hay un error
+    // Verificar que las dimensiones existan y sean mayores que cero
+    if (!this.pedido.dimensiones || this.pedido.dimensiones.alto <= 0 || this.pedido.dimensiones.ancho <= 0 || this.pedido.dimensiones.largo <= 0) {
+      console.error('Las dimensiones deben ser mayores que cero');
+      return; // Salir si las dimensiones son inválidas
     }
   
     // Calcular el volumen
     let volumen = this.pedido.dimensiones.alto * this.pedido.dimensiones.ancho * this.pedido.dimensiones.largo;
-    
-    // Ajustar el volumen según la unidad
+  
+    // Ajustar el volumen si la unidad es en centímetros
     if (this.pedido.dimensiones.unidad === 'centimetros') {
-      if (volumen === 0) {
-        console.error('El volumen no puede ser cero');
-        return; // Salir si el volumen es cero
-      }
-      volumen /= 1000000; // Convertir cm³ a m³
+      volumen /= 1000000; // Convertir de cm³ a m³
     }
-    
-    // Costo basado en volumen
-    let dimensionCost = volumen * 20; // Ajustar según necesidad
+  
+    // Validar que el volumen no sea cero o negativo
+    if (volumen <= 0) {
+      console.error('El volumen calculado no puede ser cero o negativo');
+      return; // Salir si el volumen es inválido
+    }
+  
+    // El costo base ahora es 0
+    let baseCost = 0;
+  
+    // Calcular costo por dimensiones
+    let dimensionCost = volumen * 500; // Ejemplo de costo por volumen
+  
+    // Añadir costo de la comuna si es aplicable
+    let costoComuna = this.pedido.costo || 0;
   
     // Calcular el costo total
     let totalCost = (baseCost + dimensionCost + costoComuna) * this.pedido.cantidadPaquetes;
   
-    // Asignar el costo calculado al pedido
-    this.pedido.costo = totalCost;
+    // Asignar el costo total al pedido
+    this.pedido.costoTotal = totalCost;
   
-    console.log(`Costo actualizado: ${this.pedido.costo}, para la comuna: ${this.pedido.comuna}`);
+    console.log('Costo total actualizado:', this.pedido.costoTotal);
   }
   
   

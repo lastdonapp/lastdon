@@ -195,19 +195,26 @@
         </ion-item>
         <ion-list slot="content">
 
-        <ion-item>
-          <ion-label position="stacked">Cantidad de Paquetes</ion-label>
-          <ion-input
-            [(ngModel)]="pedido.cantidadPaquetes"
-            name="cantidadPaquetes"
-            #cantidadPaquetes="ngModel"
-            type="number"
-            min="0"
-            placeholder="Ej. 2"
-            required
-            (ionInput)="updateCosto()"
-          ></ion-input>
-        </ion-item>
+          <ion-item>
+            <ion-label position="stacked">Cantidad de Paquetes</ion-label>
+            <ion-input
+              [(ngModel)]="pedido.cantidadPaquetes"
+              name="cantidadPaquetes"
+              #cantidadPaquetes="ngModel"
+              type="number"
+              min="1" 
+              placeholder="Ej. 2"
+              required
+              (ionInput)="updateCosto()"
+            ></ion-input>
+          </ion-item>
+          
+          <!-- Mostrar mensaje de error si no es válido -->
+          <div *ngIf="cantidadPaquetes.invalid && cantidadPaquetes.touched">
+            <p style="color: red;">Debe ingresar al menos 1 paquete.</p>
+            <p *ngIf="cantidadPaquetes.errors?.['required']">El número de paquetes es requerido.</p>
+          </div>
+          
         
         <ion-item>
           <ion-label>Dimensiones (Alto x Ancho x Largo)</ion-label>
@@ -231,12 +238,16 @@
             name="dimensionesAlto"
             #dimensionesAlto="ngModel"
             type="number"
-            min="0"
+            min="1"
             placeholder="Alto"
             required
             (ionInput)="onDimensionesChange()"
           ></ion-input>
         </ion-item>
+        <div *ngIf="dimensionesAlto.invalid && dimensionesAlto.touched">
+          <p style="color: red;">El alto debe ser mayor a 0.</p>
+          <p *ngIf="dimensionesAlto.errors?.['required']">El alto es requerido.</p>
+        </div>
         
         <ion-item>
           <ion-label position="stacked">Ancho</ion-label>
@@ -245,12 +256,16 @@
             name="dimensionesAncho"
             #dimensionesAncho="ngModel"
             type="number"
-            min="0"
+            min="1"
             placeholder="Ancho"
             required
             (ionInput)="onDimensionesChange()"
           ></ion-input>
         </ion-item>
+        <div *ngIf="dimensionesAncho.invalid && dimensionesAncho.touched">
+          <p style="color: red;">El ancho debe ser mayor a 0.</p>
+          <p *ngIf="dimensionesAncho.errors?.['required']">El ancho es requerido.</p>
+        </div>
         
         <ion-item>
           <ion-label position="stacked">Largo</ion-label>
@@ -259,12 +274,16 @@
             name="dimensionesLargo"
             #dimensionesLargo="ngModel"
             type="number"
-            min="0"
+            min="1"
             placeholder="Largo"
             required
             (ionInput)="onDimensionesChange()"
           ></ion-input>
         </ion-item>
+        <div *ngIf="dimensionesLargo.invalid && dimensionesLargo.touched">
+          <p style="color: red;">El largo debe ser mayor a 0.</p>
+          <p *ngIf="dimensionesLargo.errors?.['required']">El largo es requerido.</p> 
+        </div>
         
         
         <ion-item lines="full">
@@ -297,15 +316,15 @@
           <ion-label>Foto del Pedido</ion-label>
           <ion-button (click)="takePhoto()">Tomar Foto</ion-button>
         </ion-item>
+        
         <ion-item *ngIf="capturedPhoto">
           <ion-label>Foto capturada:</ion-label>
           <ion-img [src]="capturedPhoto"></ion-img>
         </ion-item>
-
-        <!-- Costo -->
+        <!-- Costo total a pagar -->
         <ion-item>
           <ion-label> </ion-label>
-          <ion-input [value]="pedido.costo | currency:' total a pagar : CLP $ ':'symbol':'1.0-0'" name="costo" readonly></ion-input>
+          <ion-input [value]="pedido.costoTotal | currency:' total a pagar : CLP $ ':'symbol':'1.0-0'"  name="costoTotal" readonly></ion-input>
         </ion-item>
         </ion-list>
       </ion-accordion>
