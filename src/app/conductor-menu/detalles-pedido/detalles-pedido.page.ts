@@ -22,6 +22,7 @@ export class DetallesPedidoPage implements OnInit {
   private watchId: number | undefined; // Almacena el ID de vigilancia de geolocalización
   private trackingId: string = ''; // Asigna el ID del tracking iniciado
   pedidoMarker: any; // Marcador del pedido
+  nuevaDirecciónEntrega: string = '';
 
 
   constructor(

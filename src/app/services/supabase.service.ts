@@ -1445,6 +1445,41 @@ async getPedidosReanudar(): Promise<any> {
   
       return { data, error };
     }
+
+
+
+
+
+
+    async actualizarEstadoReubicacion(pedidoId: string): Promise<void> {
+      try {
+          // Actualizar el estado del pedido a 'Reubicación en curso'
+          const response = await fetch(`${this.pedidos}?id=eq.${encodeURIComponent(pedidoId)}`, {
+              method: 'PATCH',
+              headers: {
+                  'Content-Type': 'application/json',
+                  'apikey': this.apiKey,
+                  'Authorization': `Bearer ${this.apiKey}`
+              },
+              body: JSON.stringify({
+                  estado: 'Reubicación en curso' // Actualiza el estado del pedido
+              })
+          });
+  
+          if (!response.ok) {
+              const errorText = await response.text();
+              console.error('Error al actualizar el estado del pedido:', errorText);
+              throw new Error(errorText || 'Error al actualizar el estado del pedido');
+          }
+  
+          console.log('Estado del pedido actualizado exitosamente a "Reubicación en curso".');
+  
+      } catch (error) {
+          console.error('Error al actualizar el estado del pedido:', error);
+          throw error;
+      }
+  }
+  
   
 
 
