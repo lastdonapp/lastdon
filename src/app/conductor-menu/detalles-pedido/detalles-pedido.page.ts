@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { SupabaseService } from '../../services/supabase.service';
 import { GoogleMapsService } from '../../services/google-maps.service';
 import { GeolocationService } from '../../services/geolocation.service';
+import { ToastController } from '@ionic/angular';
 
 
 @Component({
@@ -29,7 +30,8 @@ export class DetallesPedidoPage implements OnInit {
     private route: ActivatedRoute,
     private supabaseService: SupabaseService,
     private googleMapsService: GoogleMapsService,
-    private geolocationService: GeolocationService
+    private geolocationService: GeolocationService,
+    private toastController: ToastController
   ) {}
 
   async ngOnInit() {
@@ -185,45 +187,63 @@ export class DetallesPedidoPage implements OnInit {
 
   
 
-  async iniciarTracking(pedidoId: string) {
-    try {
-      // Verificar el estado del pedido
-      const estadoPedido = await this.supabaseService.obtenerEstadoPedido(pedidoId);
-      if (estadoPedido !== 'recepcionado') {
-        console.error('El pedido no está en el estado correcto para iniciar el tracking.');
-        return;
-      }
-  
-      // Verificar si el tracking ya ha sido iniciado
-      const trackingIniciado = await this.verificarTrackingIniciado(pedidoId);
-      if (trackingIniciado) {
-        console.warn('El tracking ya ha sido iniciado para este pedido.');
-        return;
-      }
-  
-      // Obtener la ubicación actual del conductor
-      const coords = await this.geolocationService.getCurrentPosition();
-      const pedidoDetails = await this.supabaseService.obtenerDetallesPedido(pedidoId);
-      const conductorEmail = pedidoDetails.conductor;
-      const clienteEmail = pedidoDetails.usuario;
-  
-      const trackingData = {
-        pedido_id: pedidoId,
-        conductor_email: conductorEmail,
-        cliente_email: clienteEmail,
-        latitud: coords.latitude,
-        longitud: coords.longitude,
-        estado_tracking: 'iniciado'
-      };
-  
-      // Iniciar tracking y obtener el trackingId
-      this.trackingId = await this.supabaseService.iniciarTracking(trackingData);
-  
-      console.log('Tracking iniciado con ID:', this.trackingId);
-    } catch (error) {
-      console.error('Error al iniciar el tracking:', error);
+async iniciarTracking(pedidoId: string) {
+  try {
+    // Verificar el estado del pedido
+    const estadoPedido = await this.supabaseService.obtenerEstadoPedido(pedidoId);
+    if (estadoPedido !== 'recepcionado') {
+      console.error('El pedido no está en el estado correcto para iniciar el tracking.');
+      return;
     }
+
+    // Verificar si el tracking ya ha sido iniciado
+    const trackingIniciado = await this.verificarTrackingIniciado(pedidoId);
+    if (trackingIniciado) {
+      console.warn('El tracking ya ha sido iniciado para este pedido.');
+      return;
+    }
+
+    // Obtener la ubicación actual del conductor
+    const coords = await this.geolocationService.getCurrentPosition();
+    const pedidoDetails = await this.supabaseService.obtenerDetallesPedido(pedidoId);
+    const conductorEmail = pedidoDetails.conductor;
+    const clienteEmail = pedidoDetails.usuario;
+
+    const trackingData = {
+      pedido_id: pedidoId,
+      conductor_email: conductorEmail,
+      cliente_email: clienteEmail,
+      latitud: coords.latitude,
+      longitud: coords.longitude,
+      estado_tracking: 'iniciado'
+    };
+
+    // Iniciar tracking y obtener el trackingId
+    this.trackingId = await this.supabaseService.iniciarTracking(trackingData);
+
+    console.log('Tracking iniciado con ID:', this.trackingId);
+
+    // Mostrar mensaje de éxito al usuario
+    const toast = await this.toastController.create({
+      message: 'Tracking iniciado con éxito',
+      duration: 2000, // Duración del mensaje en milisegundos
+      color: 'success' // Color del mensaje (success, danger, etc.)
+    });
+    await toast.present();
+
+  } catch (error) {
+    console.error('Error al iniciar el tracking:', error);
+    
+    // Mostrar mensaje de fallo al usuario
+    const toast = await this.toastController.create({
+      message: 'Error al iniciar el tracking: Operación fallida',
+      duration: 2000, // Duración del mensaje en milisegundos
+      color: 'danger' // Color del mensaje para fallos
+    });
+    await toast.present();
   }
+}
+
   
 
 

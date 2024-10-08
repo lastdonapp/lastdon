@@ -289,6 +289,73 @@ export class MisPedidosPage implements OnInit {
     });
     toast.present();
   }
+
+
+
+
+
+
+  async marcarEnvioRapido(pedidoId: string) {
+    try {
+      // Verificar si el tracking está iniciado antes de continuar
+      const trackingIniciado = await this.supabaseService.verificarTrackingIniciado(pedidoId);
+  
+      if (!trackingIniciado) {
+        const alert = await this.alertController.create({
+          header: 'Tracking no iniciado',
+          message: 'Debe iniciar el tracking antes de marcar este pedido como Envío Rápido.',
+          buttons: ['Aceptar']
+        });
+        await alert.present();
+        return; // Detener la ejecución si el tracking no ha sido iniciado
+      }
+  
+      // Si el tracking está iniciado, continuar con la lógica de confirmación de Envío Rápido
+      const alert = await this.alertController.create({
+        header: 'Confirmar Envío Rápido',
+        message: '¿Está seguro de que desea marcar este pedido como Envío Rápido?',
+        buttons: [
+          {
+            text: 'Cancelar',
+            role: 'cancel',
+            handler: () => {
+              console.log('envío rápido cancelado por el usuario');
+            }
+          },
+          {
+            text: 'Confirmar',
+            handler: async () => {
+              try {
+                // Llamar al servicio para cambiar el estado del pedido
+                await this.supabaseService.envioRapido(pedidoId);
+                
+                const toast = await this.toastController.create({
+                  message: 'Pedido marcado como Envío Rápido',
+                  duration: 2000,
+                  color: 'success'
+                });
+                await toast.present();
+                
+                this.loadPedidos(); // Recargar la lista de pedidos después de la operación
+              } catch (error) {
+                const toastError = await this.toastController.create({
+                  message: 'Error al marcar el pedido como Envío Rápido',
+                  duration: 2000,
+                  color: 'danger'
+                });
+                await toastError.present();
+                console.error('Error al procesar el envío rápido:', error);
+              }
+            }
+          }
+        ]
+      });
+  
+      await alert.present();
+    } catch (error) {
+      console.error('Error al procesar el Envío Rápido:', error);
+    }
+  }
   
   
 
