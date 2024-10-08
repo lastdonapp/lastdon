@@ -590,7 +590,7 @@ async getToken(): Promise<any> {
   
   async addPedido(pedido: any): Promise<any> {
     // Redondear el costo a un número entero
-    const roundedCosto = Math.round(pedido.costo);
+    const roundedCosto = Math.round(pedido.costoTotal);
     try {
       const response = await fetch(`${this.pedidos}`, { // Ajusta la URL si es necesario
         method: 'POST',

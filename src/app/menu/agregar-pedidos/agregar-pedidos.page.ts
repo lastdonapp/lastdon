@@ -270,7 +270,7 @@ export class AgregarPedidosPage implements OnInit {
                 console.log('imagen url ', this.pedido.image_url);
               }
   
-              this.pedido.costo 
+              this.pedido.costoTotal 
               this.onTelefonoChange(this.telefonoInput);
               const { data, error } = await this.supabaseService.addPedido(this.pedido);
               if (error) {
