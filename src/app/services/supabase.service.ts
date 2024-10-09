@@ -6,7 +6,7 @@ import { HashingService } from './hashing.service';
 import { environment } from 'src/environments/environment.prod';
 import { createClient } from '@supabase/supabase-js';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
-import emailjs from 'emailjs-com';
+import emailjs from '@emailjs/browser';
 
 
 
@@ -20,6 +20,7 @@ export class SupabaseService {
   private apiKey = environment.apiKey; // Usa la API Key del entorno
   private pedidos = environment.pedUrl;
   private URL = environment.URL; // url base
+  private tracking = environment.trackUrl;
   private hashingService = new HashingService();
   private supabase = createClient(this.URL, this.apiKey);
 
@@ -33,6 +34,42 @@ export class SupabaseService {
   };
 
   constructor(private http: HttpClient) {}
+
+
+// supabase.service.ts
+
+async getPedidosPorFechaRango(fechaInicio: string, fechaFin: string, emailConductor: string): Promise<any[]> {
+  const { data, error } = await this.supabase
+    .from('pedidos')
+    .select('*')
+    .eq('primer_conductor', emailConductor) // Filtrar por el conductor actual
+    .gte('fecha_tomado', fechaInicio + 'T00:00:00Z')
+    .lte('fecha_tomado', fechaFin + 'T23:59:59Z');
+
+  if (error) {
+    console.error('Error al obtener pedidos por rango de fechas:', error);
+    return [];
+  }
+  return data;
+}
+
+async getPedidosEntregadosPorFechaRango(fechaInicio: string, fechaFin: string, emailConductor: string): Promise<any[]> {
+  const { data, error } = await this.supabase
+    .from('pedidos')
+    .select('*')
+    .eq('conductor', emailConductor) // Asegúrate de usar el campo correcto
+    .gte('fecha_entrega', fechaInicio + 'T00:00:00Z')
+    .lte('fecha_entrega', fechaFin + 'T23:59:59Z');
+
+  if (error) {
+    console.error('Error al obtener pedidos entregados por rango de fechas:', error);
+    return [];
+  }
+  return data;
+}
+
+
+
 
   async takePicture(): Promise<File> {
     const image = await Camera.getPhoto({
@@ -162,7 +199,6 @@ private validatePassword(password: string): boolean {
 }
 
 // Registrar usuario
-
 async registerUser(email: string, password: string, userType: string, verificado: boolean): Promise<any> {
   try {
     // Validar formato del correo electrónico
@@ -208,72 +244,75 @@ async registerUser(email: string, password: string, userType: string, verificado
 }
 
 
+
+
 //Google
 
 
- async checkUserExists(email: string): Promise<boolean> {
-    const { data, error } = await this.supabase
-      .from('users')
-      .select('email')
-      .eq('email', email)
-      .single();
+async checkUserExists(email: string): Promise<boolean> {
+  const { data, error } = await this.supabase
+    .from('users')
+    .select('email')
+    .eq('email', email)
+    .single();
 
-    if (error && error.code === 'PGRST116') {
-      return false; // El usuario no existe
-    }
-
-    if (data) {
-      return true; // El usuario ya está registrado
-    }
-
-    throw new Error('Error al verificar el usuario');
-  } 
-
-  async registerGoogleUser(email: string, password: string, userType: string, verificado: boolean): Promise<any> {
-    const userExists = await this.checkUserExists(email);
-    if (userExists) {
-      throw new Error('El usuario ya está registrado');
-    }
-  
-    // Generar una sal única
-    const salt = crypto.randomUUID(); // Genera una sal usando la Web Crypto API
-  
-    // Hashear la contraseña antes de almacenarla
-    const hashedPassword = await this.hashingService.hashPassword(password, salt);
-  
-    // Insertar el usuario en la base de datos
-    const { data, error } = await this.supabase
-      .from('users')
-      .insert([
-        { email: email, password: hashedPassword, user_type: userType, verificado: verificado, salt: salt }
-      ]);
-  
-    if (error) {
-      throw new Error('Error al registrar usuario: ' + error.message);
-    }
-  
-    // Enviar la contraseña sin hashing al correo del usuario
-    await this.sendEmail(email, password);
-  
-    return { success: true, data };
+  if (error && error.code === 'PGRST116') {
+    return false; // El usuario no existe
   }
-  
 
- // Método para enviar el correo usando EmailJS
-  async sendEmail(email: string, password: string): Promise<void> {
-    const templateParams = {
-      to_name: email,
-      password: password,
-    };
-
-    try {
-      const response = await emailjs.send('service_z9qtwmo', 'template_9i5xk9a', templateParams, 'myh6jilHRl1Qg8DMJ');
-      console.log('Email sent successfully:', response);
-    } catch (error) {
-      console.error('Failed to send email:', error);
-      // Aquí puedes hacer un manejo adicional del error
-    }
+  if (data) {
+    return true; // El usuario ya está registrado
   }
+
+  throw new Error('Error al verificar el usuario');
+} 
+
+async registerGoogleUser(email: string, password: string, userType: string, verificado: boolean): Promise<any> {
+  const userExists = await this.checkUserExists(email);
+  if (userExists) {
+    throw new Error('El usuario ya está registrado');
+  }
+
+  // Generar una sal única
+  const salt = crypto.randomUUID(); // Genera una sal usando la Web Crypto API
+
+  // Hashear la contraseña antes de almacenarla
+  const hashedPassword = await this.hashingService.hashPassword(password, salt);
+
+  // Insertar el usuario en la base de datos
+  const { data, error } = await this.supabase
+    .from('users')
+    .insert([
+      { email: email, password: hashedPassword, user_type: userType, verificado: verificado, salt: salt }
+    ]);
+
+  if (error) {
+    throw new Error('Error al registrar usuario: ' + error.message);
+  }
+
+  // Enviar la contraseña sin hashing al correo del usuario
+  await this.sendEmail(email, password);
+
+  return { success: true, data };
+}
+
+
+// Método para enviar el correo usando EmailJS
+async sendEmail(email: string, password: string): Promise<void> {
+  const templateParams = {
+    to_name: email,
+    password: password,
+  };
+
+  try {
+    const response = await emailjs.send('service_z9qtwmo', 'template_9i5xk9a', templateParams, 'myh6jilHRl1Qg8DMJ');
+    console.log('Email sent successfully:', response);
+  } catch (error) {
+    console.error('Failed to send email:', error);
+    // Aquí puedes hacer un manejo adicional del error
+  }
+}
+
 
 
   // Obtener el token desde la base de datos
@@ -448,12 +487,9 @@ async getToken(): Promise<any> {
     }
   }
 
-
-
-
   public async signIn(email: string, password?: string): Promise<any> {
     try {
-      // Verificar si el usuario existe y obtener su información
+      // Consulta por correo electrónico
       const response = await fetch(`${this.apiUrl}?email=eq.${encodeURIComponent(email)}`, {
         method: 'GET',
         headers: {
@@ -466,7 +502,7 @@ async getToken(): Promise<any> {
       if (!response.ok) {
         const errorData = await response.json();
         console.error('Error en la respuesta del servidor:', errorData);
-        throw new Error(errorData.message || 'Error al verificar el usuario');
+        throw new Error(errorData.message || 'Error en el inicio de sesión');
       }
   
       const users = await response.json();
@@ -524,10 +560,6 @@ async getToken(): Promise<any> {
       throw error;
     }
   }
-  
-
-
-  
   
 
   // Actualizar el token en la tabla
@@ -593,6 +625,8 @@ async getToken(): Promise<any> {
   }
   
   async addPedido(pedido: any): Promise<any> {
+    // Redondear el costo a un número entero
+    const roundedCosto = Math.round(pedido.costo);
     try {
       const response = await fetch(`${this.pedidos}`, { // Ajusta la URL si es necesario
         method: 'POST',
@@ -617,7 +651,7 @@ async getToken(): Promise<any> {
           cambio: pedido.cambio,
           excede_10_kilos: pedido.excede10Kilos,
           fecha: pedido.fecha,
-          costo: pedido.costo,
+          costo: roundedCosto,
           estado: pedido.estado,
           fecha_tomado: pedido.fechaTomado,
           conductor: pedido.conductor,
@@ -746,48 +780,36 @@ async getToken(): Promise<any> {
     }
   }
 
-  async pagarPedido(pedidoId: string, usuario: string): Promise<any> {
-    try {
-      const response = await fetch(`${this.pedidos}?id=eq.${encodeURIComponent(pedidoId)}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': this.apiKey,
-          'Authorization': `Bearer ${this.apiKey}`
-        },
-        body: JSON.stringify({
-          pagado: true, // Solo actualiza el estado a pagado después de la confirmación
-          conductor: usuario,
-          fecha_tomado: new Date().toISOString() // Fecha actual en formato ISO
-        })
-      });
-  
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Error al actualizar el pedido:', errorText);
-        throw new Error(errorText || 'Error al actualizar el pedido');
-      }
-  
-      const responseText = await response.text();
-      if (responseText.trim() === '') {
-        console.log('Pedido actualizado con éxito, pero sin respuesta JSON');
-        return { success: true };
-      }
-  
-      const updatedPedido = JSON.parse(responseText);
-      console.log('Pedido actualizado:', updatedPedido);
-      return updatedPedido;
-  
-    } catch (error) {
-      console.error('Error al actualizar el pedido:', error);
-      throw error;
+  async pagarPedido(pedidoId: string): Promise<any> {
+  try {
+    const response = await fetch(`${this.pedidos}?id=eq.${encodeURIComponent(pedidoId)}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': this.apiKey,
+        'Authorization': `Bearer ${this.apiKey}`
+      },
+      body: JSON.stringify({
+        pagado: true // Solo actualizamos el estado pagado
+      })
+    });
+
+    // Depuración: verificar la respuesta del servidor
+    const responseData = await response.json();
+    console.log('Respuesta del servidor:', responseData);
+
+    if (!response.ok) {
+      console.error('Error en la respuesta de Supabase:', responseData);
+      throw new Error('Error en la actualización de Supabase');
     }
+
+    return responseData;
+
+  } catch (error) {
+    console.error('Error al actualizar el pedido:', error);
+    throw error;
   }
-
-
-
-
-
+}
  
   async getPedidosPorConductor(email: string, estado: string): Promise<any[]> {
     try {
@@ -870,6 +892,7 @@ async getToken(): Promise<any> {
 
   async entregarPedido(pedidoId: string): Promise<void> {
     try {
+      // Actualizar el estado del pedido a 'entregado'
       const response = await fetch(`${this.pedidos}?id=eq.${encodeURIComponent(pedidoId)}`, {
         method: 'PATCH',
         headers: {
@@ -878,7 +901,56 @@ async getToken(): Promise<any> {
           'Authorization': `Bearer ${this.apiKey}`
         },
         body: JSON.stringify({
-          estado: 'entregado'
+          estado: 'entregado',
+          fecha_entrega: new Date().toISOString()
+        })
+      });
+  
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error al actualizar el pedido:', errorText);
+        throw new Error(errorText || 'Error al actualizar el pedido');
+      }
+  
+      // Actualizar el estado del tracking a 'finalizado'
+      const trackingResponse = await fetch(`${this.tracking}?pedido_id=eq.${encodeURIComponent(pedidoId)}`, { // Cambiado a pedido_id
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': this.apiKey,
+          'Authorization': `Bearer ${this.apiKey}`
+        },
+        body: JSON.stringify({
+          estado_tracking: 'finalizado', // Se usa estado_tracking, ya que es la columna correcta
+          timestamp: new Date().toISOString() // Actualiza el timestamp de finalización
+        })
+      });
+  
+      if (!trackingResponse.ok) {
+        const trackingErrorText = await trackingResponse.text();
+        console.error('Error al actualizar el tracking:', trackingErrorText);
+        throw new Error(trackingErrorText || 'Error al actualizar el tracking');
+      }
+  
+    } catch (error) {
+      console.error('Error al entregar el pedido:', error);
+      throw error;
+    }
+  }
+
+
+
+  async recepcionarPedido(pedidoId: string): Promise<void> {
+    try {
+      const response = await fetch(`${this.pedidos}?id=eq.${encodeURIComponent(pedidoId)}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': this.apiKey,
+          'Authorization': `Bearer ${this.apiKey}`
+        },
+        body: JSON.stringify({
+          estado: 'recepcionado'
         })
       });
 
@@ -892,6 +964,59 @@ async getToken(): Promise<any> {
       throw error;
     }
   }
+
+
+
+
+  async almacenarPedido(pedidoId: string): Promise<void> {
+    try {
+        // Actualizar el estado del pedido a 'En centro de Distribución'
+        const response = await fetch(`${this.pedidos}?id=eq.${encodeURIComponent(pedidoId)}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'apikey': this.apiKey,
+                'Authorization': `Bearer ${this.apiKey}`
+            },
+            body: JSON.stringify({
+                estado: 'En centro de Distribución'
+            })
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Error al actualizar el pedido:', errorText);
+            throw new Error(errorText || 'Error al actualizar el pedido');
+        }
+
+        // Actualizar el estado del tracking a 'En pausa'
+        const trackingResponse = await fetch(`${this.tracking}?pedido_id=eq.${encodeURIComponent(pedidoId)}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'apikey': this.apiKey,
+                'Authorization': `Bearer ${this.apiKey}`
+            },
+            body: JSON.stringify({
+                estado_tracking: 'En pausa',  // Se actualiza el estado del tracking
+                timestamp: new Date().toISOString() // Actualiza el timestamp
+            })
+        });
+
+        if (!trackingResponse.ok) {
+            const trackingErrorText = await trackingResponse.text();
+            console.error('Error al actualizar el tracking:', trackingErrorText);
+            throw new Error(trackingErrorText || 'Error al actualizar el tracking');
+        }
+
+        console.log('Pedido y tracking actualizados exitosamente.');
+
+    } catch (error) {
+        console.error('Error al almacenar el pedido:', error);
+        throw error;
+    }
+}
+
 
 
 
@@ -939,5 +1064,426 @@ async getToken(): Promise<any> {
   }
 
 
+  async iniciarTracking(trackingData: any): Promise<string> {
+    const { data, error } = await this.supabase
+      .from('tracking')
+      .insert(trackingData)
+      .select('id')  // Recupera el ID del nuevo registro insertado
+      .single();     // Asegúrate de obtener solo un registro
+    
+    if (error) {
+      console.error('Error al iniciar el tracking en Supabase:', error);
+      throw error;   // Lanza el error para manejarlo en otro lugar
+    }
+  
+    console.log('Tracking iniciado con éxito:', data);
+    return data.id;  // Retorna el ID del nuevo registro de tracking
+  }
+  
 
+
+  async obtenerEstadoPedido(pedidoId: string): Promise<string> {
+    try {
+      const response = await fetch(`${this.pedidos}?id=eq.${encodeURIComponent(pedidoId)}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': this.apiKey,
+          'Authorization': `Bearer ${this.apiKey}`
+        }
+      });
+  
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error al obtener el estado del pedido:', errorText);
+        throw new Error(errorText || 'Error al obtener el estado del pedido');
+      }
+  
+      const [pedido] = await response.json();
+      return pedido.estado;
+    } catch (error) {
+      console.error('Error al obtener el estado del pedido:', error);
+      throw error;
+    }
+  }
+
+
+
+  async getTrackingByPedidoId(pedidoId: string): Promise<{ data: any[], error: any }> {
+    try {
+      const { data, error } = await this.supabase
+        .from('tracking')
+        .select('estado_tracking')
+        .eq('pedido_id', pedidoId)
+        .order('timestamp', { ascending: false })  // Asegura que obtengas el estado más reciente
+        .limit(1); // Solo necesitas el estado más reciente
+  
+      if (error) {
+        throw error;
+      }
+  
+      return { data, error };
+    } catch (error) {
+      console.error('Error al obtener el estado del tracking:', error);
+      return { data: [], error };
+    }
+  }
+
+
+
+  async updateTrackingLocation(trackingId: string, latitud: number, longitud: number): Promise<void> {
+    try {
+      console.log(`Actualizando tracking con ID: ${trackingId}, Latitud: ${latitud}, Longitud: ${longitud}`);
+      
+      const { data, error } = await this.supabase
+        .from('tracking')
+        .update({ 
+          latitud, 
+          longitud, 
+          timestamp: new Date()  // Actualiza el timestamp
+        })
+        .eq('id', trackingId);
+    
+      if (error) {
+        console.error('Error al actualizar la ubicación del tracking:', error);
+        throw error;  // Lanza el error para que pueda ser manejado por el llamador
+      }
+    
+      console.log('Ubicación del tracking actualizada con éxito:', data);
+    } catch (error) {
+      console.error('Ocurrió un error al intentar actualizar la ubicación del tracking:', error);
+      // Aquí puedes manejar el error de manera adicional si es necesario
+      throw error;  // Vuelve a lanzar el error para que pueda ser manejado en otro lugar
+    }
+  }
+  
+
+
+  async getTracking(pedidoId: string) {
+    const { data, error } = await this.supabase
+      .from('tracking')
+      .select('*')
+      .eq('pedido_id', pedidoId);
+  
+    if (error) {
+      throw error;
+    }
+  
+    return data;
+  }
+
+
+
+  async obtenerDetallesPedido(pedidoId: string): Promise<any> {
+    try {
+      const response = await fetch(`${this.pedidos}?id=eq.${encodeURIComponent(pedidoId)}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': this.apiKey,
+          'Authorization': `Bearer ${this.apiKey}`
+        }
+      });
+  
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error al obtener los detalles del pedido:', errorText);
+        throw new Error(errorText || 'Error al obtener los detalles del pedido');
+      }
+  
+      const [pedido] = await response.json();
+      return {
+        conductor: pedido.conductor, // Asegúrate de que estos campos existen en tu tabla
+        usuario: pedido.usuario,
+        estado: pedido.estado
+      };
+    } catch (error) {
+      console.error('Error al obtener los detalles del pedido:', error);
+      throw error;
+    }
+  }
+
+
+
+
+  async verificarTrackingIniciado(pedidoId: string): Promise<boolean> {
+    try {
+        // Actualizamos la URL para buscar tanto "iniciado" como "reanudado"
+        const response = await fetch(`${this.tracking}?pedido_id=eq.${encodeURIComponent(pedidoId)}&estado_tracking=in.(iniciado,reanudado)`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'apikey': this.apiKey,
+                'Authorization': `Bearer ${this.apiKey}`
+            }
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Error al verificar el tracking:', errorText);
+            throw new Error(errorText || 'Error al verificar el tracking');
+        }
+
+        const trackingData = await response.json();
+
+        // Retorna verdadero si hay al menos un tracking con estado 'iniciado' o 'reanudado'
+        return trackingData.length > 0;
+    } catch (error) {
+        console.error('Error al verificar el tracking:', error);
+        throw error;
+    }
+}
+
+
+
+async liberarConductor(pedidoId: string): Promise<void> {
+  try {
+    const response = await fetch(`${this.pedidos}?id=eq.${encodeURIComponent(pedidoId)}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': this.apiKey,
+        'Authorization': `Bearer ${this.apiKey}`
+      },
+      body: JSON.stringify({
+        conductor: ''
+      })
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Error al desligar conductor:', errorText);
+      throw new Error(errorText || 'Error al actualizar el pedido');
+    }
+  } catch (error) {
+    console.error('Error al desligar conductor:', error);
+    throw error;
+  }
+}
+
+
+
+
+async liberarTrackingConductor(trackingId: string): Promise<void> {
+  try {
+    // Realizar el PATCH utilizando el trackingId como referencia
+    const response = await fetch(`${this.tracking}?id=eq.${trackingId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': this.apiKey,
+        'Authorization': `Bearer ${this.apiKey}`
+      },
+      body: JSON.stringify({
+        conductor_email: ''  // Vaciar el campo del conductor
+      })
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Error al liberar conductor de tracking:', errorText);
+      throw new Error(errorText || 'Error al actualizar tracking');
+    }
+
+    console.log('Conductor liberado correctamente del tracking');
+
+  } catch (error) {
+    console.error('Error al liberar conductor de tracking:', error);
+    throw error;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+async getTrackingById(pedidoId: string): Promise<string | null> {
+  try {
+      const { data, error } = await this.supabase
+          .from('tracking')
+          .select('id')
+          .eq('pedido_id', pedidoId)
+          .single();  // Suponiendo que hay solo un tracking por pedido
+
+      if (error) {
+          console.error('Error al obtener el trackingId:', error);
+          return null;
+      }
+
+      return data ? data.id : null;
+  } catch (error) {
+      console.error('Error en getTrackingById:', error);
+      return null;
+  }
+}
+
+
+
+
+async getPedidosReanudar(): Promise<any> {
+  try {
+    const response = await fetch(`${this.pedidos}?estado=eq.En centro de Distribución`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': this.apiKey,
+        'Authorization': `Bearer ${this.apiKey}`
+      }
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Error al obtener los pedidos:', errorData);
+      throw new Error(errorData.message || 'Error al obtener los pedidos');
+    }
+
+    const pedidos = await response.json();
+    console.log('Pedidos por reanudar:', pedidos);
+    return pedidos;
+  } catch (error) {
+    console.error('Error al obtener los pedidos:', error);
+    throw error;
+  }
+}
+
+
+  async tomarPedidoIngresado(pedidoId: string, conductor: string): Promise<any> {
+    try {
+      const response = await fetch(`${this.pedidos}?id=eq.${encodeURIComponent(pedidoId)}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': this.apiKey,
+          'Authorization': `Bearer ${this.apiKey}`
+        },
+        body: JSON.stringify({
+          estado: 'reanudado',
+          conductor: conductor,
+          fecha_tomado: new Date().toISOString() // Fecha actual en formato ISO
+        })
+      });
+  
+      // Verificar si la respuesta no es un JSON
+      if (!response.ok) {
+        const errorText = await response.text(); // Obtener el texto de error
+        console.error('Error al actualizar el pedido:', errorText);
+        throw new Error(errorText || 'Error al actualizar el pedido');
+      }
+  
+      // Intentar analizar la respuesta JSON solo si el cuerpo no está vacío
+      const responseText = await response.text();
+      if (responseText.trim() === '') {
+        // Respuesta vacía, podemos asumir que la actualización fue exitosa
+        console.log('Pedido actualizado con éxito, pero sin respuesta JSON');
+        return { success: true };
+      }
+  
+      const updatedPedido = JSON.parse(responseText);
+      console.log('Pedido actualizado:', updatedPedido);
+      return updatedPedido;
+  
+    } catch (error) {
+      console.error('Error al actualizar el pedido:', error);
+      throw error;
+    }
+  }
+
+
+  async nuevoConductorTracking(trackingId: string, conductor_email: string): Promise<void> {
+    try {
+      const response = await fetch(`${this.tracking}?id=eq.${encodeURIComponent(trackingId)}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': this.apiKey,
+          'Authorization': `Bearer ${this.apiKey}`
+        },
+        body: JSON.stringify({
+          conductor_email: conductor_email
+        })
+      });
+  
+      if (response.ok) {
+        console.log('Conductor anexado correctamente.');
+      } else {
+        throw new Error(`Error al actualizar el conductor: ${response.statusText}`);
+      }
+    } catch (error) {
+      console.error('Error al anexar conductor en la tabla tracking:', error);
+    }
+  }
+  
+
+  async reanudarTracking(trackingId: string): Promise<void> {
+    try {
+      const response = await fetch(`${this.tracking}?id=eq.${encodeURIComponent(trackingId)}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': this.apiKey,
+          'Authorization': `Bearer ${this.apiKey}`
+        },
+        body: JSON.stringify({
+          estado_tracking: 'reanudado'
+        })
+      });
+  
+      if (response.ok) {
+        console.log('Estado del tracking actualizado a "reanudado".');
+      } else {
+        throw new Error(`Error al reanudar el tracking: ${response.statusText}`);
+      }
+    } catch (error) {
+      console.error('Error al reanudar el tracking:', error);
+    }
+  }
+
+
+  async registroPrimerConductor(pedidoId: string, conductor_email: string): Promise<void> {
+    try {
+      const response = await fetch(`${this.pedidos}?id=eq.${encodeURIComponent(pedidoId)}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': this.apiKey,
+          'Authorization': `Bearer ${this.apiKey}`
+        },
+        body: JSON.stringify({
+          primer_conductor: conductor_email
+        })
+      });
+  
+      if (response.ok) {
+        console.log('Conductor registrado correctamente.');
+      } else {
+        throw new Error(`Error al actualizar el conductor: ${response.statusText}`);
+      }
+    } catch (error) {
+      console.error('Error al registrar conductor en la tabla de pedidos:', error);
+    }
+  }
+
+
+
+
+    // Método para actualizar la foto de entrega
+    async updatePedidoFotoEnvio(pedidoId: string, fotoUrl: string) {
+      const { data, error } = await this.supabase
+        .from('pedidos') // Tabla de pedidos
+        .update({ fotoEnvio_final: fotoUrl }) // Actualizar la URL de la foto
+        .eq('id', pedidoId); // Filtrar por el ID del pedido
+  
+      return { data, error };
+    }
+  
+
+
+
+  
 }

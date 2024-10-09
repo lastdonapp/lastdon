@@ -1,0 +1,56 @@
+
+/* Contenedor para la tabla que permite el desplazamiento horizontal en pantallas pequeñas */
+.table-container {
+    overflow-x: auto;
+    margin-top: 15px;
+}
+
+/* Estilos generales para la tabla de pedidos */
+.pedidos-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    table-layout: fixed; /* Para evitar que las celdas se ajusten dinámicamente */
+}
+
+/* Estilos para celdas y encabezados */
+.pedidos-table th, .pedidos-table td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    white-space: nowrap; /* Evita que el texto se divida en varias líneas */
+    overflow: hidden; /* Para que el contenido largo no desborde */
+    text-overflow: ellipsis; /* Añade puntos suspensivos si el contenido es demasiado largo */
+}
+
+/* Encabezados con fondo diferenciado */
+.pedidos-table th {
+    background-color: #f1f1f1;
+    text-align: center;
+}
+
+/* Botón adicional para acciones de la tabla */
+.add-button {
+    margin: 10px 0;
+}
+
+/* Estilo para el mensaje de 'sin pedidos' */
+.no-pedidos {
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* Estilos para pantallas pequeñas */
+@media (max-width: 768px) {
+    .pedidos-table th, .pedidos-table td {
+        font-size: 14px;
+        padding: 8px;
+    }
+
+    .pedidos-table th {
+        font-size: 16px;
+    }
+
+    ion-button {
+        font-size: 12px;
+    }
+}

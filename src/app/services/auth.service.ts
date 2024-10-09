@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 import { Platform } from '@ionic/angular';
 import { SupabaseService } from './supabase.service';
+import { environment } from '../../environments/environment'; // Importa el archivo de entorno
 
 @Injectable({
   providedIn: 'root'

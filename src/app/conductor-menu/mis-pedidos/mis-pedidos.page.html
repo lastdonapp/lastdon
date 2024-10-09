@@ -5,28 +5,92 @@
 </ion-header>
 
 <ion-content>
-  <!-- Filtro de estado -->
-  <ion-item>
-    <ion-label>Filtrar por estado</ion-label>
-    <ion-select [(ngModel)]="selectedState" (ionChange)="filterPedidos()">
-      <ion-select-option value="">Todos</ion-select-option>
-      <ion-select-option value="tomado">Tomado</ion-select-option>
-      <ion-select-option value="entregado">Entregado</ion-select-option>
-    </ion-select>
-  </ion-item>
 
-  <!-- Lista de pedidos -->
-  <ion-list>
-    <ion-item *ngFor="let pedido of pedidos" (click)="verDetalles(pedido.id)">
-      <ion-label>
-        <h2>{{ pedido.nombre_pedido }}</h2>
-        <p>{{ pedido.descripcion_pedido }}</p>
-        <p>Estado: {{ pedido.estado }}</p>
-        <p>Fecha tomado: {{ pedido.fecha_tomado | date }}</p>
-      </ion-label>
-      <ion-button (click)="entregarPedido(pedido.id)" *ngIf="pedido.estado === 'tomado'" color="primary">
-        Entregado
-      </ion-button>
-    </ion-item>
-  </ion-list>
+  <!-- Contadores de pedidos -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Contador de Pedidos</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p>Pedidos Tomados: {{ totalPedidosTomados }}</p>
+      <p>Pedidos Entregados: {{ totalPedidosEntregados }}</p>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Botones para filtrar pedidos -->
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <ion-button expand="block" (click)="filtrarPedidos('hoy')" color="primary">Hoy</ion-button>
+      </ion-col>
+      <ion-col>
+        <ion-button expand="block" (click)="filtrarPedidos('ayer')" color="primary">Ayer</ion-button>
+      </ion-col>
+      <ion-col>
+        <ion-button expand="block" (click)="filtrarPedidos('semana')" color="primary">Última Semana</ion-button>
+      </ion-col>
+      <ion-col>
+        <ion-select [(ngModel)]="selectedState" (ionChange)="filterPedidos()">
+          <ion-select-option value="">Todos</ion-select-option>
+          <ion-select-option value="tomado">Tomado</ion-select-option>
+          <ion-select-option value="recepcionado">Recepcionado</ion-select-option>
+          <ion-select-option value="entregado">Entregado</ion-select-option>
+        </ion-select>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- Tabla de pedidos -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Pedidos Filtrados: {{ filtroActual }}</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <div class="table-container">
+        <ion-grid>
+          <table class="vehiculos-table">
+            <thead>
+               <tr>
+               <th>Nombre</th>
+                <th>Cliente</th>
+                <th>Estado</th>
+                <th>Conductor Receptor</th>
+                <th>Fecha Tomado</th>
+                <th>Conductor Entrega</th>
+                <th>Fecha Tomado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+          <tbody>
+          <tr *ngFor="let pedido of pedidos" (click)="verDetalles(pedido.id)">
+            <td>{{ pedido.nombre_pedido }}</td>
+            <td>{{ pedido.usuario }}</td> 
+            <td>{{ pedido.estado }}</td>
+            <td> {{ pedido.primer_conductor }} </td>
+            <td>{{ pedido.fecha_tomado }}</td>
+            <td *ngIf="pedido.primer_conductor !== null && pedido.primer_conductor !== ''">{{ pedido.conductor }}</td>
+            <td>{{ pedido.fecha_tomado }}</td>
+            <td>
+              <!-- Botones de acción según el estado -->
+              <ion-button *ngIf="pedido.estado === 'tomado'" (click)="recepcionar(pedido.id)" color="secondary">
+                Recepcionado
+              </ion-button>
+              <ion-button *ngIf="pedido.estado === 'reanudado'" (click)="entregarPedido(pedido.id)" color="primary">
+                Entregado
+              </ion-button>
+              <ion-button *ngIf="pedido.estado === 'recepcionado'" (click)="ingresarCentroDistribucion(pedido.id)" color="primary">
+                Ingresar
+              </ion-button>
+              <ion-button *ngIf="pedido.estado === 'reanudado'" (click)="takePhotoAndSave(pedido.id)" color="primary">
+                Foto de entrega
+              </ion-button>
+            </td>
+          </tr>
+        </tbody>
+        </table>
+        </ion-grid>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
 </ion-content>

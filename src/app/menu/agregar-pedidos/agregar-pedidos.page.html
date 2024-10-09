@@ -14,18 +14,19 @@
     </ion-card-header>
 
     <ion-card-content>
-    <ion-accordion-group>
+        
+      <ion-accordion-group>
+
       <form (ngSubmit)="onSubmit()" #pedidoForm="ngForm">
         <!-- Nombre y Descripción -->
-      
-        
-    <ion-accordion>
+
+        <ion-accordion>
       <ion-item slot="header">
         <ion-label>Información del Pedido</ion-label>
       </ion-item>
       <ion-list slot="content">
 
-      <ion-item>
+        <ion-item>
           <ion-label position="stacked">Nombre del Pedido</ion-label>
           <ion-input
             [(ngModel)]="pedido.nombrePedido"
@@ -101,6 +102,7 @@
           <ion-label>Información del Destinatario</ion-label>
         </ion-item>
         <ion-list slot="content">
+
         <ion-item>
           <ion-label position="stacked">Nombre del Destinatario</ion-label>
           <ion-input
@@ -137,6 +139,7 @@
             name="vivienda"
             #vivienda="ngModel"
             required
+            (ionChange)="onViviendaChange($event)"
           >
             <ion-select-option value="casa">Casa</ion-select-option>
             <ion-select-option value="departamento">Departamento</ion-select-option>
@@ -146,6 +149,21 @@
         <ion-text color="danger" *ngIf="vivienda.invalid && (vivienda.dirty || vivienda.touched)">
           <p *ngIf="vivienda.errors?.['required']">La vivienda es requerida.</p>
         </ion-text>
+      
+        <!-- Campo dinámico de número de departamento -->
+        <ion-item *ngIf="mostrarNumeroDepartamento">
+          <ion-label position="floating">Número de departamento</ion-label>
+          <ion-input
+            [(ngModel)]="numeroDepartamentoTemporal"
+            name="numeroDepartamento"
+            pattern="^[0-9]*$"
+            maxlength="4"
+            required
+            #numeroDepartamento="ngModel"
+          ></ion-input>
+        </ion-item>
+
+
 
         <ion-item>
           <ion-label>Comuna</ion-label>
@@ -154,10 +172,13 @@
             name="comuna"
             #comuna="ngModel"
             required
+            (ionChange)="onComunaChange($event.detail.value)"
           >
             <ion-select-option *ngFor="let comuna of comunas" [value]="comuna">{{comuna}}</ion-select-option>
           </ion-select>
         </ion-item>
+        
+        
         <ion-text color="danger" *ngIf="comuna.invalid && (comuna.dirty || comuna.touched)">
           <p *ngIf="comuna.errors?.['required']">La comuna es requerida.</p>
         </ion-text>
@@ -183,13 +204,13 @@
         </ion-list>
         </ion-accordion>
 
-
         <!-- Cantidad de Paquetes y Dimensiones -->
         <ion-accordion>
         <ion-item slot="header">
           <ion-label>Cantidad de Paquetes y Dimensiones</ion-label>
         </ion-item>
         <ion-list slot="content">
+
         <ion-item>
           <ion-label position="stacked">Cantidad de Paquetes</ion-label>
           <ion-input
@@ -299,14 +320,15 @@
 
         <!-- Costo -->
         <ion-item>
-          <ion-label>CLP$ </ion-label>
-          <ion-input [value]="pedido.costo | currency:'CLP':'symbol':'1.0-0'" name="costo" readonly></ion-input>
+          <ion-label> </ion-label>
+          <ion-input [value]="pedido.costo | currency:' total a pagar : CLP $ ':'symbol':'1.0-0'" name="costo" readonly></ion-input>
         </ion-item>
         </ion-list>
       </ion-accordion>
+
         <!-- Botón de Envío -->
         <ion-button expand="full" type="submit" [disabled]="pedidoForm.form.invalid">Agregar Pedido</ion-button>
-      
+
       </form>
     </ion-accordion-group>
     </ion-card-content>
