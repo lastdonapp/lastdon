@@ -216,20 +216,7 @@
           </div>
           
         
-        <ion-item>
-          <ion-label>Dimensiones (Alto x Ancho x Largo)</ion-label>
-          <ion-select
-            [(ngModel)]="pedido.dimensiones.unidad"
-            name="dimensionesUnidad"
-            #dimensionesUnidad="ngModel"
-            required
-            placeholder="Unidad"
-            (ionChange)="onDimensionesChange()"
-          >
-            <ion-select-option value="metros">Metros</ion-select-option>
-            <ion-select-option value="centimetros">Centímetros</ion-select-option>
-          </ion-select>
-        </ion-item>
+        
         
         <ion-item>
           <ion-label position="stacked">Alto</ion-label>
@@ -239,15 +226,24 @@
             #dimensionesAlto="ngModel"
             type="number"
             min="1"
-            placeholder="Alto"
+            max="80"
+            placeholder="Alto (cm)"
             required
             (ionInput)="onDimensionesChange()"
           ></ion-input>
         </ion-item>
         <div *ngIf="dimensionesAlto.invalid && dimensionesAlto.touched">
-          <p style="color: red;">El alto debe ser mayor a 0.</p>
-          <p *ngIf="dimensionesAlto.errors?.['required']">El alto es requerido.</p>
+          <p *ngIf="dimensionesAlto.errors?.['required']" style="color: red;">
+            El alto es requerido.
+          </p>
+          <p *ngIf="dimensionesAlto.errors?.['min']" style="color: red;">
+            El alto debe ser mayor a 0.
+          </p>
+          <p *ngIf="dimensionesAlto.errors?.['max']" style="color: red;">
+            El alto no puede exceder los 80 cm.
+          </p>
         </div>
+        
         
         <ion-item>
           <ion-label position="stacked">Ancho</ion-label>
@@ -257,15 +253,24 @@
             #dimensionesAncho="ngModel"
             type="number"
             min="1"
-            placeholder="Ancho"
+            max="80"
+            placeholder="Ancho (cm)"
             required
             (ionInput)="onDimensionesChange()"
           ></ion-input>
         </ion-item>
         <div *ngIf="dimensionesAncho.invalid && dimensionesAncho.touched">
-          <p style="color: red;">El ancho debe ser mayor a 0.</p>
-          <p *ngIf="dimensionesAncho.errors?.['required']">El ancho es requerido.</p>
+          <p *ngIf="dimensionesAncho.errors?.['required']" style="color: red;">
+            El ancho es requerido.
+          </p>
+          <p *ngIf="dimensionesAncho.errors?.['min']" style="color: red;">
+            El ancho debe ser mayor a 0.
+          </p>
+          <p *ngIf="dimensionesAncho.errors?.['max']" style="color: red;">
+            El ancho no puede exceder los 80 cm.
+          </p>
         </div>
+        
         
         <ion-item>
           <ion-label position="stacked">Largo</ion-label>
@@ -275,25 +280,36 @@
             #dimensionesLargo="ngModel"
             type="number"
             min="1"
-            placeholder="Largo"
+            max="80"
+            placeholder="Largo (cm)"
             required
             (ionInput)="onDimensionesChange()"
           ></ion-input>
         </ion-item>
         <div *ngIf="dimensionesLargo.invalid && dimensionesLargo.touched">
-          <p style="color: red;">El largo debe ser mayor a 0.</p>
-          <p *ngIf="dimensionesLargo.errors?.['required']">El largo es requerido.</p> 
+          <p *ngIf="dimensionesLargo.errors?.['required']" style="color: red;">
+            El largo es requerido.
+          </p>
+          <p *ngIf="dimensionesLargo.errors?.['min']" style="color: red;">
+            El largo debe ser mayor a 0.
+          </p>
+          <p *ngIf="dimensionesLargo.errors?.['max']" style="color: red;">
+            El largo no puede exceder los 80 cm.
+          </p>
         </div>
-        
-        
+
+
+
         <ion-item lines="full">
           <ion-label>¿Es frágil?</ion-label>
           <ion-checkbox
             [(ngModel)]="pedido.fragil"
             name="fragil"
-            (ionChange)="updateCosto()"
+            (ionChange)="onFragilChange($event)"
           ></ion-checkbox>
         </ion-item>
+        
+  
         <ion-item lines="full">
           <ion-label>¿Es para cambio?</ion-label>
           <ion-checkbox
@@ -302,14 +318,17 @@
             (ionChange)="updateCosto()"
           ></ion-checkbox>
         </ion-item>
+
         <ion-item lines="full">
-          <ion-label>¿Excede 10 Kilos?</ion-label>
+          <ion-label>¿Excede 2,5 kg de peso?</ion-label>
           <ion-checkbox
-            [(ngModel)]="pedido.excede10Kilos"
-            name="excede10Kilos"
-            (ionChange)="updateCosto()"
+            [(ngModel)]="pedido.excedeKilos"
+            name="excedeKilos"
+            (ionChange)="handleExcedeKilosChange()"
           ></ion-checkbox>
         </ion-item>
+
+
 
         <!-- Foto del Pedido -->
         <ion-item>

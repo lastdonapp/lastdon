@@ -217,10 +217,22 @@ export class AgregarPedidosPage implements OnInit {
   }
   
   onDimensionesChange() {
-    // Actualiza el costo cuando se cambian las dimensiones o la unidad
-    this.updateCosto();
+    // Limitar el valor del alto a 80 si lo excede
+    if (this.pedido.dimensiones.alto > 80) {
+      this.pedido.dimensiones.alto = 80;
+    }
+  
+    // Limitar el valor del ancho a 80 si lo excede
+    if (this.pedido.dimensiones.ancho > 80) {
+      this.pedido.dimensiones.ancho = 80;
+    }
+  
+    // Limitar el valor del largo a 80 si lo excede
+    if (this.pedido.dimensiones.largo > 80) {
+      this.pedido.dimensiones.largo = 80;
+    }
+    this.updateCosto(); // Actualiza el costo cuando se cambian las dimensiones o la unidad
   }
-
 
 
   async onSubmit() {
@@ -294,21 +306,6 @@ export class AgregarPedidosPage implements OnInit {
 
 
 
-  calculateCost() {
-    let cost = 0; // Costo base por paquete
-  
-    if (this.pedido.excede10Kilos) {
-      cost += 2000; // Costo adicional por exceder 10 kilos
-    }
-    if (this.pedido.fragil) {
-      cost += 1000; // Costo adicional por ser frágil
-    }
-    if (this.pedido.cambio) {
-      cost += 500; // Costo adicional por requerir cambio
-    }
-  
-    return cost; // Retorna el costo calculado por paquete
-  }
 
   updateCosto() {
     // Validar que se haya ingresado al menos un paquete
@@ -323,13 +320,8 @@ export class AgregarPedidosPage implements OnInit {
       return; // Salir si las dimensiones son inválidas
     }
   
-    // Calcular el volumen
+    // Calcular el volumen en cm³
     let volumen = this.pedido.dimensiones.alto * this.pedido.dimensiones.ancho * this.pedido.dimensiones.largo;
-  
-    // Ajustar el volumen si la unidad es en centímetros
-    if (this.pedido.dimensiones.unidad === 'centimetros') {
-      volumen /= 1000000; // Convertir de cm³ a m³
-    }
   
     // Validar que el volumen no sea cero o negativo
     if (volumen <= 0) {
@@ -337,23 +329,35 @@ export class AgregarPedidosPage implements OnInit {
       return; // Salir si el volumen es inválido
     }
   
-    // El costo base ahora es 0
-    let baseCost = 0;
+    // Cálculo del costo por volumen 
+    let dimensionCost = volumen * 0.002; // Ajusta el factor de costo si es necesario
   
-    // Calcular costo por dimensiones
-    let dimensionCost = volumen * 500; // Ejemplo de costo por volumen
-  
-    // Añadir costo de la comuna si es aplicable
+    // Añadir el costo de la comuna si es aplicable
     let costoComuna = this.pedido.costo || 0;
   
-    // Calcular el costo total
-    let totalCost = (baseCost + dimensionCost + costoComuna) * this.pedido.cantidadPaquetes;
+    // Inicializar el costo base
+    let cost = dimensionCost + costoComuna;
+  
+    // Aplicar los costos adicionales basados en las condiciones del pedido
+    if (this.pedido.excedeKilos) {
+      cost += 3000; // Costo adicional por exceder 2,5 kilos
+    }
+    if (this.pedido.fragil) {
+      cost += 1000; // Costo adicional por ser frágil
+    }
+    if (this.pedido.cambio) {
+      cost += 500; // Costo adicional por requerir cambio
+    }
+  
+    // Calcular el costo total multiplicando por la cantidad de paquetes
+    let totalCost = cost * this.pedido.cantidadPaquetes;
   
     // Asignar el costo total al pedido
     this.pedido.costoTotal = totalCost;
   
     console.log('Costo total actualizado:', this.pedido.costoTotal);
   }
+  
   
   
 
@@ -404,9 +408,57 @@ export class AgregarPedidosPage implements OnInit {
 
 
 
+  async onFragilChange(event: any) {
+    if (event.detail.checked) {
+      const alert = await this.alertController.create({
+        header: 'Advertencia',
+        message: 'El paquete es frágil. Asegúrate de embalarlo correctamente.',
+        buttons: ['Entendido']
+      });
+
+      await alert.present();
+    }
+        // Llamar a la función que actualiza el costo
+        this.updateCosto();
+  }
+
+
+
+  handleExcedeKilosChange() {
+    // Mostrar advertencia si el checkbox está seleccionado
+    if (this.pedido.excedeKilos) {
+      this.presentPesoAlert();
+    }
+  
+    // Actualizar el costo del pedido
+    this.updateCosto();
+  }
+  
+  async presentPesoAlert() {
+    const alert = await this.alertController.create({
+      header: 'Advertencia',
+      message: 'El peso máximo por pedido no debe exceder los 5 kg. Asegúrese de que su paquete esté dentro de los límites permitidos.',
+      buttons: ['OK']
+    });
+  
+    await alert.present();
+  }
+
+
+
+
+
+
+
+
+
+}
+
+
+
 
   
 
 
 
-}
+
