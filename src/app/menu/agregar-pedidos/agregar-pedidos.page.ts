@@ -29,7 +29,7 @@ export class AgregarPedidosPage implements OnInit {
     cantidadPaquetes: 0,
     dimensiones: {
       valor: 0,
-      unidad: 'metros'
+      unidad: 'cm'
     },
     fragil: false,
     cambio: false,
@@ -338,15 +338,18 @@ export class AgregarPedidosPage implements OnInit {
     // Inicializar el costo base
     let cost = dimensionCost + costoComuna;
   
+    // Verificar si TODAS las dimensiones exceden los 40 cm y añadir tarifa fija
+    if (this.pedido.dimensiones.alto > 40 && this.pedido.dimensiones.ancho > 40 && this.pedido.dimensiones.largo > 40) {
+      cost += 1500 // Tarifa fija por exceder los 40 cm en TODAS las dimensiones
+      console.log('Tarifa fija por exceder los 40 cm en TODAS las dimensiones, por cada paquete');
+    }
+  
     // Aplicar los costos adicionales basados en las condiciones del pedido
     if (this.pedido.excedeKilos) {
       cost += 3000; // Costo adicional por exceder 2,5 kilos
     }
     if (this.pedido.fragil) {
       cost += 1000; // Costo adicional por ser frágil
-    }
-    if (this.pedido.cambio) {
-      cost += 500; // Costo adicional por requerir cambio
     }
   
     // Calcular el costo total multiplicando por la cantidad de paquetes
@@ -412,7 +415,7 @@ export class AgregarPedidosPage implements OnInit {
     if (event.detail.checked) {
       const alert = await this.alertController.create({
         header: 'Advertencia',
-        message: 'El paquete es frágil. Asegúrate de embalarlo correctamente.',
+        message: 'El paquete es frágil. Asegúrate de embalarlo correctamente, al seleccionar este campo la tarifa aumenta en 1000 CLP por paquete.',
         buttons: ['Entendido']
       });
 
@@ -437,8 +440,7 @@ export class AgregarPedidosPage implements OnInit {
   async presentPesoAlert() {
     const alert = await this.alertController.create({
       header: 'Advertencia',
-      message: 'El peso máximo por pedido no debe exceder los 5 kg. Asegúrese de que su paquete esté dentro de los límites permitidos.',
-      buttons: ['OK']
+      message: 'El peso máximo por pedido no debe exceder los 5 kg, . Al exceder los 2,5 kg, existe tarifa adicional de 3000 CLP por paquete. Asegúrese de que su paquete esté dentro de los límites permitidos.',
     });
   
     await alert.present();

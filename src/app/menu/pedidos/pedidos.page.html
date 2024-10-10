@@ -32,6 +32,15 @@
           <p><strong>Excede 10 Kilos:</strong> {{ pedido.excede_10_kilos ? 'Sí' : 'No' }}</p>
           <p><strong>Costo:</strong> {{ pedido.costo }}</p>
           <p><strong>Estado:</strong> {{ pedido.estado }}</p>
+
+          
+        <!-- Botón "de cambio" solo si el pedido está en estado "entregado" -->
+        <ion-button 
+        *ngIf="pedido.estado === 'entregado' "
+        color="primary">
+        Solicitar cambio
+      </ion-button>
+
         </ion-card-content>
       </ion-card>
       
