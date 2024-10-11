@@ -1159,7 +1159,8 @@ async getToken(): Promise<any> {
       return {
         conductor: pedido.conductor, // Asegúrate de que estos campos existen en tu tabla
         usuario: pedido.usuario,
-        estado: pedido.estado
+        estado: pedido.estado,
+
       };
     } catch (error) {
       console.error('Error al obtener los detalles del pedido:', error);
@@ -1451,40 +1452,6 @@ async getPedidosReanudar(): Promise<any> {
 
 
 
-    async actualizarEstadoReubicacion(pedidoId: string): Promise<void> {
-      try {
-          // Actualizar el estado del pedido a 'Reubicación en curso'
-          const response = await fetch(`${this.pedidos}?id=eq.${encodeURIComponent(pedidoId)}`, {
-              method: 'PATCH',
-              headers: {
-                  'Content-Type': 'application/json',
-                  'apikey': this.apiKey,
-                  'Authorization': `Bearer ${this.apiKey}`
-              },
-              body: JSON.stringify({
-                  estado: 'Reubicación en curso' // Actualiza el estado del pedido
-              })
-          });
-  
-          if (!response.ok) {
-              const errorText = await response.text();
-              console.error('Error al actualizar el estado del pedido:', errorText);
-              throw new Error(errorText || 'Error al actualizar el estado del pedido');
-          }
-  
-          console.log('Estado del pedido actualizado exitosamente a "Reubicación en curso".');
-  
-      } catch (error) {
-          console.error('Error al actualizar el estado del pedido:', error);
-          throw error;
-      }
-  }
-
-
-
-
-
-
   async envioRapido(pedidoId: string): Promise<void> {
     try {
         // Actualizar el estado del pedido a 'Reubicación en curso'
@@ -1513,6 +1480,46 @@ async getPedidosReanudar(): Promise<any> {
         throw error;
     }
 }
+
+
+
+async obtenerDetallesPedidoEntregado(pedidoId: string): Promise<any> {
+  try {
+    const response = await fetch(`${this.pedidos}?id=eq.${encodeURIComponent(pedidoId)}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': this.apiKey,
+        'Authorization': `Bearer ${this.apiKey}`
+      }
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Error al obtener los detalles del pedido:', errorText);
+      throw new Error(errorText || 'Error al obtener los detalles del pedido');
+    }
+
+    const [pedido] = await response.json();
+    return {
+      nombre_pedido : pedido.nombrePedido,
+      descripcion_pedido : pedido.descripcionPedido,
+      comuna : pedido.comuna,
+      image_url : pedido.image_url,
+      usuario : pedido.usuario,
+      excede_kilos : pedido.excedeKilos,
+      fragil : pedido.fragil,
+      dimensiones : pedido.dimensiones,
+      
+    };
+  } catch (error) {
+    console.error('Error al obtener los detalles del pedido:', error);
+    throw error;
+  }
+}
+
+
+
 
 
 
