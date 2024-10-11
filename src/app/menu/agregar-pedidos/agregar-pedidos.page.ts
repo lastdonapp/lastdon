@@ -101,10 +101,10 @@ export class AgregarPedidosPage implements OnInit {
     'Estación Central': 3500,
     'Huechuraba': 3500,
     'Independencia': 2990,
-    'La florida': 3500,
+    'La Florida': 3500,
     'La Granja': 2990,
-    'La pintana': 3500,
-    'La reina': 3500,
+    'La Pintana': 3500,
+    'La Reina': 3500,
     'Las Condes': 3500,
     'Lo Barnechea': 4000,
     'Lo Espejo': 3500,
@@ -441,6 +441,7 @@ export class AgregarPedidosPage implements OnInit {
     const alert = await this.alertController.create({
       header: 'Advertencia',
       message: 'El peso máximo por pedido no debe exceder los 5 kg, . Al exceder los 2,5 kg, existe tarifa adicional de 3000 CLP por paquete. Asegúrese de que su paquete esté dentro de los límites permitidos.',
+      buttons: ['OK']
     });
   
     await alert.present();

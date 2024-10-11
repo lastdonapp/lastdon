@@ -7,7 +7,7 @@
 
 <ion-content>
   <ion-list *ngIf="pedidos.length > 0; else noPedidos">
-    <ion-item *ngFor="let pedido of pedidos" (click)="verDetalles(pedido.id)">
+    <ion-item *ngFor="let pedido of pedidos" (click)="verDetalles(pedido.id, pedido.mostrarFormulario)">
       <ion-card>
         <ion-card-header>
           <ion-card-title>{{ pedido.nombre_pedido }}</ion-card-title>
@@ -34,13 +34,27 @@
           <p><strong>Estado:</strong> {{ pedido.estado }}</p>
 
           
-        <!-- Botón "de cambio" solo si el pedido está en estado "entregado" -->
-        <ion-button 
-        *ngIf="pedido.estado === 'entregado' "
-        color="primary">
-        Solicitar cambio
-      </ion-button>
+          <ion-button *ngIf="pedido.estado === 'entregado'" color="primary" (click)="mostrarFormulario(pedido.id , $event)">
+            Solicitar cambio
+          </ion-button>
+          
+             <!-- Formulario condicional -->
+      <ion-item *ngIf="pedido.mostrarFormulario">
+        <ion-label position="stacked">Observaciones</ion-label>
+        <ion-input [(ngModel)]="observaciones" placeholder="Escribe tus observaciones"></ion-input>
 
+        <ion-label position="stacked">Dirección de Pedido</ion-label>
+        <ion-input [(ngModel)]="direccionPedido" placeholder="Escribe la dirección de pedido"></ion-input>
+
+        <ion-label position="stacked">Dirección de Entrega</ion-label>
+        <ion-input [(ngModel)]="direccionEntrega" placeholder="Escribe la dirección de entrega"></ion-input>
+
+        <ion-button (click)="confirmarCambio()">Confirmar Cambio</ion-button>
+
+        <!-- Botón para cerrar el formulario -->
+        <ion-button color="danger" (click)="cerrarFormulario(pedido.id, $event)">Cerrar formulario</ion-button>
+      </ion-item>
+          
         </ion-card-content>
       </ion-card>
       
