@@ -613,7 +613,7 @@ async getToken(): Promise<any> {
           dimensiones: pedido.dimensiones,
           fragil: pedido.fragil,
           cambio: pedido.cambio,
-          excede_Kilos: pedido.excede10Kilos,
+          excede_Kilos: pedido.excedeKilos,
           fecha: pedido.fecha,
           costo: roundedCosto,
           estado: pedido.estado,

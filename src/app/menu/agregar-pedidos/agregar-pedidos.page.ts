@@ -33,7 +33,7 @@ export class AgregarPedidosPage implements OnInit {
     },
     fragil: false,
     cambio: false,
-    excede10Kilos: false,
+    excedeKilos: false,
     fecha: '',
     costo: 0,
     estado: 'por tomar',
