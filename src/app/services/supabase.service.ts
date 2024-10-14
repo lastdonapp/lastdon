@@ -1521,6 +1521,22 @@ async obtenerDetallesPedidoEntregado(pedidoId: string): Promise<any> {
 
 
 
+async actualizarCambioRealizado(pedidoId: string, cambioRealizado: boolean) {
+  const { data, error } = await this.supabase
+    .from('pedidos')
+    .update({ cambio_realizado: cambioRealizado })
+    .eq('id', pedidoId);
+
+  if (error) {
+    console.error('Error al actualizar el cambio realizado:', error);
+  } else {
+    console.log('Cambio realizado actualizado con éxito.');
+  }
+}
+
+
+
+
 
 
 

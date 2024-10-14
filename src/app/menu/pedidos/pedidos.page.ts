@@ -21,7 +21,7 @@ export class PedidosPage implements OnInit {
   cantidadPaquetesCambio :number = 0;
   valorCambioPedido : number =1000;
   telefonoCambio : string = '';
-  cambioRealizado : boolean = false;
+  cambioRealizado : boolean = true;
 
   constructor(private supabaseService: SupabaseService, private toastController: ToastController, private router: Router, private alertController: AlertController) { }
 
@@ -37,8 +37,16 @@ export class PedidosPage implements OnInit {
         if (pedido.dimensiones) {
           pedido.dimensiones = JSON.parse(pedido.dimensiones);
         }
-        // Agrega la propiedad mostrarFormulario
-        pedido.mostrarFormulario = false;
+  
+        // Consultar si el cambio ya fue realizado (boolean de la base de datos)
+        if (pedido.cambio_realizado) {
+          // Si cambio_realizado es true, deshabilitar el botón para este pedido
+          pedido.cambioRealizado = true;
+        } else {
+          pedido.cambioRealizado = false;
+        }
+  
+        pedido.mostrarFormulario = false; // Agregar propiedad para mostrar el formulario de cambios si aplica
       });
       if (this.pedidos.length === 0) {
         this.showToast('No tienes pedidos actualmente.');
@@ -48,6 +56,7 @@ export class PedidosPage implements OnInit {
       console.error('Error al cargar los pedidos:', error);
     }
   }
+  
 
   // Mostrar el formulario y detener la propagación del evento
   mostrarFormulario(id: string, event: Event) {
@@ -95,7 +104,6 @@ export class PedidosPage implements OnInit {
 
 
   async generarNuevoPedidoDesdeEntregado(pedidoId: string) {
-    // Mostrar el alert para confirmar
     const alert = await this.alertController.create({
       header: 'Confirmar cambio',
       message: '¿Está seguro de querer generar el cambio de pedido?',
@@ -111,23 +119,20 @@ export class PedidosPage implements OnInit {
           text: 'Aceptar',
           handler: async () => {
             try {
-              // Paso 1: Obtener los detalles del pedido entregado
               const pedidoEntregado = await this.supabaseService.obtenerDetallesPedidoEntregado(pedidoId);
-  
               if (!pedidoEntregado) {
                 console.error('No se encontraron los detalles del pedido entregado');
                 return;
               }
   
-              // Paso 2: Crear el nuevo pedido utilizando los datos obtenidos
               const pedidoCambio = {
                 nombrePedido: pedidoEntregado.nombre_pedido,
                 descripcionPedido: this.observaciones,
                 direccionPedido: this.direccionPedidoCambio,
                 direccionEntrega: this.direccionEntregaCambio,
                 nombreDestinatario: this.destinatarioCambio,
-                numeracionCasa: '1234', // Cambia esto según lo que necesites
-                vivienda: 'Nueva vivienda', // Cambia esto según lo que necesites
+                numeracionCasa: '1234',
+                vivienda: 'Nueva vivienda',
                 comuna: pedidoEntregado.comuna,
                 telefono: this.telefonoCambio,
                 cantidadPaquetes: this.cantidadPaquetesCambio,
@@ -146,7 +151,6 @@ export class PedidosPage implements OnInit {
                 pagado: false
               };
   
-              // Paso 3: Llamar a addPedido con el nuevo objeto
               const resultado = await this.supabaseService.addPedido(pedidoCambio);
   
               if (resultado.error) {
@@ -155,8 +159,18 @@ export class PedidosPage implements OnInit {
                 console.log('Nuevo pedido agregado con éxito');
                 this.showToast('El nuevo pedido ha sido agregado exitosamente.');
   
-                // Deshabilitar el botón de cambio estableciendo la propiedad cambioRealizado a true
-                this.cambioRealizado = true;
+                // Actualizar el campo 'cambio_realizado' en la base de datos para el pedido original
+                await this.supabaseService.actualizarCambioRealizado(pedidoId, true);
+  
+                // Marcar localmente el pedido como cambiado para deshabilitar el botón
+                const pedido = this.pedidos.find(p => p.id === pedidoId);
+                if (pedido) {
+                  pedido.cambioRealizado = true;
+                }
+                // evitamos que sigua utilizando el formulario para hacer cambios
+                this.router.navigate(['menu/detalles-pedido']);
+
+
               }
   
             } catch (error) {
@@ -168,7 +182,6 @@ export class PedidosPage implements OnInit {
       ]
     });
   
-    // Mostrar el alert
     await alert.present();
   }
   

@@ -119,7 +119,7 @@
 
         <!-- Datos Adicionales -->
         <ion-item>
-          <ion-label position="stacked">Numeración de la Casa</ion-label>
+          <ion-label position="stacked">Numeración de Vivienda </ion-label>
           <ion-input
             [(ngModel)]="pedido.numeracionCasa"
             name="numeracionCasa"
@@ -129,7 +129,7 @@
           ></ion-input>
         </ion-item>
         <ion-text color="danger" *ngIf="numeracionCasa.invalid && (numeracionCasa.dirty || numeracionCasa.touched)">
-          <p *ngIf="numeracionCasa.errors?.['required']">La numeración de la casa es requerida.</p>
+          <p *ngIf="numeracionCasa.errors?.['required']">La numeración de la Viviendo es requerida.</p>
         </ion-text>
 
         <ion-item>

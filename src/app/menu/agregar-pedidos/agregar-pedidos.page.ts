@@ -16,6 +16,8 @@ export class AgregarPedidosPage implements OnInit {
   sugerenciasPedido: any[] = [];
   sugerenciasEntrega: any[] = [];
   sugerencias: any[] = []; // Para almacenar las sugerencias
+
+  
   pedido: any = {
     nombrePedido: '',
     descripcionPedido: '',
@@ -42,7 +44,8 @@ export class AgregarPedidosPage implements OnInit {
     usuario: '',
     codigo: '',
     image_url: '', // Asegúrate de incluir esta propiedad para la URL de la foto
-    pagado: false
+    pagado: false,
+
   };
 
   comunas: string[] = [
@@ -281,7 +284,6 @@ export class AgregarPedidosPage implements OnInit {
                 this.pedido.image_url = this.photoUrl; // Guarda la URL en el objeto pedido
                 console.log('imagen url ', this.pedido.image_url);
               }
-  
               this.pedido.costoTotal 
               this.onTelefonoChange(this.telefonoInput);
               const { data, error } = await this.supabaseService.addPedido(this.pedido);

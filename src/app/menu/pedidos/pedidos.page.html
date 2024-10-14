@@ -35,10 +35,17 @@
 
           
           <ion-button *ngIf="pedido.estado === 'entregado'" color="primary" 
-          [disabled]="cambioRealizado"
-          (click)="mostrarFormulario(pedido.id , $event)">
+          [disabled]="pedido.cambioRealizado || pedido.cambio" 
+          (click)="mostrarFormulario(pedido.id, $event)">
             Solicitar cambio
           </ion-button>
+          
+          <!-- Mensaje cuando ya se ha realizado un cambio en el pedido -->
+          <p *ngIf="pedido.cambioRealizado">Este pedido ya tiene un cambio realizado.</p>
+          
+          <!-- Mensaje cuando el pedido ha sido marcado como cambiado -->
+          <p *ngIf="pedido.cambio">No se puede gestionar un cambio de un pedido que ya ha sido modificado.</p>
+          
           
       <!-- Formulario condicional -->
       <ion-item *ngIf="pedido.mostrarFormulario">
