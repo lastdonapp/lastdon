@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AlertController } from '@ionic/angular';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-agregar-pedidos',
@@ -13,6 +14,9 @@ import { AlertController } from '@ionic/angular';
   styleUrls: ['./agregar-pedidos.page.scss'],
 })
 export class AgregarPedidosPage implements OnInit {
+  mostrarNumeroDepartamento: boolean = false;
+  numeroDepartamentoTemporal: string = ''; // Variable temporal
+
   sugerenciasPedido: any[] = [];
   sugerenciasEntrega: any[] = [];
   sugerencias: any[] = []; // Para almacenar las sugerencias
@@ -149,6 +153,16 @@ export class AgregarPedidosPage implements OnInit {
     this.pedido.fecha = new Date().toISOString();
   }
 
+  
+  onViviendaChange(event: any) {
+    const tipoVivienda = event.detail.value;
+    this.mostrarNumeroDepartamento = tipoVivienda === 'departamento';
+
+    if (!this.mostrarNumeroDepartamento) {
+      // Si no es departamento, reseteamos el campo de número de departamento
+      this.numeroDepartamentoTemporal = '';
+    }
+  }
 
 
     // Método para actualizar el costo cuando cambia la comuna

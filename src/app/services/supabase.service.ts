@@ -35,6 +35,42 @@ export class SupabaseService {
 
   constructor(private http: HttpClient) {}
 
+  async getPedidosPorFechaRango(fechaInicio: string, fechaFin: string, emailConductor: string): Promise<any[]> {
+    const { data, error } = await this.supabase
+      .from('pedidos')
+      .select('*')
+      .eq('primer_conductor', emailConductor) // Filtrar por el conductor actual
+      .gte('fecha_tomado', fechaInicio + 'T00:00:00Z')
+      .lte('fecha_tomado', fechaFin + 'T23:59:59Z');
+  
+    if (error) {
+      console.error('Error al obtener pedidos por rango de fechas:', error);
+      return [];
+    }
+    return data;
+  }
+  
+  async getPedidosEntregadosPorFechaRango(fechaInicio: string, fechaFin: string, emailConductor: string): Promise<any[]> {
+    const { data, error } = await this.supabase
+      .from('pedidos')
+      .select('*')
+      .eq('conductor', emailConductor) // Asegúrate de usar el campo correcto
+      .gte('fecha_entrega', fechaInicio + 'T00:00:00Z')
+      .lte('fecha_entrega', fechaFin + 'T23:59:59Z');
+  
+    if (error) {
+      console.error('Error al obtener pedidos entregados por rango de fechas:', error);
+      return [];
+    }
+    return data;
+  }
+  
+  
+
+
+
+
+  
   async takePicture(): Promise<File> {
     const image = await Camera.getPhoto({
       quality: 100,
@@ -613,7 +649,7 @@ async getToken(): Promise<any> {
           dimensiones: pedido.dimensiones,
           fragil: pedido.fragil,
           cambio: pedido.cambio,
-          excede_10_kilos: pedido.excede10Kilos,
+          excede_Kilos: pedido.excede10Kilos,
           fecha: pedido.fecha,
           costo: roundedCosto,
           estado: pedido.estado,
@@ -1485,7 +1521,7 @@ async getPedidosReanudar(): Promise<any> {
 
 
 
-  async envioRapido(pedidoId: string): Promise<void> {
+  async envioRapido(pedidoId: string, conductor_email: string): Promise<void> {
     try {
         // Actualizar el estado del pedido a 'Reubicación en curso'
         const response = await fetch(`${this.pedidos}?id=eq.${encodeURIComponent(pedidoId)}`, {
@@ -1496,7 +1532,9 @@ async getPedidosReanudar(): Promise<any> {
                 'Authorization': `Bearer ${this.apiKey}`
             },
             body: JSON.stringify({
-                estado: 'Envio rápido' // Actualiza el estado del pedido
+                estado: 'Envio rápido', // Actualiza el estado del pedido
+                conductor: conductor_email// Actualiza el estado del pedido
+
             })
         });
 

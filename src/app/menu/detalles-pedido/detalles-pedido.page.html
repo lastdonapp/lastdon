@@ -4,8 +4,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content *ngIf="pedido">
-  <ion-card>
+  <ion-card *ngIf="pedido">
     <ion-card-header>
       <ion-card-title>{{ pedido.nombre_pedido }}</ion-card-title>
       <ion-card-subtitle>{{ pedido.fecha }}</ion-card-subtitle>
@@ -57,4 +56,3 @@
 
     </ion-card-content>
   </ion-card>
-</ion-content>

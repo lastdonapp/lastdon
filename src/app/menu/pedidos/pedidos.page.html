@@ -5,7 +5,6 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
   <ion-list *ngIf="pedidos.length > 0; else noPedidos">
     <ion-item *ngFor="let pedido of pedidos" (click)="verDetalles(pedido.id)">
       <ion-card>
@@ -43,4 +42,3 @@
     </ion-text>
   </ng-template>
 
-</ion-content>

@@ -4,6 +4,7 @@ import { SupabaseService } from '../../services/supabase.service';
 import { GoogleMapsService } from '../../services/google-maps.service';
 import { GeolocationService } from '../../services/geolocation.service';
 import { ToastController } from '@ionic/angular';
+import { NavController } from '@ionic/angular';
 
 
 @Component({
@@ -28,6 +29,7 @@ export class DetallesPedidoPage implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
+    private navCtrl: NavController,
     private supabaseService: SupabaseService,
     private googleMapsService: GoogleMapsService,
     private geolocationService: GeolocationService,
@@ -44,7 +46,9 @@ export class DetallesPedidoPage implements OnInit {
 
 
 
-
+  goBack() {
+    this.navCtrl.navigateBack('/conductor-menu/mis-pedidos');
+  }
 
 
 

@@ -4,7 +4,6 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
   <ion-card>
     <ion-card-header>
       <ion-card-title>Datos del Pedido</ion-card-title>
@@ -119,7 +118,7 @@
 
         <!-- Datos Adicionales -->
         <ion-item>
-          <ion-label position="stacked">Numeración de la Casa</ion-label>
+          <ion-label position="stacked">Numeración de la Vivienda</ion-label>
           <ion-input
             [(ngModel)]="pedido.numeracionCasa"
             name="numeracionCasa"
@@ -139,6 +138,8 @@
             name="vivienda"
             #vivienda="ngModel"
             required
+                        (ionChange)="onViviendaChange($event)"
+
           >
             <ion-select-option value="casa">Casa</ion-select-option>
             <ion-select-option value="departamento">Departamento</ion-select-option>
@@ -148,6 +149,18 @@
         <ion-text color="danger" *ngIf="vivienda.invalid && (vivienda.dirty || vivienda.touched)">
           <p *ngIf="vivienda.errors?.['required']">La vivienda es requerida.</p>
         </ion-text>
+                <!-- Campo dinámico de número de departamento -->
+        <ion-item *ngIf="mostrarNumeroDepartamento">
+          <ion-label position="floating">Número de departamento</ion-label>
+          <ion-input
+            [(ngModel)]="numeroDepartamentoTemporal"
+            name="numeroDepartamento"
+            pattern="^[0-9]*$"
+            maxlength="4"
+            required
+            #numeroDepartamento="ngModel"
+          ></ion-input>
+        </ion-item>
 
         <ion-item>
           <ion-label>Comuna</ion-label>
@@ -355,4 +368,3 @@
     </ion-accordion-group>
     </ion-card-content>
   </ion-card>
-</ion-content>

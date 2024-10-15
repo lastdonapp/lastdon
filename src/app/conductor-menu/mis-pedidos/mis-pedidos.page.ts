@@ -11,10 +11,22 @@ import { AlertController } from '@ionic/angular';
 })
 export class MisPedidosPage implements OnInit {
   pedidos: any[] = [];
+  pedidosFiltrados: any[] = [];
+  pedidosTabla: any[] = []; // Para mostrar los pedidos en la tabla (filtrados por fecha)
+
   selectedState: string = ''; // Valor para filtrar pedidos
+  selectedStateTable: string = ''; // Valor para filtrar pedidos
+
   usuario: any = this.supabaseService.getCurrentUser();
   capturedPhoto: string = ''; // Variable para almacenar la URL de la foto capturada 
   photoUrl: string = ''; // URL de la foto del pedido
+
+
+  
+  totalPedidosTomados: number = 0;
+  totalPedidosEntregados: number = 0;
+  filtroActual: string = 'hoy';
+  totalPedidosTomadosEnvioRapido: number =0;
 
   constructor(private supabaseService: SupabaseService, private toastController: ToastController, private router: Router, private alertController: AlertController) {}
 
@@ -34,9 +46,10 @@ export class MisPedidosPage implements OnInit {
       }
   
       const email = user.email;
-  
       // Obtener pedidos del conductor utilizando solo el filtro por conductor
       await this.getPedidos(email);
+    // Iterar sobre los pedidos
+  
     } catch (error) {
       console.error('Error al cargar los pedidos:', error);
     }
@@ -44,15 +57,114 @@ export class MisPedidosPage implements OnInit {
   
   async getPedidos(email: string) {
     try {
-      // Obtener pedidos normales utilizando el filtro por conductor
+      const pedidosFiltrados = await this.supabaseService.getPedidosPorConductor(email, this.selectedStateTable)
+      this.pedidosFiltrados = pedidosFiltrados; // Asignar los pedidos obtenidos a la propiedad local
+     // Obtener pedidos normales utilizando el filtro por conductor
       const pedidos = await this.supabaseService.getPedidosPorConductor(email, this.selectedState);
       this.pedidos = pedidos; // Asignar los pedidos obtenidos a la propiedad local
+
     } catch (error) {
       console.error('Error al obtener los pedidos:', error);
     }
   }
   
 
+
+
+
+  async contarPedidosPorEstado(): Promise<void> {
+    const emailConductor = this.usuario.email; // Obtener el email del conductor actual 
+
+    let  contadorHistoricoTomados = 0;  // Inicialmente en 0
+    let  contadorHistoricoEntregados = 0;  // Inicialmente en 0
+    let  contadorHistoricoTomadosEnvioRapido = 0;  // Inicialmente en 0
+
+    // Contar pedidos tomados
+    const pedidosTomados = await this.supabaseService.getPedidosPorFechaRango('2024-01-01', '2044-12-31', emailConductor);
+    this.totalPedidosTomados = pedidosTomados.filter(pedido => pedido.primer_conductor === emailConductor ).length;
+
+    // Incrementar el contador histórico por cada pedido que haya pasado por el conductor
+    pedidosTomados.forEach(pedido => {
+      if (pedido.historicoEstados.includes(emailConductor)) {
+        contadorHistoricoTomados += 1;
+      }
+    });
+    // Contar pedidos envio rapido
+    const pedidosTomadosEnvioRapido = await this.supabaseService.getPedidosPorFechaRango('2024-01-01', '2044-12-31', emailConductor);
+    this.totalPedidosTomadosEnvioRapido = pedidosTomadosEnvioRapido.filter(pedido =>  pedido.primer_conductor === null && pedido.conductor === emailConductor ).length;
+    
+
+    // Incrementar el contador histórico por cada pedido que haya pasado por el conductor
+    pedidosTomadosEnvioRapido.forEach(pedido => {
+      if (pedido.historicoEstados.includes(emailConductor && emailConductor)) {
+        contadorHistoricoTomadosEnvioRapido += 1;
+      }
+   
+    });
+
+    // Contar pedidos entregados
+    const pedidosEntregados = await this.supabaseService.getPedidosEntregadosPorFechaRango('2024-01-01', '2044-12-31', emailConductor);
+    this.totalPedidosEntregados = pedidosEntregados.filter(pedido => pedido.conductor === emailConductor).length;
+  // Incrementar el contador histórico por cada pedido que haya pasado por el conductor
+  pedidosEntregados.forEach(pedido => {
+    if (pedido.historicoEstados.includes(emailConductor)) {
+      contadorHistoricoEntregados += 1;
+    }
+  });
+}
+
+
+  // Método para aplicar el filtro según la opción seleccionada
+  async filtrarPedidos(filtro: string) {
+    this.filtroActual = filtro;
+    await this.loadPedidos(); // Recargar los pedidos aplicando los filtros unificados
+
+    let fechaInicio: string;
+    let fechaFin: string;
+
+    const hoy = new Date();
+    const ayer = new Date(hoy);
+    ayer.setDate(hoy.getDate() - 1);
+
+    switch (filtro) {
+      case 'hoy':
+        this.loadPedidos();
+        fechaInicio = hoy.toISOString().split('T')[0];
+        fechaFin = fechaInicio;
+        break;
+      case 'ayer':
+        this.loadPedidos();
+        fechaInicio = ayer.toISOString().split('T')[0];
+        fechaFin = fechaInicio;
+        break;
+      case 'semana':
+        this.loadPedidos();
+        const semanaInicio = new Date(hoy);
+        semanaInicio.setDate(hoy.getDate() - 7);
+        fechaInicio = semanaInicio.toISOString().split('T')[0];
+        fechaFin = hoy.toISOString().split('T')[0];
+        break;
+      default:
+        
+        return;
+    }
+    const emailConductor = this.usuario.email;
+
+    // Obtener los pedidos según el filtro
+    const pedidosTomados = await this.supabaseService.getPedidosPorFechaRango(fechaInicio, fechaFin, emailConductor);
+    const pedidosTomadosEnvioRapido = await this.supabaseService.getPedidosPorFechaRango(fechaInicio, fechaFin, emailConductor);
+    const pedidosEntregados = await this.supabaseService.getPedidosEntregadosPorFechaRango(fechaInicio, fechaFin, emailConductor);
+
+    this.pedidosFiltrados  = pedidosTomados // Mostrar los recibidos en la tabla
+
+    console.log(pedidosTomados);
+    console.log(pedidosEntregados);
+    console.log(pedidosTomadosEnvioRapido);
+
+    this.totalPedidosTomados = pedidosTomados.length;
+    this.totalPedidosTomadosEnvioRapido = pedidosTomadosEnvioRapido.length;
+    this.totalPedidosEntregados = pedidosEntregados.length;
+  }
 
 
 
@@ -235,10 +347,15 @@ export class MisPedidosPage implements OnInit {
     this.router.navigate(['conductor-menu/detalles-pedido', id]);
   }
 
+ 
+
+
   filterPedidos() {
     // Aplicar filtro por estado
     this.loadPedidos();
+
   }
+  
 
 
   async tomarFotoEntrega(pedidoId: string) {
@@ -299,7 +416,7 @@ export class MisPedidosPage implements OnInit {
     try {
       // Verificar si el tracking está iniciado antes de continuar
       const trackingIniciado = await this.supabaseService.verificarTrackingIniciado(pedidoId);
-  
+
       if (!trackingIniciado) {
         const alert = await this.alertController.create({
           header: 'Tracking no iniciado',
@@ -327,8 +444,10 @@ export class MisPedidosPage implements OnInit {
             handler: async () => {
               try {
                 // Llamar al servicio para cambiar el estado del pedido
-                await this.supabaseService.envioRapido(pedidoId);
-                
+                await this.supabaseService.envioRapido(pedidoId, this.usuario.email);
+                //registro primer conductor
+                await this.supabaseService.registroPrimerConductor(pedidoId, this.usuario.email);
+
                 const toast = await this.toastController.create({
                   message: 'Pedido marcado como Envío Rápido',
                   duration: 2000,
@@ -370,15 +489,3 @@ export class MisPedidosPage implements OnInit {
 
 
   
-
-
-
-
-
-
-
-
-
-
-
-
