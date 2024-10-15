@@ -32,6 +32,10 @@
           <p><strong>Excede 10 Kilos:</strong> {{ pedido.excede_10_kilos ? 'Sí' : 'No' }}</p>
           <p><strong>Costo:</strong> {{ pedido.costo }}</p>
           <p><strong>Estado:</strong> {{ pedido.estado }}</p>
+          <!--QR Code por cada pedido-->
+          <qr-code value="Hello world!" 
+         size="200" 
+         errorCorrectionLevel="M" />
 
           
           <ion-button *ngIf="pedido.estado === 'entregado'" color="primary" 
