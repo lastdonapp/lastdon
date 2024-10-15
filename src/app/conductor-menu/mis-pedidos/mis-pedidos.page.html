@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <ion-header>
   <ion-toolbar>
     <ion-title>Mis Entregas</ion-title>
@@ -7,6 +8,104 @@
 <ion-content>
 
   <!-- Contadores de pedidos -->
+=======
+
+
+<ion-grid>
+  <!-- Filtro de estado -->
+  <ion-card>
+  <ion-card-header>
+  <ion-item>
+    <ion-label>Filtrar por estado</ion-label>
+    <ion-select [(ngModel)]="selectedState" (ionChange)="filterPedidos()">
+      <ion-select-option value="">Todos</ion-select-option>
+      <ion-select-option value="tomado">Tomados</ion-select-option>
+      <ion-select-option value="recepcionado">Recepcionado</ion-select-option>
+      <ion-select-option value="Envio rápido">Envio Rápido</ion-select-option>
+            <ion-select-option value="reanudado">Reanudados</ion-select-option>
+
+      <ion-select-option value="entregado">Entregados</ion-select-option>
+    </ion-select>
+  </ion-item>
+  </ion-card-header>
+
+  <ion-card-content>
+  <!-- Lista de pedidos -->
+  <ion-list *ngIf="pedidos.length > 0; else noPedidos">
+    <ion-item *ngFor="let pedido of pedidos" (click)="verDetalles(pedido.id)">
+      <ion-label>
+        <h2>{{ pedido.nombre_pedido }}</h2>
+        <p>{{ pedido.descripcion_pedido }}</p>
+        <p>Estado: {{ pedido.estado }}</p>
+        <p>Fecha tomado: {{ pedido.fecha_tomado | date:'shortDate' }}</p>
+      </ion-label>
+
+      <!-- Botón "Recepcionado" solo si el pedido está en estado "tomado" -->
+      <ion-button 
+        (click)="recepcionar(pedido.id)"
+        *ngIf="pedido.estado === 'tomado'" 
+        color="secondary">
+        <ion-icon slot="start" name="checkmark"></ion-icon>
+        Recepcionado
+      </ion-button>
+
+
+
+
+         <!-- Botón "envío rápido" solo si el pedido está en estado "recepcionado" -->
+         <ion-button 
+         (click)="marcarEnvioRapido(pedido.id)"
+         *ngIf="pedido.estado === 'recepcionado'" 
+         color="primary">
+         <ion-icon slot="start" name="fast-forward"></ion-icon>
+         Envío rápido
+       </ion-button>
+
+
+
+
+      <!-- Botón "Entregado" solo si el pedido está en estado "Ingresado a centro de distribución" -->
+      <ion-button 
+        (click)="entregarPedido(pedido.id)" 
+        *ngIf="pedido.estado === 'reanudado' || pedido.estado === 'Envio rápido'" 
+        color="primary">
+        <ion-icon slot="start" name="checkmark-circle"></ion-icon>
+        Entregado
+      </ion-button>
+
+      <!-- Botón "Ingresar a Centro de Distribución" solo si el pedido está en estado "recepcionado" -->
+      <ion-button 
+        (click)="ingresarCentroDistribucion(pedido.id)"
+        *ngIf="pedido.estado === 'recepcionado'" 
+        color="primary">
+        <ion-icon slot="start" name="archive"></ion-icon>
+        Ingresar
+      </ion-button>
+
+        <!-- Botón "Ingresar a Centro de Distribución" solo si el pedido está en estado "recepcionado" -->
+        <ion-button 
+        (click)="tomarFotoEntrega(pedido.id)"
+        *ngIf="pedido.estado === 'reanudado' || pedido.estado === 'Envio rápido'"
+        color="primary">
+        <ion-icon slot="start" name="camera"></ion-icon>
+        Foto de entrega
+      </ion-button>
+
+    </ion-item>
+  </ion-list>
+</ion-card-content>
+</ion-card>
+
+
+  <ng-template #noPedidos>
+    <ion-text>
+      <h2>Aun no hay pedidos disponibles en este Estado.</h2>
+    </ion-text>
+  </ng-template>
+</ion-grid>
+
+<!-- Contadores de pedidos -->
+>>>>>>> master
   <ion-card>
     <ion-card-header>
       <ion-card-title>Contador de Pedidos</ion-card-title>
@@ -14,12 +113,23 @@
     <ion-card-content>
       <p>Pedidos Tomados: {{ totalPedidosTomados }}</p>
       <p>Pedidos Entregados: {{ totalPedidosEntregados }}</p>
+<<<<<<< HEAD
     </ion-card-content>
   </ion-card>
 
   <!-- Botones para filtrar pedidos -->
   <ion-grid>
     <ion-row>
+=======
+     <!-- <p>Pedidos Tomados para Envio Rapido: {{ totalPedidosTomadosEnvioRapido }}</p> -->
+
+    </ion-card-content>
+  </ion-card>
+
+<!-- Botones para filtrar pedidos -->
+  <ion-grid>
+    <ion-row  [(ngModel)]="selectedStateTable" (ionChange)="filterPedidos()">
+>>>>>>> master
       <ion-col>
         <ion-button expand="block" (click)="filtrarPedidos('hoy')" color="primary">Hoy</ion-button>
       </ion-col>
@@ -29,6 +139,7 @@
       <ion-col>
         <ion-button expand="block" (click)="filtrarPedidos('semana')" color="primary">Última Semana</ion-button>
       </ion-col>
+<<<<<<< HEAD
       <ion-col>
         <ion-select [(ngModel)]="selectedState" (ionChange)="filterPedidos()">
           <ion-select-option value="">Todos</ion-select-option>
@@ -40,6 +151,12 @@
     </ion-row>
   </ion-grid>
 
+=======
+    </ion-row>
+  </ion-grid>
+
+
+>>>>>>> master
   <!-- Tabla de pedidos -->
   <ion-card>
     <ion-card-header>
@@ -52,11 +169,15 @@
             <thead>
                <tr>
                <th>Nombre</th>
+<<<<<<< HEAD
                 <th>Cliente</th>
+=======
+>>>>>>> master
                 <th>Estado</th>
                 <th>Conductor Receptor</th>
                 <th>Fecha Tomado</th>
                 <th>Conductor Entrega</th>
+<<<<<<< HEAD
                 <th>Fecha Tomado</th>
                 <th>Acciones</th>
               </tr>
@@ -85,6 +206,20 @@
                 Foto de entrega
               </ion-button>
             </td>
+=======
+                <th>Fecha Entregado</th>
+              </tr>
+            </thead>
+          <tbody>
+
+          <tr *ngFor="let pedido of pedidosFiltrados" (click)="verDetalles(pedido.id)">
+            <td>{{ pedido.nombre_pedido }}</td>
+            <td>{{ pedido.estado }}</td>
+            <td>{{ pedido.primer_conductor || pedido.conductor }}</td>
+            <td>{{ pedido.fecha_tomado | date:'shortDate' }}</td>
+            <td *ngIf="pedido.primer_conductor !== null && pedido.primer_conductor !== ''" >{{ pedido.conductor }}</td>
+            <td>{{ pedido.fecha_entrega | date:'shortDate' }}</td>
+>>>>>>> master
           </tr>
         </tbody>
         </table>
@@ -93,4 +228,7 @@
     </ion-card-content>
   </ion-card>
 
+<<<<<<< HEAD
 </ion-content>
+=======
+>>>>>>> master

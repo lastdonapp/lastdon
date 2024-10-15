@@ -14,6 +14,7 @@ const config: CapacitorConfig = {
       SplashScreen: 'screen',
       SplashScreenDelay: '3000'
     }
+<<<<<<< HEAD
   },
   plugins: {
     GoogleAuth: {
@@ -22,6 +23,9 @@ const config: CapacitorConfig = {
       forceCodeForRefreshToken: true,
     },
   },
+=======
+  }
+>>>>>>> master
 };
 
 export default config;

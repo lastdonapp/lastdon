@@ -4,7 +4,10 @@
   </ion-toolbar>
 </ion-header>
 
+<<<<<<< HEAD
 <ion-content>
+=======
+>>>>>>> master
   <ion-card>
     <ion-card-header>
       <ion-card-title>Datos del Pedido</ion-card-title>
@@ -119,7 +122,11 @@
 
         <!-- Datos Adicionales -->
         <ion-item>
+<<<<<<< HEAD
           <ion-label position="stacked">Numeración de la Casa</ion-label>
+=======
+          <ion-label position="stacked">Numeración de la Vivienda</ion-label>
+>>>>>>> master
           <ion-input
             [(ngModel)]="pedido.numeracionCasa"
             name="numeracionCasa"
@@ -139,7 +146,12 @@
             name="vivienda"
             #vivienda="ngModel"
             required
+<<<<<<< HEAD
             (ionChange)="onViviendaChange($event)"
+=======
+                        (ionChange)="onViviendaChange($event)"
+
+>>>>>>> master
           >
             <ion-select-option value="casa">Casa</ion-select-option>
             <ion-select-option value="departamento">Departamento</ion-select-option>
@@ -149,8 +161,12 @@
         <ion-text color="danger" *ngIf="vivienda.invalid && (vivienda.dirty || vivienda.touched)">
           <p *ngIf="vivienda.errors?.['required']">La vivienda es requerida.</p>
         </ion-text>
+<<<<<<< HEAD
       
         <!-- Campo dinámico de número de departamento -->
+=======
+                <!-- Campo dinámico de número de departamento -->
+>>>>>>> master
         <ion-item *ngIf="mostrarNumeroDepartamento">
           <ion-label position="floating">Número de departamento</ion-label>
           <ion-input
@@ -163,8 +179,11 @@
           ></ion-input>
         </ion-item>
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> master
         <ion-item>
           <ion-label>Comuna</ion-label>
           <ion-select
@@ -211,6 +230,7 @@
         </ion-item>
         <ion-list slot="content">
 
+<<<<<<< HEAD
         <ion-item>
           <ion-label position="stacked">Cantidad de Paquetes</ion-label>
           <ion-input
@@ -239,6 +259,30 @@
             <ion-select-option value="centimetros">Centímetros</ion-select-option>
           </ion-select>
         </ion-item>
+=======
+          <ion-item>
+            <ion-label position="stacked">Cantidad de Paquetes</ion-label>
+            <ion-input
+              [(ngModel)]="pedido.cantidadPaquetes"
+              name="cantidadPaquetes"
+              #cantidadPaquetes="ngModel"
+              type="number"
+              min="1" 
+              placeholder="Ej. 2"
+              required
+              (ionInput)="updateCosto()"
+            ></ion-input>
+          </ion-item>
+          
+          <!-- Mostrar mensaje de error si no es válido -->
+          <div *ngIf="cantidadPaquetes.invalid && cantidadPaquetes.touched">
+            <p style="color: red;">Debe ingresar al menos 1 paquete.</p>
+            <p *ngIf="cantidadPaquetes.errors?.['required']">El número de paquetes es requerido.</p>
+          </div>
+          
+        
+        
+>>>>>>> master
         
         <ion-item>
           <ion-label position="stacked">Alto</ion-label>
@@ -247,12 +291,33 @@
             name="dimensionesAlto"
             #dimensionesAlto="ngModel"
             type="number"
+<<<<<<< HEAD
             min="0"
             placeholder="Alto"
+=======
+            min="1"
+            max="80"
+            placeholder="Alto (cm)"
+>>>>>>> master
             required
             (ionInput)="onDimensionesChange()"
           ></ion-input>
         </ion-item>
+<<<<<<< HEAD
+=======
+        <div *ngIf="dimensionesAlto.invalid && dimensionesAlto.touched">
+          <p *ngIf="dimensionesAlto.errors?.['required']" style="color: red;">
+            El alto es requerido.
+          </p>
+          <p *ngIf="dimensionesAlto.errors?.['min']" style="color: red;">
+            El alto debe ser mayor a 0.
+          </p>
+          <p *ngIf="dimensionesAlto.errors?.['max']" style="color: red;">
+            El alto no puede exceder los 80 cm.
+          </p>
+        </div>
+        
+>>>>>>> master
         
         <ion-item>
           <ion-label position="stacked">Ancho</ion-label>
@@ -261,12 +326,33 @@
             name="dimensionesAncho"
             #dimensionesAncho="ngModel"
             type="number"
+<<<<<<< HEAD
             min="0"
             placeholder="Ancho"
+=======
+            min="1"
+            max="80"
+            placeholder="Ancho (cm)"
+>>>>>>> master
             required
             (ionInput)="onDimensionesChange()"
           ></ion-input>
         </ion-item>
+<<<<<<< HEAD
+=======
+        <div *ngIf="dimensionesAncho.invalid && dimensionesAncho.touched">
+          <p *ngIf="dimensionesAncho.errors?.['required']" style="color: red;">
+            El ancho es requerido.
+          </p>
+          <p *ngIf="dimensionesAncho.errors?.['min']" style="color: red;">
+            El ancho debe ser mayor a 0.
+          </p>
+          <p *ngIf="dimensionesAncho.errors?.['max']" style="color: red;">
+            El ancho no puede exceder los 80 cm.
+          </p>
+        </div>
+        
+>>>>>>> master
         
         <ion-item>
           <ion-label position="stacked">Largo</ion-label>
@@ -275,22 +361,53 @@
             name="dimensionesLargo"
             #dimensionesLargo="ngModel"
             type="number"
+<<<<<<< HEAD
             min="0"
             placeholder="Largo"
+=======
+            min="1"
+            max="80"
+            placeholder="Largo (cm)"
+>>>>>>> master
             required
             (ionInput)="onDimensionesChange()"
           ></ion-input>
         </ion-item>
+<<<<<<< HEAD
         
         
+=======
+        <div *ngIf="dimensionesLargo.invalid && dimensionesLargo.touched">
+          <p *ngIf="dimensionesLargo.errors?.['required']" style="color: red;">
+            El largo es requerido.
+          </p>
+          <p *ngIf="dimensionesLargo.errors?.['min']" style="color: red;">
+            El largo debe ser mayor a 0.
+          </p>
+          <p *ngIf="dimensionesLargo.errors?.['max']" style="color: red;">
+            El largo no puede exceder los 80 cm.
+          </p>
+        </div>
+
+
+
+>>>>>>> master
         <ion-item lines="full">
           <ion-label>¿Es frágil?</ion-label>
           <ion-checkbox
             [(ngModel)]="pedido.fragil"
             name="fragil"
+<<<<<<< HEAD
             (ionChange)="updateCosto()"
           ></ion-checkbox>
         </ion-item>
+=======
+            (ionChange)="onFragilChange($event)"
+          ></ion-checkbox>
+        </ion-item>
+        
+  
+>>>>>>> master
         <ion-item lines="full">
           <ion-label>¿Es para cambio?</ion-label>
           <ion-checkbox
@@ -299,6 +416,7 @@
             (ionChange)="updateCosto()"
           ></ion-checkbox>
         </ion-item>
+<<<<<<< HEAD
         <ion-item lines="full">
           <ion-label>¿Excede 10 Kilos?</ion-label>
           <ion-checkbox
@@ -308,20 +426,45 @@
           ></ion-checkbox>
         </ion-item>
 
+=======
+
+        <ion-item lines="full">
+          <ion-label>¿Excede 2,5 kg de peso?</ion-label>
+          <ion-checkbox
+            [(ngModel)]="pedido.excedeKilos"
+            name="excedeKilos"
+            (ionChange)="handleExcedeKilosChange()"
+          ></ion-checkbox>
+        </ion-item>
+
+
+
+>>>>>>> master
         <!-- Foto del Pedido -->
         <ion-item>
           <ion-label>Foto del Pedido</ion-label>
           <ion-button (click)="takePhoto()">Tomar Foto</ion-button>
         </ion-item>
+<<<<<<< HEAD
+=======
+        
+>>>>>>> master
         <ion-item *ngIf="capturedPhoto">
           <ion-label>Foto capturada:</ion-label>
           <ion-img [src]="capturedPhoto"></ion-img>
         </ion-item>
+<<<<<<< HEAD
 
         <!-- Costo -->
         <ion-item>
           <ion-label> </ion-label>
           <ion-input [value]="pedido.costo | currency:' total a pagar : CLP $ ':'symbol':'1.0-0'" name="costo" readonly></ion-input>
+=======
+        <!-- Costo total a pagar -->
+        <ion-item>
+          <ion-label> </ion-label>
+          <ion-input [value]="pedido.costoTotal | currency:' total a pagar : CLP $ ':'symbol':'1.0-0'"  name="costoTotal" readonly></ion-input>
+>>>>>>> master
         </ion-item>
         </ion-list>
       </ion-accordion>
@@ -333,4 +476,7 @@
     </ion-accordion-group>
     </ion-card-content>
   </ion-card>
+<<<<<<< HEAD
 </ion-content>
+=======
+>>>>>>> master

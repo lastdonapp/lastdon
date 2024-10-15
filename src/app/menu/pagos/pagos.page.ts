@@ -14,6 +14,10 @@ export class PagosPage implements OnInit {
   selectedState: string = '';
   totalCosto: number = 0;// Nueva propiedad para almacenar el costo total
   usuario: any = this.supabaseService.getCurrentUser();
+<<<<<<< HEAD
+=======
+  metodoPago: string = 'mercadoPago';  // Valor predeterminado de selección
+>>>>>>> master
 
 
   constructor(private supabaseService: SupabaseService, private toastController: ToastController, private router: Router, private mercadoPagoService: MercadoPagoService) {}
@@ -70,7 +74,11 @@ export class PagosPage implements OnInit {
         name: pedido.nombrePedido,
         quantity: 1,
         currency_id: 'CLP',
+<<<<<<< HEAD
         unit_price: Math.round(Number(pedido.costo))
+=======
+        unit_price: pedido.costo
+>>>>>>> master
       }];
   
       // Crear la preferencia de Mercado Pago y pasar el pedidoId

@@ -2,7 +2,11 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { SupabaseService } from '../services/supabase.service';
 import { AlertController, ToastController } from '@ionic/angular';
+<<<<<<< HEAD
 import { AuthService } from '../services/auth.service';
+=======
+import { AuthService } from '../services/auth-service.service';
+>>>>>>> master
 
 
 @Component({
@@ -20,11 +24,20 @@ export class RegisterGooglePage {
   user: any;
 
   constructor(
+<<<<<<< HEAD
     private authService: AuthService,
     private supabaseService: SupabaseService,
     private router: Router,
     private toastController: ToastController,
     private alertController: AlertController
+=======
+   
+    private supabaseService: SupabaseService,
+    private router: Router,
+    private toastController: ToastController,
+    private alertController: AlertController,
+    private authService: AuthService
+>>>>>>> master
   ) {}
 
   // Método para iniciar sesión con Google

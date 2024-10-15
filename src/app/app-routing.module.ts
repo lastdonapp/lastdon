@@ -20,6 +20,14 @@ const routes: Routes = [
     canActivate: [demonGuard] 
   },
   { 
+<<<<<<< HEAD
+=======
+    path: 'conductor-menu/detalles-pedido/:id', 
+    loadChildren: () => import('./conductor-menu/conductor-menu.module').then(m => m.ConductorMenuPageModule),
+    canActivate: [demonGuard] 
+  },
+  { 
+>>>>>>> master
     path: 'admin-menu', 
     loadChildren: () => import('./admin-menu/admin-menu.module').then(m => m.AdminMenuPageModule),
     canActivate: [demonGuard] 
@@ -45,6 +53,10 @@ const routes: Routes = [
     path: 'register-google',
     loadChildren: () => import('./register-google/register-google.module').then( m => m.RegisterGooglePageModule)
   }
+<<<<<<< HEAD
+=======
+
+>>>>>>> master
 // Esta línea redirige cualquier ruta no definida al login
 ];
 

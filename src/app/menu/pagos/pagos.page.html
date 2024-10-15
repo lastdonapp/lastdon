@@ -4,7 +4,10 @@
   </ion-toolbar>
 </ion-header>
 
+<<<<<<< HEAD
 <ion-content>
+=======
+>>>>>>> master
   <!-- Filtro de estado -->
   <ion-item>
     <ion-label>Filtrar por estado</ion-label>
@@ -37,9 +40,34 @@
 
           <ion-input [value]="pedido.costo | currency:'CLP $ ':'symbol':'1.0-0'" readonly></ion-input>
         </ion-item>
+<<<<<<< HEAD
+=======
+
+
+        <ion-list>
+          <ion-radio-group [(ngModel)]="metodoPago">
+            <ion-list-header>
+              <ion-label>Seleccione Método de Pago</ion-label>
+            </ion-list-header>
+            <ion-item>
+              <ion-label>Mercado Pago</ion-label>
+              <ion-radio slot="start" value="mercadoPago"></ion-radio>
+            </ion-item>
+            <ion-item>
+              <ion-label>Webpay Plus</ion-label>
+              <ion-radio slot="start" value="webpayPlus"></ion-radio>
+            </ion-item>
+          </ion-radio-group>
+        </ion-list>
+
+
+>>>>>>> master
         <ion-button (click)="pagarPedido(pedido.id)" color="primary">Pagar</ion-button>
  
       </ion-label>
     </ion-item>
   </ion-list>
+<<<<<<< HEAD
 </ion-content>
+=======
+>>>>>>> master

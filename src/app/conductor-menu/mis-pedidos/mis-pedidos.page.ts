@@ -11,24 +11,45 @@ import { AlertController } from '@ionic/angular';
 })
 export class MisPedidosPage implements OnInit {
   pedidos: any[] = [];
+<<<<<<< HEAD
   selectedState: string = ''; // Valor para filtrar pedidos
+=======
+  pedidosFiltrados: any[] = [];
+  pedidosTabla: any[] = []; // Para mostrar los pedidos en la tabla (filtrados por fecha)
+
+  selectedState: string = ''; // Valor para filtrar pedidos
+  selectedStateTable: string = ''; // Valor para filtrar pedidos
+
+>>>>>>> master
   usuario: any = this.supabaseService.getCurrentUser();
   capturedPhoto: string = ''; // Variable para almacenar la URL de la foto capturada 
   photoUrl: string = ''; // URL de la foto del pedido
 
 
+<<<<<<< HEAD
   totalPedidosTomados: number = 0;
   totalPedidosEntregados: number = 0;
   filtroActual: string = 'hoy';
+=======
+  
+  totalPedidosTomados: number = 0;
+  totalPedidosEntregados: number = 0;
+  filtroActual: string = 'hoy';
+  totalPedidosTomadosEnvioRapido: number =0;
+>>>>>>> master
 
   constructor(private supabaseService: SupabaseService, private toastController: ToastController, private router: Router, private alertController: AlertController) {}
 
   ngOnInit() {
+<<<<<<< HEAD
     this.usuario = this.supabaseService.getCurrentUser();
     this.loadPedidos();
     this.filtrarPedidos('hoy');
     this.contarPedidosPorEstado(); // Llamar para inicializar contadores
 
+=======
+    this.loadPedidos();
+>>>>>>> master
   }
 
   async loadPedidos() {
@@ -43,9 +64,16 @@ export class MisPedidosPage implements OnInit {
       }
   
       const email = user.email;
+<<<<<<< HEAD
   
       // Obtener pedidos del conductor utilizando solo el filtro por conductor
       await this.getPedidos(email);
+=======
+      // Obtener pedidos del conductor utilizando solo el filtro por conductor
+      await this.getPedidos(email);
+    // Iterar sobre los pedidos
+  
+>>>>>>> master
     } catch (error) {
       console.error('Error al cargar los pedidos:', error);
     }
@@ -53,17 +81,32 @@ export class MisPedidosPage implements OnInit {
   
   async getPedidos(email: string) {
     try {
+<<<<<<< HEAD
       // Obtener pedidos normales utilizando el filtro por conductor
       const pedidos = await this.supabaseService.getPedidosPorConductor(email, this.selectedState);
       this.pedidos = pedidos; // Asignar los pedidos obtenidos a la propiedad local
+=======
+      const pedidosFiltrados = await this.supabaseService.getPedidosPorConductor(email, this.selectedStateTable)
+      this.pedidosFiltrados = pedidosFiltrados; // Asignar los pedidos obtenidos a la propiedad local
+     // Obtener pedidos normales utilizando el filtro por conductor
+      const pedidos = await this.supabaseService.getPedidosPorConductor(email, this.selectedState);
+      this.pedidos = pedidos; // Asignar los pedidos obtenidos a la propiedad local
+
+>>>>>>> master
     } catch (error) {
       console.error('Error al obtener los pedidos:', error);
     }
   }
+<<<<<<< HEAD
+=======
+  
+
+>>>>>>> master
 
 
 
   async contarPedidosPorEstado(): Promise<void> {
+<<<<<<< HEAD
     const emailConductor = this.usuario.email; // Obtener el email del conductor actual
 
     let  contadorHistoricoTomados = 0;  // Inicialmente en 0
@@ -74,23 +117,60 @@ export class MisPedidosPage implements OnInit {
     this.totalPedidosTomados = pedidosTomados.filter(pedido => pedido.primer_conductor === emailConductor).length;
 
     // Incrementar el contador histórico por cada pedido que haya pasado por el estado 'tomado'
+=======
+    const emailConductor = this.usuario.email; // Obtener el email del conductor actual 
+
+    let  contadorHistoricoTomados = 0;  // Inicialmente en 0
+    let  contadorHistoricoEntregados = 0;  // Inicialmente en 0
+    let  contadorHistoricoTomadosEnvioRapido = 0;  // Inicialmente en 0
+
+    // Contar pedidos tomados
+    const pedidosTomados = await this.supabaseService.getPedidosPorFechaRango('2024-01-01', '2044-12-31', emailConductor);
+    this.totalPedidosTomados = pedidosTomados.filter(pedido => pedido.primer_conductor === emailConductor ).length;
+
+    // Incrementar el contador histórico por cada pedido que haya pasado por el conductor
+>>>>>>> master
     pedidosTomados.forEach(pedido => {
       if (pedido.historicoEstados.includes(emailConductor)) {
         contadorHistoricoTomados += 1;
       }
     });
+<<<<<<< HEAD
     // Contar pedidos entregados
     const pedidosEntregados = await this.supabaseService.getPedidosEntregadosPorFechaRango('2024-01-01', '2034-12-31', emailConductor);
     this.totalPedidosEntregados = pedidosEntregados.filter(pedido => pedido.conductor === emailConductor).length;
   // Incrementar el contador histórico por cada pedido que haya pasado por el estado 'tomado'
+=======
+    // Contar pedidos envio rapido
+    const pedidosTomadosEnvioRapido = await this.supabaseService.getPedidosPorFechaRango('2024-01-01', '2044-12-31', emailConductor);
+    this.totalPedidosTomadosEnvioRapido = pedidosTomadosEnvioRapido.filter(pedido =>  pedido.primer_conductor === null && pedido.conductor === emailConductor ).length;
+    
+
+    // Incrementar el contador histórico por cada pedido que haya pasado por el conductor
+    pedidosTomadosEnvioRapido.forEach(pedido => {
+      if (pedido.historicoEstados.includes(emailConductor && emailConductor)) {
+        contadorHistoricoTomadosEnvioRapido += 1;
+      }
+   
+    });
+
+    // Contar pedidos entregados
+    const pedidosEntregados = await this.supabaseService.getPedidosEntregadosPorFechaRango('2024-01-01', '2044-12-31', emailConductor);
+    this.totalPedidosEntregados = pedidosEntregados.filter(pedido => pedido.conductor === emailConductor).length;
+  // Incrementar el contador histórico por cada pedido que haya pasado por el conductor
+>>>>>>> master
   pedidosEntregados.forEach(pedido => {
     if (pedido.historicoEstados.includes(emailConductor)) {
       contadorHistoricoEntregados += 1;
     }
   });
+<<<<<<< HEAD
   
   }
   
+=======
+}
+>>>>>>> master
 
 
   // Método para aplicar el filtro según la opción seleccionada
@@ -124,17 +204,35 @@ export class MisPedidosPage implements OnInit {
         fechaFin = hoy.toISOString().split('T')[0];
         break;
       default:
+<<<<<<< HEAD
+=======
+        
+>>>>>>> master
         return;
     }
     const emailConductor = this.usuario.email;
 
     // Obtener los pedidos según el filtro
     const pedidosTomados = await this.supabaseService.getPedidosPorFechaRango(fechaInicio, fechaFin, emailConductor);
+<<<<<<< HEAD
     const pedidosEntregados = await this.supabaseService.getPedidosEntregadosPorFechaRango(fechaInicio, fechaFin, emailConductor);
 
     this.pedidos = pedidosTomados; // Mostrar los recibidos en la tabla
 
     this.totalPedidosTomados = pedidosTomados.length;
+=======
+    const pedidosTomadosEnvioRapido = await this.supabaseService.getPedidosPorFechaRango(fechaInicio, fechaFin, emailConductor);
+    const pedidosEntregados = await this.supabaseService.getPedidosEntregadosPorFechaRango(fechaInicio, fechaFin, emailConductor);
+
+    this.pedidosFiltrados  = pedidosTomados // Mostrar los recibidos en la tabla
+
+    console.log(pedidosTomados);
+    console.log(pedidosEntregados);
+    console.log(pedidosTomadosEnvioRapido);
+
+    this.totalPedidosTomados = pedidosTomados.length;
+    this.totalPedidosTomadosEnvioRapido = pedidosTomadosEnvioRapido.length;
+>>>>>>> master
     this.totalPedidosEntregados = pedidosEntregados.length;
   }
 
@@ -178,7 +276,10 @@ export class MisPedidosPage implements OnInit {
                             color: 'success'
                         });
                         await toast.present();
+<<<<<<< HEAD
                         await this.contarPedidosPorEstado(); // Actualizar contadores después de la entrega
+=======
+>>>>>>> master
                         this.loadPedidos(); // Recargar la lista de pedidos
                     }
                 }
@@ -320,6 +421,7 @@ export class MisPedidosPage implements OnInit {
     this.router.navigate(['conductor-menu/detalles-pedido', id]);
   }
 
+<<<<<<< HEAD
   filterPedidos() {
     // Aplicar filtro por estado
     this.loadPedidos();
@@ -400,6 +502,58 @@ export class MisPedidosPage implements OnInit {
     });
   }
 
+=======
+ 
+
+
+  filterPedidos() {
+    // Aplicar filtro por estado
+    this.loadPedidos();
+
+  }
+  
+
+
+  async tomarFotoEntrega(pedidoId: string) {
+    try {
+      // Tomar la foto usando el servicio
+      const foto: File = await this.supabaseService.takePicture();
+  
+      if (foto) {
+        // Generar el path único para la imagen
+        const path = `pedidos/${pedidoId}/fotoEnvio_final-${new Date().getTime()}.jpeg`;
+  
+        // Subir la imagen a Supabase
+        const { data, error } = await this.supabaseService.uploadImage(foto, path);
+  
+        if (error) {
+          console.error('Error subiendo la imagen:', error);
+          await this.showToast('Error al subir la foto de entrega', 'danger');
+          return;
+        }
+  
+        // Obtener la URL pública de la imagen
+        const { publicURL, error: urlError } = await this.supabaseService.getImageUrl(path);
+  
+        if (urlError || !publicURL) {
+          console.error('Error obteniendo la URL pública:', urlError);
+          await this.showToast('Error al obtener la URL de la imagen', 'danger');
+          return;
+        }
+  
+        // Guardar la URL de la imagen en la tabla 'pedidos'
+        await this.supabaseService.updatePedidoFotoEnvio(pedidoId, publicURL);
+  
+        // Mostrar un mensaje de éxito
+        await this.showToast('Foto de entrega subida con éxito', 'success');
+      }
+    } catch (error) {
+      console.error('Error al capturar o subir la foto:', error);
+      await this.showToast('Error al procesar la foto de entrega', 'danger');
+    }
+  }
+  
+>>>>>>> master
   async showToast(message: string, color: string) {
     const toast = await this.toastController.create({
       message: message,
@@ -409,6 +563,84 @@ export class MisPedidosPage implements OnInit {
     });
     toast.present();
   }
+<<<<<<< HEAD
+=======
+
+
+
+
+
+
+  async marcarEnvioRapido(pedidoId: string) {
+    try {
+      // Verificar si el tracking está iniciado antes de continuar
+      const trackingIniciado = await this.supabaseService.verificarTrackingIniciado(pedidoId);
+
+      if (!trackingIniciado) {
+        const alert = await this.alertController.create({
+          header: 'Tracking no iniciado',
+          message: 'Debe iniciar el tracking antes de marcar este pedido como Envío Rápido.',
+          buttons: ['Aceptar']
+        });
+        await alert.present();
+        return; // Detener la ejecución si el tracking no ha sido iniciado
+      }
+  
+      // Si el tracking está iniciado, continuar con la lógica de confirmación de Envío Rápido
+      const alert = await this.alertController.create({
+        header: 'Confirmar Envío Rápido',
+        message: '¿Está seguro de que desea marcar este pedido como Envío Rápido?',
+        buttons: [
+          {
+            text: 'Cancelar',
+            role: 'cancel',
+            handler: () => {
+              console.log('envío rápido cancelado por el usuario');
+            }
+          },
+          {
+            text: 'Confirmar',
+            handler: async () => {
+              try {
+                // Llamar al servicio para cambiar el estado del pedido
+                await this.supabaseService.envioRapido(pedidoId, this.usuario.email);
+                //registro primer conductor
+                await this.supabaseService.registroPrimerConductor(pedidoId, this.usuario.email);
+
+                const toast = await this.toastController.create({
+                  message: 'Pedido marcado como Envío Rápido',
+                  duration: 2000,
+                  color: 'success'
+                });
+                await toast.present();
+                
+                this.loadPedidos(); // Recargar la lista de pedidos después de la operación
+              } catch (error) {
+                const toastError = await this.toastController.create({
+                  message: 'Error al marcar el pedido como Envío Rápido',
+                  duration: 2000,
+                  color: 'danger'
+                });
+                await toastError.present();
+                console.error('Error al procesar el envío rápido:', error);
+              }
+            }
+          }
+        ]
+      });
+  
+      await alert.present();
+    } catch (error) {
+      console.error('Error al procesar el Envío Rápido:', error);
+    }
+  }
+  
+  
+
+
+
+
+>>>>>>> master
 }
 
 
@@ -416,6 +648,7 @@ export class MisPedidosPage implements OnInit {
 
 
 
+<<<<<<< HEAD
   
 
 
@@ -429,3 +662,6 @@ export class MisPedidosPage implements OnInit {
 
 
 
+=======
+  
+>>>>>>> master

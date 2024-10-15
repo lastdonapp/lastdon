@@ -1,8 +1,13 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { SupabaseService } from '../services/supabase.service';
+<<<<<<< HEAD
 import { ToastController, AlertController } from '@ionic/angular';
 import { AuthService } from '../services/auth.service';
+=======
+import { ToastController,AlertController } from '@ionic/angular';
+import { AuthService } from '../services/auth-service.service';
+>>>>>>> master
 
 @Component({
   selector: 'app-login',
@@ -12,12 +17,18 @@ import { AuthService } from '../services/auth.service';
 export class LoginPage {
   email: string = "";
   password: string = "";
+<<<<<<< HEAD
   userType: string = ""; // Solo usado para Google sign-in
   verificado: boolean = false;
   errorMessage: string | null = null;
   
 
 
+=======
+  verificado: boolean = false;
+  errorMessage: string | null = null;
+  
+>>>>>>> master
   user:any;
 
   constructor(
@@ -26,12 +37,43 @@ export class LoginPage {
     private router: Router,
     private toastController: ToastController,
     private alertController: AlertController
+<<<<<<< HEAD
   ) { }
 
   ngOnInit() {
     this.resetForm();
   }
 
+=======
+  ) {}
+
+
+
+  ngOnInit() {
+    // Limpiar los campos de email y password cuando se carga la página
+    this.resetForm();
+  }
+
+
+
+
+  // Definir la función showToast
+  async showToast(message: string, color: string) {
+    const toast = await this.toastController.create({
+      message: message,
+      duration: 2000,
+      position: 'top',
+      color: color
+    });
+    toast.present();
+  }
+
+
+
+
+
+
+>>>>>>> master
   async login() {
     try {
       let session;
@@ -75,13 +117,18 @@ export class LoginPage {
       await this.showToast('Ocurrió un error durante el inicio de sesión.', 'danger');
     }
   }
+<<<<<<< HEAD
    
+=======
+  
+>>>>>>> master
   private async showPopup(title: string, message: string) {
     const alert = await this.alertController.create({
       header: title,
       message: message,
       buttons: ['OK']
     });
+<<<<<<< HEAD
 
     await alert.present();
   }
@@ -97,8 +144,22 @@ export class LoginPage {
   }
 
   private resetForm() {
+=======
+  
+    await alert.present();
+  }
+// Resetear el formulario
+  resetForm() {
+>>>>>>> master
     this.email = '';
     this.password = '';
   }
 
+<<<<<<< HEAD
 }
+=======
+
+
+
+}
+>>>>>>> master

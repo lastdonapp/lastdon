@@ -1,11 +1,18 @@
+<<<<<<< HEAD
 <!-- agregar-pedidos.page.html -->
+=======
+>>>>>>> master
 <ion-header>
   <ion-toolbar>
     <ion-title>Agregar Entrega</ion-title>
   </ion-toolbar>
 </ion-header>
 
+<<<<<<< HEAD
 <ion-content>
+=======
+  <!-- Mostrar pedidos disponibles para tomar -->
+>>>>>>> master
   <ion-list *ngIf="pedidos.length > 0; else noPedidos">
     <ion-item *ngFor="let pedido of pedidos" (click)="verDetalles(pedido.id)">
       <ion-card>
@@ -14,7 +21,11 @@
           <ion-card-subtitle>{{ pedido.fecha }}</ion-card-subtitle>
         </ion-card-header>
         <ion-card-content>
+<<<<<<< HEAD
           <p><strong>Dirección de Pedido:</strong> {{ pedido.direccion_pedido }}</p>
+=======
+          <p><strong>Dirección de recogida:</strong> {{ pedido.direccion_pedido }}</p>
+>>>>>>> master
           <p><strong>Dirección de Entrega:</strong> {{ pedido.direccion_entrega }}</p>
           <p><strong>Comuna:</strong> {{ pedido.comuna }}</p>
           <p><strong>Teléfono:</strong> {{ pedido.telefono }}</p>
@@ -23,9 +34,41 @@
       </ion-card>
     </ion-item>
   </ion-list>
+<<<<<<< HEAD
+=======
+
+  <!-- Mostrar pedidos en centro de distribución -->
+  <ion-list *ngIf="pedidosReanudar.length > 0; else noPedidosReanudar">
+    <ion-item *ngFor="let pedido of pedidosReanudar" (click)="verDetalles(pedido.id)">
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>{{ pedido.nombre_pedido }}</ion-card-title>
+          <ion-card-subtitle>{{ pedido.fecha }}</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+          <p><strong>Dirección de recogida:</strong> {{ pedido.direccion_pedido }}</p>
+          <p><strong>Dirección de Entrega:</strong> {{ pedido.direccion_entrega }}</p>
+          <p><strong>Comuna:</strong> {{ pedido.comuna }}</p>
+          <p><strong>Teléfono:</strong> {{ pedido.telefono }}</p>
+          <ion-button (click)="tomarPedidoIngresado(pedido.id)" color="primary">Reanudar</ion-button>
+        </ion-card-content>
+      </ion-card>
+    </ion-item>
+  </ion-list>
+
+>>>>>>> master
   <ng-template #noPedidos>
     <ion-text>
       <h2>No hay pedidos disponibles para tomar.</h2>
     </ion-text>
   </ng-template>
+<<<<<<< HEAD
 </ion-content>
+=======
+
+  <ng-template #noPedidosReanudar>
+    <ion-text>
+      <h2>No hay pedidos disponibles para reanudar.</h2>
+    </ion-text>
+  </ng-template>
+>>>>>>> master
