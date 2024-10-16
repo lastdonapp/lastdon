@@ -66,6 +66,7 @@ Sigue estos pasos para instalar el proyecto:
   npm install @types/google.maps --save-dev
   npm i --save @codetrix-studio/capacitor-google-auth
   npm install --save @emailjs/browser
+  npm install ng-qrcode --save
 
 
 ```
