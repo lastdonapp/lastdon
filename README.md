@@ -67,6 +67,8 @@ Sigue estos pasos para instalar el proyecto:
   npm i --save @codetrix-studio/capacitor-google-auth
   npm install --save @emailjs/browser
   npm install ng-qrcode --save
+  npm install jspdf --save
+  npm install html2canvas --save
 
 
 ```
