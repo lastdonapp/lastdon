@@ -197,43 +197,68 @@ export class PedidosPage implements OnInit {
            this.telefonoCambio && this.telefonoCambio.length === 8;
   }
 
-  // Función para generar el PDF con la etiqueta y el código QR
-  generarEtiquetaPDF(pedido: any) {
-    const doc = new jsPDF();
+ // Función para generar el PDF con la etiqueta y el código QR
+generarEtiquetaPDF(pedido: any) {
+  const doc = new jsPDF();
 
-    // Seleccionar el elemento QR generado dinámicamente
-    const qrElementId = `qrCode-${pedido.id}`;
-    const qrElement = document.getElementById(qrElementId);
+  // Seleccionar el elemento QR generado dinámicamente
+  const qrElementId = `qrCode-${pedido.id}`;
+  const qrElement = document.getElementById(qrElementId);
 
-    if (qrElement) {
-      // Convertir la sección que contiene el QR a imagen
-      html2canvas(qrElement).then(canvas => {
-        const qrImage = canvas.toDataURL('image/png');
+  if (qrElement) {
+    // Convertir la sección que contiene el QR a imagen
+    html2canvas(qrElement).then(canvas => {
+      const qrImage = canvas.toDataURL('image/png');
 
-        // Agregar detalles del pedido al PDF
-        doc.text(`Remitente: ${pedido.nombre_destinatario}`, 10, 30);
-        doc.text(`Dirección de Pedido: ${pedido.direccion_pedido}`, 10, 40);
-        doc.text(`Dirección de Entrega: ${pedido.direccion_entrega}`, 10, 50);
-        doc.text(`Teléfono: ${pedido.telefono}`, 10, 60);
-        doc.text(`Costo del envío en CLP $: ${pedido.costo}`, 10, 70);
+      // Agregar detalles del pedido al PDF
+      let currentY = 30; // Posición inicial en Y
 
-        // Añadir el código QR al PDF
-        doc.addImage(qrImage, 'PNG', 10, 80, 50, 50);
+      doc.text(`Remitente: ${pedido.nombre_destinatario}`, 10, currentY);
+      currentY += 10; // Incrementar la posición para la siguiente línea
 
-        // Descargar el PDF
-        doc.save(`etiqueta_pedido_${pedido.id}.pdf`);
-      }).catch(error => {
-        console.error('Error generando la imagen del código QR:', error);
-      });
-    } else {
-      console.error('No se pudo encontrar el elemento QR para el pedido:', pedido.id);
-    }
+      doc.text(`Dirección de Pedido: ${pedido.direccion_pedido}`, 10, currentY);
+      currentY += 10;
+
+      doc.text(`Dirección de Entrega: ${pedido.direccion_entrega}`, 10, currentY);
+      currentY += 10;
+
+      doc.text(`Teléfono: ${pedido.telefono}`, 10, currentY);
+      currentY += 10;
+
+      doc.text(`Costo del envío en CLP $: ${pedido.costo}`, 10, currentY);
+      currentY += 10;
+
+      // Reemplazar true/false por "Sí"/"No"
+      const esFragil = pedido.fragil ? 'Sí' : 'No';
+      doc.text(`¿Es frágil? ${esFragil}`, 10, currentY);
+      currentY += 10;
+
+      // Reemplazar true/false por "Sí"/"No" para el peso
+      const excedeKilos = pedido.excede_kilos ? 'Sí' : 'No';
+      doc.text(`¿Excede 2,5 kilos? ${excedeKilos}`, 10, currentY);
+      currentY += 10; // Incrementar si agregas más texto después
+
+      // Añadir el código QR al PDF
+      const qrWidth = canvas.width;
+      const qrHeight = canvas.height;
+
+      // Calcular el tamaño a mantener
+      const aspectRatio = qrWidth / qrHeight;
+      const newWidth = 100; // Establece el ancho deseado
+      const newHeight = newWidth / aspectRatio; // Mantener la relación de aspecto
+
+      doc.addImage(qrImage, 'PNG', 10, currentY, newWidth, newHeight);
+
+      // Descargar el PDF
+      doc.save(`etiqueta_pedido_${pedido.id}.pdf`);
+    }).catch(error => {
+      console.error('Error generando la imagen del código QR:', error);
+    });
+  } else {
+    console.error('No se pudo encontrar el elemento QR para el pedido:', pedido.id);
   }
 }
-
-  
-  
-  
+}
 
 
 
