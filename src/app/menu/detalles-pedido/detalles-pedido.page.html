@@ -1,38 +1,58 @@
-<!-- detalles-pedido.page.html -->
 <ion-header>
   <ion-toolbar>
     <ion-title>Detalles Entrega</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content *ngIf="pedido">
-  <ion-card>
+  <ion-card *ngIf="pedido">
     <ion-card-header>
       <ion-card-title>{{ pedido.nombre_pedido }}</ion-card-title>
       <ion-card-subtitle>{{ pedido.fecha }}</ion-card-subtitle>
     </ion-card-header>
     <ion-card-content>
-  <ion-img *ngIf="pedido.foto" [src]="pedido.foto" alt="Foto del pedido"></ion-img>
-  <p><strong>Descripción:</strong> {{ pedido.descripcion_pedido }}</p>
-  <p><strong>Dirección de Pedido:</strong> {{ pedido.direccion_pedido }}</p>
-  <p><strong>Dirección de Entrega:</strong> {{ pedido.direccion_entrega }}</p>
-  <p><strong>Destinatario:</strong> {{ pedido.nombre_destinatario }}</p>
-  <p><strong>Comuna:</strong> {{ pedido.comuna }}</p>
-  <p><strong>Teléfono:</strong> {{ pedido.telefono }}</p>
-  <p><strong>Cantidad de Paquetes:</strong> {{ pedido.cantidad_paquetes }}</p>
-  <p><strong>Dimensiones:</strong></p>
-  <ul>
-    <li><strong>Alto:</strong> {{ pedido.dimensiones.alto }} {{ pedido.dimensiones.unidad }}</li>
-    <li><strong>Ancho:</strong> {{ pedido.dimensiones.ancho }} {{ pedido.dimensiones.unidad }}</li>
-    <li><strong>Largo:</strong> {{ pedido.dimensiones.largo }} {{ pedido.dimensiones.unidad }}</li>
-  </ul>
-  <p><strong>Fragil:</strong> {{ pedido.fragil ? 'Sí' : 'No' }}</p>
-  <p><strong>Cambio:</strong> {{ pedido.cambio ? 'Sí' : 'No' }}</p>
-  <p><strong>Excede 10 Kilos:</strong> {{ pedido.excede_10_kilos ? 'Sí' : 'No' }}</p>
-  <p><strong>Costo:</strong> {{ pedido.costo }}</p>
-  <p><strong>Estado:</strong> {{ pedido.estado }}</p>
-  <ion-img *ngIf="pedido.image_url" [src]="pedido.image_url" alt="Foto del pedido"></ion-img>
-</ion-card-content>
+      <ion-img *ngIf="pedido.foto" [src]="pedido.foto" alt="Foto del pedido"></ion-img>
+      <p><strong>Descripción:</strong> {{ pedido.descripcion_pedido }}</p>
+      <p><strong>Dirección de Pedido:</strong> {{ pedido.direccion_pedido }}</p>
+      <p><strong>Dirección de Entrega:</strong> {{ pedido.direccion_entrega }}</p>
+      <p><strong>Destinatario:</strong> {{ pedido.nombre_destinatario }}</p>
+      <p><strong>Comuna:</strong> {{ pedido.comuna }}</p>
+      <p><strong>Teléfono:</strong> {{ pedido.telefono }}</p>
+      <p><strong>Cantidad de Paquetes:</strong> {{ pedido.cantidad_paquetes }}</p>
+      <p><strong>Dimensiones:</strong></p>
+      <ul>
+        <li><strong>Alto:</strong> {{ pedido.dimensiones.alto }} {{ pedido.dimensiones.unidad }}</li>
+        <li><strong>Ancho:</strong> {{ pedido.dimensiones.ancho }} {{ pedido.dimensiones.unidad }}</li>
+        <li><strong>Largo:</strong> {{ pedido.dimensiones.largo }} {{ pedido.dimensiones.unidad }}</li>
+      </ul>
+      <p><strong>Fragil:</strong> {{ pedido.fragil ? 'Sí' : 'No' }}</p>
+      <p><strong>Cambio:</strong> {{ pedido.cambio ? 'Sí' : 'No' }}</p>
+      <p><strong>Excede 10 Kilos:</strong> {{ pedido.excede_10_kilos ? 'Sí' : 'No' }}</p>
+      <p><strong>Costo:</strong> {{ pedido.costo }}</p>
+      <p><strong>Estado:</strong> {{ pedido.estado }}</p>
+      <ion-img *ngIf="pedido.image_url" [src]="pedido.image_url" alt="Foto del pedido"></ion-img>
 
+      <!-- Mostrar botón de seguimiento solo si el tracking está activo -->
+      <ion-button *ngIf="trackingActivo" (click)="mostrarUbicacionConductor()">
+        Seguir mi paquete
+      </ion-button>
+
+      <!-- Mostrar el mapa solo si el tracking está activo y no ha finalizado -->
+      <div *ngIf="mostrarMapa">
+        <div id="map" style="width: 100%; height: 400px;"></div>
+      </div>
+
+      <!-- Mensaje si el tracking ha finalizado -->
+      <p *ngIf="!trackingActivo && pedido.estado === 'entregado'">
+        El seguimiento del paquete ha finalizado.
+      </p>
+
+
+
+         <!-- Mensaje si el tracking esta en pausa -->
+         <p *ngIf="!trackingActivo && pedido.estado === 'En centro de Distribución'">
+          El paquete está en el centro de distribución, a la brevedad se le notificará cuando se inicie el seguimiento.
+        </p>
+
+
+    </ion-card-content>
   </ion-card>
-</ion-content>

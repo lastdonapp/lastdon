@@ -35,42 +35,42 @@ export class SupabaseService {
 
   constructor(private http: HttpClient) {}
 
-
-// supabase.service.ts
-
-async getPedidosPorFechaRango(fechaInicio: string, fechaFin: string, emailConductor: string): Promise<any[]> {
-  const { data, error } = await this.supabase
-    .from('pedidos')
-    .select('*')
-    .eq('primer_conductor', emailConductor) // Filtrar por el conductor actual
-    .gte('fecha_tomado', fechaInicio + 'T00:00:00Z')
-    .lte('fecha_tomado', fechaFin + 'T23:59:59Z');
-
-  if (error) {
-    console.error('Error al obtener pedidos por rango de fechas:', error);
-    return [];
+  async getPedidosPorFechaRango(fechaInicio: string, fechaFin: string, emailConductor: string): Promise<any[]> {
+    const { data, error } = await this.supabase
+      .from('pedidos')
+      .select('*')
+      .eq('primer_conductor', emailConductor) // Filtrar por el conductor actual
+      .gte('fecha_tomado', fechaInicio + 'T00:00:00Z')
+      .lte('fecha_tomado', fechaFin + 'T23:59:59Z');
+  
+    if (error) {
+      console.error('Error al obtener pedidos por rango de fechas:', error);
+      return [];
+    }
+    return data;
   }
-  return data;
-}
-
-async getPedidosEntregadosPorFechaRango(fechaInicio: string, fechaFin: string, emailConductor: string): Promise<any[]> {
-  const { data, error } = await this.supabase
-    .from('pedidos')
-    .select('*')
-    .eq('conductor', emailConductor) // Asegúrate de usar el campo correcto
-    .gte('fecha_entrega', fechaInicio + 'T00:00:00Z')
-    .lte('fecha_entrega', fechaFin + 'T23:59:59Z');
-
-  if (error) {
-    console.error('Error al obtener pedidos entregados por rango de fechas:', error);
-    return [];
+  
+  async getPedidosEntregadosPorFechaRango(fechaInicio: string, fechaFin: string, emailConductor: string): Promise<any[]> {
+    const { data, error } = await this.supabase
+      .from('pedidos')
+      .select('*')
+      .eq('conductor', emailConductor) // Asegúrate de usar el campo correcto
+      .gte('fecha_entrega', fechaInicio + 'T00:00:00Z')
+      .lte('fecha_entrega', fechaFin + 'T23:59:59Z');
+  
+    if (error) {
+      console.error('Error al obtener pedidos entregados por rango de fechas:', error);
+      return [];
+    }
+    return data;
   }
-  return data;
-}
+  
+  
 
 
 
 
+  
   async takePicture(): Promise<File> {
     const image = await Camera.getPhoto({
       quality: 100,
@@ -626,7 +626,7 @@ async getToken(): Promise<any> {
   
   async addPedido(pedido: any): Promise<any> {
     // Redondear el costo a un número entero
-    const roundedCosto = Math.round(pedido.costo);
+    const roundedCosto = Math.round(pedido.costoTotal);
     try {
       const response = await fetch(`${this.pedidos}`, { // Ajusta la URL si es necesario
         method: 'POST',
@@ -649,7 +649,7 @@ async getToken(): Promise<any> {
           dimensiones: pedido.dimensiones,
           fragil: pedido.fragil,
           cambio: pedido.cambio,
-          excede_10_kilos: pedido.excede10Kilos,
+          excede_Kilos: pedido.excede10Kilos,
           fecha: pedido.fecha,
           costo: roundedCosto,
           estado: pedido.estado,
@@ -1481,6 +1481,84 @@ async getPedidosReanudar(): Promise<any> {
   
       return { data, error };
     }
+
+
+
+
+
+
+    async actualizarEstadoReubicacion(pedidoId: string): Promise<void> {
+      try {
+          // Actualizar el estado del pedido a 'Reubicación en curso'
+          const response = await fetch(`${this.pedidos}?id=eq.${encodeURIComponent(pedidoId)}`, {
+              method: 'PATCH',
+              headers: {
+                  'Content-Type': 'application/json',
+                  'apikey': this.apiKey,
+                  'Authorization': `Bearer ${this.apiKey}`
+              },
+              body: JSON.stringify({
+                  estado: 'Reubicación en curso' // Actualiza el estado del pedido
+              })
+          });
+  
+          if (!response.ok) {
+              const errorText = await response.text();
+              console.error('Error al actualizar el estado del pedido:', errorText);
+              throw new Error(errorText || 'Error al actualizar el estado del pedido');
+          }
+  
+          console.log('Estado del pedido actualizado exitosamente a "Reubicación en curso".');
+  
+      } catch (error) {
+          console.error('Error al actualizar el estado del pedido:', error);
+          throw error;
+      }
+  }
+
+
+
+
+
+
+  async envioRapido(pedidoId: string, conductor_email: string): Promise<void> {
+    try {
+        // Actualizar el estado del pedido a 'Reubicación en curso'
+        const response = await fetch(`${this.pedidos}?id=eq.${encodeURIComponent(pedidoId)}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'apikey': this.apiKey,
+                'Authorization': `Bearer ${this.apiKey}`
+            },
+            body: JSON.stringify({
+                estado: 'Envio rápido', // Actualiza el estado del pedido
+                conductor: conductor_email// Actualiza el estado del pedido
+
+            })
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Error al actualizar el estado del pedido:', errorText);
+            throw new Error(errorText || 'Error al actualizar el estado del pedido');
+        }
+
+        console.log('Estado del pedido actualizado exitosamente a "Envío rápido.');
+
+    } catch (error) {
+        console.error('Error al actualizar el estado del pedido:', error);
+        throw error;
+    }
+}
+
+
+
+
+
+
+
+  
   
 
 

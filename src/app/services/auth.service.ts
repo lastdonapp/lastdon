@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 import { Platform } from '@ionic/angular';
 import { SupabaseService } from './supabase.service';
-import { environment } from '../../environments/environment'; // Importa el archivo de entorno
+import { environment } from 'src/environments/environment'; // Importa el archivo de entorno
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +16,11 @@ export class AuthService {
     private supabaseService: SupabaseService
   ) { 
     this.platform.ready().then(() => {
-      GoogleAuth.initialize();
+      GoogleAuth.initialize({
+        clientId: environment.googleClientId,  // Aquí utiliza el Client ID de Google desde environment
+        scopes: ['profile', 'email'],
+        grantOfflineAccess: true,
+      });
     });
   }
 

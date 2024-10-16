@@ -19,7 +19,7 @@ import { RouteReuseStrategy } from '@angular/router';
     AppRoutingModule,
     LoginPageModule,
     RegisterPageModule,
-    HttpClientModule
+    HttpClientModule,
   ],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent],

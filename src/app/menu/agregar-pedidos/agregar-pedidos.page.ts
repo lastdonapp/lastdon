@@ -8,7 +8,6 @@ import { map } from 'rxjs/operators';
 import { AlertController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
-
 @Component({
   selector: 'app-agregar-pedidos',
   templateUrl: './agregar-pedidos.page.html',
@@ -154,6 +153,7 @@ export class AgregarPedidosPage implements OnInit {
     this.pedido.fecha = new Date().toISOString();
   }
 
+  
   onViviendaChange(event: any) {
     const tipoVivienda = event.detail.value;
     this.mostrarNumeroDepartamento = tipoVivienda === 'departamento';
@@ -163,6 +163,7 @@ export class AgregarPedidosPage implements OnInit {
       this.numeroDepartamentoTemporal = '';
     }
   }
+
 
     // Método para actualizar el costo cuando cambia la comuna
     onComunaChange(comuna: string) {
@@ -230,10 +231,22 @@ export class AgregarPedidosPage implements OnInit {
   }
   
   onDimensionesChange() {
-    // Actualiza el costo cuando se cambian las dimensiones o la unidad
-    this.updateCosto();
+    // Limitar el valor del alto a 80 si lo excede
+    if (this.pedido.dimensiones.alto > 80) {
+      this.pedido.dimensiones.alto = 80;
+    }
+  
+    // Limitar el valor del ancho a 80 si lo excede
+    if (this.pedido.dimensiones.ancho > 80) {
+      this.pedido.dimensiones.ancho = 80;
+    }
+  
+    // Limitar el valor del largo a 80 si lo excede
+    if (this.pedido.dimensiones.largo > 80) {
+      this.pedido.dimensiones.largo = 80;
+    }
+    this.updateCosto(); // Actualiza el costo cuando se cambian las dimensiones o la unidad
   }
-
 
 
   async onSubmit() {
@@ -283,7 +296,7 @@ export class AgregarPedidosPage implements OnInit {
                 console.log('imagen url ', this.pedido.image_url);
               }
   
-              this.pedido.costo 
+              this.pedido.costoTotal 
               this.onTelefonoChange(this.telefonoInput);
               const { data, error } = await this.supabaseService.addPedido(this.pedido);
               if (error) {
@@ -307,11 +320,41 @@ export class AgregarPedidosPage implements OnInit {
 
 
 
-  calculateCost() {
-    let cost = 0; // Costo base por paquete
+
+  updateCosto() {
+    // Validar que se haya ingresado al menos un paquete
+    if (this.pedido.cantidadPaquetes <= 0) {
+      console.error('Debe ingresar al menos un paquete');
+      return; // Salir si la cantidad de paquetes es inválida
+    }
   
-    if (this.pedido.excede10Kilos) {
-      cost += 2000; // Costo adicional por exceder 10 kilos
+    // Verificar que las dimensiones existan y sean mayores que cero
+    if (!this.pedido.dimensiones || this.pedido.dimensiones.alto <= 0 || this.pedido.dimensiones.ancho <= 0 || this.pedido.dimensiones.largo <= 0) {
+      console.error('Las dimensiones deben ser mayores que cero');
+      return; // Salir si las dimensiones son inválidas
+    }
+  
+    // Calcular el volumen en cm³
+    let volumen = this.pedido.dimensiones.alto * this.pedido.dimensiones.ancho * this.pedido.dimensiones.largo;
+  
+    // Validar que el volumen no sea cero o negativo
+    if (volumen <= 0) {
+      console.error('El volumen calculado no puede ser cero o negativo');
+      return; // Salir si el volumen es inválido
+    }
+  
+    // Cálculo del costo por volumen 
+    let dimensionCost = volumen * 0.002; // Ajusta el factor de costo si es necesario
+  
+    // Añadir el costo de la comuna si es aplicable
+    let costoComuna = this.pedido.costo || 0;
+  
+    // Inicializar el costo base
+    let cost = dimensionCost + costoComuna;
+  
+    // Aplicar los costos adicionales basados en las condiciones del pedido
+    if (this.pedido.excedeKilos) {
+      cost += 3000; // Costo adicional por exceder 2,5 kilos
     }
     if (this.pedido.fragil) {
       cost += 1000; // Costo adicional por ser frágil
@@ -320,50 +363,15 @@ export class AgregarPedidosPage implements OnInit {
       cost += 500; // Costo adicional por requerir cambio
     }
   
-    return cost; // Retorna el costo calculado por paquete
+    // Calcular el costo total multiplicando por la cantidad de paquetes
+    let totalCost = cost * this.pedido.cantidadPaquetes;
+  
+    // Asignar el costo total al pedido
+    this.pedido.costoTotal = totalCost;
+  
+    console.log('Costo total actualizado:', this.pedido.costoTotal);
   }
-
-  updateCosto() {
-    // Costo base
-    let baseCost = this.calculateCost();
   
-    // Verificar el costo de la comuna
-    let costoComuna = this.costosPorComuna[this.pedido.comuna];
-  
-    if (typeof costoComuna !== 'number') {
-      console.error('El costo de la comuna no es un número. Se establecerá en 0.');
-      costoComuna = 0; // Asignar 0 si no se encuentra un valor numérico
-    }
-  
-    // Verificar dimensiones
-    if (!this.pedido.dimensiones.alto || !this.pedido.dimensiones.ancho || !this.pedido.dimensiones.largo) {
-      console.error('Las dimensiones deben ser valores válidos');
-      return; // Salir si hay un error
-    }
-  
-    // Calcular el volumen
-    let volumen = this.pedido.dimensiones.alto * this.pedido.dimensiones.ancho * this.pedido.dimensiones.largo;
-    
-    // Ajustar el volumen según la unidad
-    if (this.pedido.dimensiones.unidad === 'centimetros') {
-      if (volumen === 0) {
-        console.error('El volumen no puede ser cero');
-        return; // Salir si el volumen es cero
-      }
-      volumen /= 1000000; // Convertir cm³ a m³
-    }
-    
-    // Costo basado en volumen
-    let dimensionCost = volumen * 20; // Ajustar según necesidad
-  
-    // Calcular el costo total
-    let totalCost = (baseCost + dimensionCost + costoComuna) * this.pedido.cantidadPaquetes;
-  
-    // Asignar el costo calculado al pedido
-    this.pedido.costo = totalCost;
-  
-    console.log(`Costo actualizado: ${this.pedido.costo}, para la comuna: ${this.pedido.comuna}`);
-  }
   
   
 
@@ -414,9 +422,57 @@ export class AgregarPedidosPage implements OnInit {
 
 
 
+  async onFragilChange(event: any) {
+    if (event.detail.checked) {
+      const alert = await this.alertController.create({
+        header: 'Advertencia',
+        message: 'El paquete es frágil. Asegúrate de embalarlo correctamente.',
+        buttons: ['Entendido']
+      });
+
+      await alert.present();
+    }
+        // Llamar a la función que actualiza el costo
+        this.updateCosto();
+  }
+
+
+
+  handleExcedeKilosChange() {
+    // Mostrar advertencia si el checkbox está seleccionado
+    if (this.pedido.excedeKilos) {
+      this.presentPesoAlert();
+    }
+  
+    // Actualizar el costo del pedido
+    this.updateCosto();
+  }
+  
+  async presentPesoAlert() {
+    const alert = await this.alertController.create({
+      header: 'Advertencia',
+      message: 'El peso máximo por pedido no debe exceder los 5 kg. Asegúrese de que su paquete esté dentro de los límites permitidos.',
+      buttons: ['OK']
+    });
+  
+    await alert.present();
+  }
+
+
+
+
+
+
+
+
+
+}
+
+
+
 
   
 
 
 
-}
+

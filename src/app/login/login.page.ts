@@ -12,12 +12,9 @@ import { AuthService } from '../services/auth.service';
 export class LoginPage {
   email: string = "";
   password: string = "";
-  userType: string = ""; // Solo usado para Google sign-in
   verificado: boolean = false;
   errorMessage: string | null = null;
   
-
-
   user:any;
 
   constructor(
@@ -26,11 +23,33 @@ export class LoginPage {
     private router: Router,
     private toastController: ToastController,
     private alertController: AlertController
-  ) { }
+  ) {}
+
+
 
   ngOnInit() {
+    // Limpiar los campos de email y password cuando se carga la página
     this.resetForm();
   }
+
+
+
+
+  // Definir la función showToast
+  async showToast(message: string, color: string) {
+    const toast = await this.toastController.create({
+      message: message,
+      duration: 2000,
+      position: 'top',
+      color: color
+    });
+    toast.present();
+  }
+
+
+
+
+
 
   async login() {
     try {
@@ -75,30 +94,23 @@ export class LoginPage {
       await this.showToast('Ocurrió un error durante el inicio de sesión.', 'danger');
     }
   }
-   
+  
   private async showPopup(title: string, message: string) {
     const alert = await this.alertController.create({
       header: title,
       message: message,
       buttons: ['OK']
     });
-
+  
     await alert.present();
   }
-
-  private async showToast(message: string, color: string) {
-    const toast = await this.toastController.create({
-      message: message,
-      duration: 2000,
-      position: 'top',
-      color: color
-    });
-    toast.present();
-  }
-
-  private resetForm() {
+// Resetear el formulario
+  resetForm() {
     this.email = '';
     this.password = '';
   }
+
+
+
 
 }
