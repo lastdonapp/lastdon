@@ -32,24 +32,38 @@
           <p><strong>Excede 10 Kilos:</strong> {{ pedido.excede_10_kilos ? 'Sí' : 'No' }}</p>
           <p><strong>Costo:</strong> {{ pedido.costo }}</p>
           <p><strong>Estado:</strong> {{ pedido.estado }}</p>
-          <!--QR Code por cada pedido-->
-          <qr-code value="Hello world!" 
-         size="200" 
-         errorCorrectionLevel="M" />
 
-          
-          <ion-button *ngIf="pedido.estado === 'entregado'" color="primary" 
-          [disabled]="pedido.cambioRealizado || pedido.cambio" 
-          (click)="mostrarFormulario(pedido.id, $event)">
-            Solicitar cambio
-          </ion-button>
-          
-          <!-- Mensaje cuando ya se ha realizado un cambio en el pedido -->
-          <p *ngIf="pedido.cambioRealizado">Este pedido ya tiene un cambio realizado.</p>
-          
-          <!-- Mensaje cuando el pedido ha sido marcado como cambiado -->
-          <p *ngIf="pedido.cambio">No se puede gestionar un cambio de un pedido que ya ha sido modificado.</p>
-          
+
+        <!-- QR code dynamically generated, only visible if pedido.pagado is true -->
+        <div *ngIf="pedido.pagado" id="qrCode-{{pedido.id}}">
+          <qr-code [value]="'Precio: ' + pedido.costo + ', Origen: ' + pedido.direccion_pedido + ', Destino: ' + pedido.direccion_entrega" [size]="100"></qr-code>
+        </div>
+        <!-- Botón para generar la etiqueta con el QR -->
+      <ion-button color="primary" (click)="generarEtiquetaPDF(pedido)" [disabled]="!pedido.pagado">
+        Descargar Etiqueta
+      </ion-button>
+
+      <!-- Mensaje condicional para el botón de descarga -->
+      <p *ngIf="!pedido.pagado" style="color: red;">
+        Debe cancelar la entrega para solicitar la etiqueta virtual.
+      </p>
+
+      <!-- Botón para solicitar un cambio -->
+      <ion-button *ngIf="pedido.estado === 'entregado'" color="primary" 
+        [disabled]="pedido.cambioRealizado || pedido.cambio" 
+        (click)="mostrarFormulario(pedido.id, $event)">
+        Solicitar cambio
+      </ion-button>
+
+      <!-- Mensaje cuando ya se ha realizado un cambio en el pedido -->
+      <p *ngIf="pedido.cambioRealizado" style="color: orange;">
+        Este pedido ya tiene un cambio realizado.
+      </p>
+
+      <!-- Mensaje cuando el pedido ha sido marcado como cambiado -->
+      <p *ngIf="pedido.cambio" style="color: orange;">
+        No se puede gestionar un cambio de un pedido que ya ha sido modificado.
+      </p>
           
       <!-- Formulario condicional -->
       <ion-item *ngIf="pedido.mostrarFormulario">

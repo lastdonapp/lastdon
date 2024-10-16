@@ -4,6 +4,11 @@ import { SupabaseService } from 'src/app/services/supabase.service';
 import { ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
+import { jsPDF } from 'jspdf';  // Importar jsPDF para el PDF
+import html2canvas from 'html2canvas'; // Para convertir la parte visual a un PDF
+
+
+
 
 @Component({
   selector: 'app-pedidos',
@@ -22,6 +27,7 @@ export class PedidosPage implements OnInit {
   valorCambioPedido : number =1000;
   telefonoCambio : string = '';
   cambioRealizado : boolean = true;
+ 
 
   constructor(private supabaseService: SupabaseService, private toastController: ToastController, private router: Router, private alertController: AlertController) { }
 
@@ -190,10 +196,45 @@ export class PedidosPage implements OnInit {
            this.destinatarioCambio && this.cantidadPaquetesCambio >= 1 &&
            this.telefonoCambio && this.telefonoCambio.length === 8;
   }
-  
-  
 
+  // Función para generar el PDF con la etiqueta y el código QR
+  generarEtiquetaPDF(pedido: any) {
+    const doc = new jsPDF();
 
+    // Seleccionar el elemento QR generado dinámicamente
+    const qrElementId = `qrCode-${pedido.id}`;
+    const qrElement = document.getElementById(qrElementId);
 
+    if (qrElement) {
+      // Convertir la sección que contiene el QR a imagen
+      html2canvas(qrElement).then(canvas => {
+        const qrImage = canvas.toDataURL('image/png');
 
+        // Agregar detalles del pedido al PDF
+        doc.text(`Remitente: ${pedido.nombre_destinatario}`, 10, 30);
+        doc.text(`Dirección de Pedido: ${pedido.direccion_pedido}`, 10, 40);
+        doc.text(`Dirección de Entrega: ${pedido.direccion_entrega}`, 10, 50);
+        doc.text(`Teléfono: ${pedido.telefono}`, 10, 60);
+        doc.text(`Costo del envío en CLP $: ${pedido.costo}`, 10, 70);
+
+        // Añadir el código QR al PDF
+        doc.addImage(qrImage, 'PNG', 10, 80, 50, 50);
+
+        // Descargar el PDF
+        doc.save(`etiqueta_pedido_${pedido.id}.pdf`);
+      }).catch(error => {
+        console.error('Error generando la imagen del código QR:', error);
+      });
+    } else {
+      console.error('No se pudo encontrar el elemento QR para el pedido:', pedido.id);
+    }
+  }
 }
+
+  
+  
+  
+
+
+
+
