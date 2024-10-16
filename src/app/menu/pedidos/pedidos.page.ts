@@ -216,16 +216,7 @@ generarEtiquetaPDF(pedido: any) {
       doc.text(`Remitente: ${pedido.nombre_destinatario}`, 10, currentY);
       currentY += 10; // Incrementar la posición para la siguiente línea
 
-      doc.text(`Dirección de Pedido: ${pedido.direccion_pedido}`, 10, currentY);
-      currentY += 10;
-
       doc.text(`Dirección de Entrega: ${pedido.direccion_entrega}`, 10, currentY);
-      currentY += 10;
-
-      doc.text(`Teléfono: ${pedido.telefono}`, 10, currentY);
-      currentY += 10;
-
-      doc.text(`Costo del envío en CLP $: ${pedido.costo}`, 10, currentY);
       currentY += 10;
 
       // Reemplazar true/false por "Sí"/"No"
@@ -258,6 +249,17 @@ generarEtiquetaPDF(pedido: any) {
     console.error('No se pudo encontrar el elemento QR para el pedido:', pedido.id);
   }
 }
+
+generarQRValue(pedido: any): string {
+  const qrValue = `valor envío $ : ${pedido.costo}, Origen: ${pedido.direccion_pedido}, Destino: ${pedido.direccion_entrega},
+  teléfono: ${pedido.telefono}`;
+  console.log('Valor del QR:', qrValue); // Verificar el valor generado
+  return qrValue;
+}
+
+
+
+
 }
 
 

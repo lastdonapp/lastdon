@@ -36,7 +36,7 @@
 
         <!-- QR code dynamically generated, only visible if pedido.pagado is true -->
         <div *ngIf="pedido.pagado" id="qrCode-{{pedido.id}}">
-          <qr-code [value]="'Precio: ' + pedido.costo + ', Origen: ' + pedido.direccion_pedido + ', Destino: ' + pedido.direccion_entrega" [size]="100"></qr-code>
+          <qr-code [value]="generarQRValue(pedido)" [size]="100"></qr-code>
         </div>
         <!-- Botón para generar la etiqueta con el QR -->
       <ion-button color="primary" (click)="generarEtiquetaPDF(pedido)" [disabled]="!pedido.pagado">
