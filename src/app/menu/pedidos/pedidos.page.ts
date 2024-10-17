@@ -27,6 +27,9 @@ export class PedidosPage implements OnInit {
   valorCambioPedido : number =1000;
   telefonoCambio : string = '';
   cambioRealizado : boolean = true;
+  tituloCambio : string ='';
+  searchTerm: string = '';  // Término de búsqueda
+  pedidosFiltrados: any[] = [];
  
 
   constructor(private supabaseService: SupabaseService, private toastController: ToastController, private router: Router, private alertController: AlertController) { }
@@ -36,6 +39,7 @@ export class PedidosPage implements OnInit {
 
   }
 
+  
   async loadPedidos() {
     try {
       this.pedidos = await this.supabaseService.getPedidos(this.usuario.email);
@@ -43,17 +47,12 @@ export class PedidosPage implements OnInit {
         if (pedido.dimensiones) {
           pedido.dimensiones = JSON.parse(pedido.dimensiones);
         }
-  
-        // Consultar si el cambio ya fue realizado (boolean de la base de datos)
-        if (pedido.cambio_realizado) {
-          // Si cambio_realizado es true, deshabilitar el botón para este pedido
-          pedido.cambioRealizado = true;
-        } else {
-          pedido.cambioRealizado = false;
-        }
-  
-        pedido.mostrarFormulario = false; // Agregar propiedad para mostrar el formulario de cambios si aplica
+        pedido.cambioRealizado = pedido.cambio_realizado ? true : false;
+        pedido.mostrarFormulario = false;
       });
+
+      this.pedidosFiltrados = this.pedidos;  // Inicialmente mostrar todos los pedidos
+
       if (this.pedidos.length === 0) {
         this.showToast('No tienes pedidos actualmente.');
       }
@@ -62,8 +61,16 @@ export class PedidosPage implements OnInit {
       console.error('Error al cargar los pedidos:', error);
     }
   }
-  
 
+  filtrarPedidos(event: any) {
+    const searchTerm = event.target.value.toLowerCase().trim();
+    this.pedidosFiltrados = this.pedidos.filter(pedido => 
+      pedido && pedido.nombre_pedido && 
+      pedido.nombre_pedido.toLowerCase().includes(searchTerm)
+    );
+    console.log('Pedidos filtrados:', this.pedidosFiltrados);
+  }
+  
   // Mostrar el formulario y detener la propagación del evento
   mostrarFormulario(id: string, event: Event) {
     event.stopPropagation(); // Detener la propagación del evento
@@ -132,7 +139,7 @@ export class PedidosPage implements OnInit {
               }
   
               const pedidoCambio = {
-                nombrePedido: pedidoEntregado.nombre_pedido,
+                nombrePedido: this.tituloCambio,
                 descripcionPedido: this.observaciones,
                 direccionPedido: this.direccionPedidoCambio,
                 direccionEntrega: this.direccionEntregaCambio,
@@ -256,6 +263,7 @@ generarQRValue(pedido: any): string {
   console.log('Valor del QR:', qrValue); // Verificar el valor generado
   return qrValue;
 }
+
 
 
 

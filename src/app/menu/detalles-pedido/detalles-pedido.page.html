@@ -27,7 +27,7 @@
       </ul>
       <p><strong>Fragil:</strong> {{ pedido.fragil ? 'Sí' : 'No' }}</p>
       <p><strong>Cambio:</strong> {{ pedido.cambio ? 'Sí' : 'No' }}</p>
-      <p><strong>Excede 10 Kilos:</strong> {{ pedido.excede_10_kilos ? 'Sí' : 'No' }}</p>
+      <p><strong>Excede 2,5 Kilos:</strong> {{ pedido.excedeKilos ? 'Sí' : 'No' }}</p>
       <p><strong>Costo:</strong> {{ pedido.costo }}</p>
       <p><strong>Estado:</strong> {{ pedido.estado }}</p>
       <ion-img *ngIf="pedido.image_url" [src]="pedido.image_url" alt="Foto del pedido"></ion-img>

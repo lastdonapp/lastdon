@@ -1,4 +1,3 @@
-<!-- pedidos.page.html -->
 <ion-header>
   <ion-toolbar>
     <ion-title>Mis Pedidos</ion-title>
@@ -6,8 +5,12 @@
 </ion-header>
 
 <ion-content>
-  <ion-list *ngIf="pedidos.length > 0; else noPedidos">
-    <ion-item *ngFor="let pedido of pedidos" (click)="verDetalles(pedido.id, pedido.mostrarFormulario)">
+  <!-- Barra de búsqueda -->
+  <ion-searchbar [(ngModel)]="searchTerm" (ionInput)="filtrarPedidos($event)" placeholder="Buscar pedidos por título"></ion-searchbar>
+  
+  <!-- Lista de pedidos filtrados -->
+  <ion-list *ngIf="pedidosFiltrados.length > 0; else noPedidos">
+    <ion-item *ngFor="let pedido of pedidosFiltrados" (click)="verDetalles(pedido.id, pedido.mostrarFormulario)">
       <ion-card>
         <ion-card-header>
           <ion-card-title>{{ pedido.nombre_pedido }}</ion-card-title>
@@ -22,89 +25,86 @@
           <p><strong>Teléfono:</strong> {{ pedido.telefono }}</p>
           <p><strong>Cantidad de Paquetes:</strong> {{ pedido.cantidad_paquetes }}</p>
           <p><strong>Dimensiones:</strong></p>
-  <ul>
-    <li><strong>Alto:</strong> {{ pedido.dimensiones.alto }} {{ pedido.dimensiones.unidad }}</li>
-    <li><strong>Ancho:</strong> {{ pedido.dimensiones.ancho }} {{ pedido.dimensiones.unidad }}</li>
-    <li><strong>Largo:</strong> {{ pedido.dimensiones.largo }} {{ pedido.dimensiones.unidad }}</li>
-  </ul>
+          <ul>
+            <li><strong>Alto:</strong> {{ pedido.dimensiones.alto }} {{ pedido.dimensiones.unidad }}</li>
+            <li><strong>Ancho:</strong> {{ pedido.dimensiones.ancho }} {{ pedido.dimensiones.unidad }}</li>
+            <li><strong>Largo:</strong> {{ pedido.dimensiones.largo }} {{ pedido.dimensiones.unidad }}</li>
+          </ul>
           <p><strong>Fragil:</strong> {{ pedido.fragil ? 'Sí' : 'No' }}</p>
           <p><strong>Cambio:</strong> {{ pedido.cambio ? 'Sí' : 'No' }}</p>
-          <p><strong>Excede 10 Kilos:</strong> {{ pedido.excede_10_kilos ? 'Sí' : 'No' }}</p>
+          <p><strong>Excede 2,5 kilos:</strong> {{ pedido.excedeKilos ? 'Sí' : 'No' }}</p>
           <p><strong>Costo:</strong> {{ pedido.costo }}</p>
           <p><strong>Estado:</strong> {{ pedido.estado }}</p>
 
+          <!-- Código QR y botones condicionales -->
+          <div *ngIf="pedido.pagado" id="qrCode-{{pedido.id}}">
+            <qr-code [value]="generarQRValue(pedido)" [size]="100"></qr-code>
+          </div>
 
-        <!-- QR code dynamically generated, only visible if pedido.pagado is true -->
-        <div *ngIf="pedido.pagado" id="qrCode-{{pedido.id}}">
-          <qr-code [value]="generarQRValue(pedido)" [size]="100"></qr-code>
-        </div>
-        <!-- Botón para generar la etiqueta con el QR -->
-      <ion-button color="primary" (click)="generarEtiquetaPDF(pedido)" [disabled]="!pedido.pagado">
-        Descargar Etiqueta
-      </ion-button>
+          <ion-button color="primary" (click)="generarEtiquetaPDF(pedido)" [disabled]="!pedido.pagado">
+            Descargar Etiqueta
+          </ion-button>
 
-      <!-- Mensaje condicional para el botón de descarga -->
-      <p *ngIf="!pedido.pagado" style="color: red;">
-        Debe cancelar la entrega para solicitar la etiqueta virtual.
-      </p>
+          <p *ngIf="!pedido.pagado" style="color: red;">
+            Debe cancelar la entrega para solicitar la etiqueta virtual.
+          </p>
 
-      <!-- Botón para solicitar un cambio -->
-      <ion-button *ngIf="pedido.estado === 'entregado'" color="primary" 
-        [disabled]="pedido.cambioRealizado || pedido.cambio" 
-        (click)="mostrarFormulario(pedido.id, $event)">
-        Solicitar cambio
-      </ion-button>
+          <ion-button *ngIf="pedido.estado === 'entregado'" color="primary" 
+            [disabled]="pedido.cambioRealizado || pedido.cambio" 
+            (click)="mostrarFormulario(pedido.id, $event)">
+            Solicitar cambio
+          </ion-button>
 
-      <!-- Mensaje cuando ya se ha realizado un cambio en el pedido -->
-      <p *ngIf="pedido.cambioRealizado" style="color: orange;">
-        Este pedido ya tiene un cambio realizado.
-      </p>
+          <p *ngIf="pedido.cambioRealizado" style="color: orange;">
+            Este pedido ya tiene un cambio realizado.
+          </p>
 
-      <!-- Mensaje cuando el pedido ha sido marcado como cambiado -->
-      <p *ngIf="pedido.cambio" style="color: orange;">
-        No se puede gestionar un cambio de un pedido que ya ha sido modificado.
-      </p>
-          
-      <!-- Formulario condicional -->
-      <ion-item *ngIf="pedido.mostrarFormulario">
-        <ion-label position="stacked">Observaciones</ion-label>
-        <ion-input [(ngModel)]="observaciones" placeholder="Escribe tus observaciones" required></ion-input>
-        <p *ngIf="observaciones.length > 250" style="color: red;">La longitud máxima de las observaciones es de 250 caracteres.</p>
+          <p *ngIf="pedido.cambio" style="color: orange;">
+            No se puede gestionar un cambio de un pedido que ya ha sido modificado.
+          </p>
 
-    
-        <ion-label position="stacked">Dirección de Pedido</ion-label>
-        <ion-input [(ngModel)]="direccionPedidoCambio" placeholder="Escribe la dirección de pedido" required></ion-input>
-        <p *ngIf="direccionPedidoCambio.length > 60" style="color: red;">La longitud máxima de la dirección de pedido es de 60 caracteres.</p>
+          <!-- Formulario de cambio condicional -->
+          <ion-item *ngIf="pedido.mostrarFormulario">
+            <ion-label position="stacked">Título</ion-label>
+            <ion-input [(ngModel)]="tituloCambio" placeholder="Escribe un título para el cambio" required></ion-input>
+            <p *ngIf="tituloCambio.length > 50" style="color: red;">La longitud máxima del título es de 50 caracteres.</p>
 
-        <ion-label position="stacked">Dirección de Entrega</ion-label>
-        <ion-input [(ngModel)]="direccionEntregaCambio" placeholder="Escribe la dirección de entrega" required></ion-input>
-        <p *ngIf="direccionEntregaCambio.length > 60" style="color: red;">La longitud máxima de la dirección de entrega es de 60 caracteres.</p>
+            <ion-label position="stacked">Observaciones</ion-label>
+            <ion-input [(ngModel)]="observaciones" placeholder="Escribe tus observaciones" required></ion-input>
+            <p *ngIf="observaciones.length > 250" style="color: red;">La longitud máxima de las observaciones es de 250 caracteres.</p>
 
-        <ion-label position="stacked">Nombre del Destinatario</ion-label>
-        <ion-input [(ngModel)]="destinatarioCambio" placeholder="Escribe el nombre del destinatario" required></ion-input>
-        <p *ngIf="destinatarioCambio.length > 20" style="color: red;">La longitud máxima del nombre del destinatario es de 20caracteres.</p>
+            <ion-label position="stacked">Dirección de Pedido</ion-label>
+            <ion-input [(ngModel)]="direccionPedidoCambio" placeholder="Escribe la dirección de pedido" required></ion-input>
+            <p *ngIf="direccionPedidoCambio.length > 60" style="color: red;">La longitud máxima de la dirección de pedido es de 60 caracteres.</p>
 
-        <ion-label position="stacked">Cantidad de Paquetes</ion-label>
-        <ion-input [(ngModel)]="cantidadPaquetesCambio" type="number" min="1" placeholder="Ingrese cantidad de paquetes" required></ion-input>
+            <ion-label position="stacked">Dirección de Entrega</ion-label>
+            <ion-input [(ngModel)]="direccionEntregaCambio" placeholder="Escribe la dirección de entrega" required></ion-input>
+            <p *ngIf="direccionEntregaCambio.length > 60" style="color: red;">La longitud máxima de la dirección de entrega es de 60 caracteres.</p>
 
-        <ion-label position="stacked">Teléfono del Destinatario</ion-label>
-        <ion-input [(ngModel)]="telefonoCambio" type="tel" minlength="8" maxlength="8" placeholder="Ingrese un número de teléfono" required></ion-input>
+            <ion-label position="stacked">Nombre del Destinatario</ion-label>
+            <ion-input [(ngModel)]="destinatarioCambio" placeholder="Escribe el nombre del destinatario" required></ion-input>
+            <p *ngIf="destinatarioCambio.length > 20" style="color: red;">La longitud máxima del nombre del destinatario es de 20 caracteres.</p>
 
-        <ion-button [disabled]="!isFormValid()" (click)="generarNuevoPedidoDesdeEntregado(pedido.id)">Confirmar Cambio</ion-button>
-        
-        <!-- Botón para cerrar el formulario -->
-        <ion-button color="danger" (click)="cerrarFormulario(pedido.id, $event)">Cerrar formulario</ion-button>
-      </ion-item>
+            <ion-label position="stacked">Cantidad de Paquetes</ion-label>
+            <ion-input [(ngModel)]="cantidadPaquetesCambio" type="number" min="1" placeholder="Ingrese cantidad de paquetes" required></ion-input>
+
+            <ion-label position="stacked">Teléfono del Destinatario</ion-label>
+            <ion-input [(ngModel)]="telefonoCambio" type="tel" minlength="8" maxlength="8" placeholder="Ingrese un número de teléfono" required></ion-input>
+
+            <ion-button [disabled]="!isFormValid()" (click)="generarNuevoPedidoDesdeEntregado(pedido.id)">Confirmar Cambio</ion-button>
+
+            <ion-button color="danger" (click)="cerrarFormulario(pedido.id, $event)">Cerrar formulario</ion-button>
+          </ion-item>
 
         </ion-card-content>
       </ion-card>
-      
     </ion-item>
   </ion-list>
+
+  <!-- Mensaje cuando no hay pedidos -->
   <ng-template #noPedidos>
     <ion-text>
       <h2>No tienes pedidos actualmente.</h2>
     </ion-text>
   </ng-template>
-
 </ion-content>
