@@ -65,10 +65,6 @@
 
           <!-- Formulario de cambio condicional -->
           <ion-item *ngIf="pedido.mostrarFormulario">
-            <ion-label position="stacked">Título</ion-label>
-            <ion-input [(ngModel)]="tituloCambio" placeholder="Escribe un título para el cambio" required></ion-input>
-            <p *ngIf="tituloCambio.length > 50" style="color: red;">La longitud máxima del título es de 50 caracteres.</p>
-
             <ion-label position="stacked">Observaciones</ion-label>
             <ion-input [(ngModel)]="observaciones" placeholder="Escribe tus observaciones" required></ion-input>
             <p *ngIf="observaciones.length > 250" style="color: red;">La longitud máxima de las observaciones es de 250 caracteres.</p>

@@ -1501,22 +1501,22 @@ async obtenerDetallesPedidoEntregado(pedidoId: string): Promise<any> {
     }
 
     const [pedido] = await response.json();
+
     return {
-      nombre_pedido : pedido.nombrePedido,
-      descripcion_pedido : pedido.descripcionPedido,
-      comuna : pedido.comuna,
-      image_url : pedido.image_url,
-      usuario : pedido.usuario,
-      excede_kilos : pedido.excedeKilos,
-      fragil : pedido.fragil,
-      dimensiones : pedido.dimensiones,
-      
+      nombre_pedido: pedido.nombre_pedido, // Asegúrate de usar el nombre correcto
+      comuna: pedido.comuna,
+      image_url: pedido.image_url,
+      usuario: pedido.usuario,
+      excede_Kilos: pedido.excede_Kilos, // Verifica también el nombre correcto aquí
+      fragil: pedido.fragil,
+      dimensiones: pedido.dimensiones
     };
   } catch (error) {
     console.error('Error al obtener los detalles del pedido:', error);
     throw error;
   }
 }
+
 
 
 

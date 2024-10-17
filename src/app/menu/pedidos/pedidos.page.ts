@@ -27,12 +27,18 @@ export class PedidosPage implements OnInit {
   valorCambioPedido : number =1000;
   telefonoCambio : string = '';
   cambioRealizado : boolean = true;
-  tituloCambio : string ='';
   searchTerm: string = '';  // Término de búsqueda
   pedidosFiltrados: any[] = [];
+  prefijo : string= '+569';
+  prefijoNombreCambio : string ='Cambio';
+
+
+
+
  
 
-  constructor(private supabaseService: SupabaseService, private toastController: ToastController, private router: Router, private alertController: AlertController) { }
+  constructor(private supabaseService: SupabaseService, private toastController: ToastController, private router: Router, private alertController: AlertController
+  ) { }
 
   ngOnInit() {
     this.loadPedidos();
@@ -70,7 +76,7 @@ export class PedidosPage implements OnInit {
     );
     console.log('Pedidos filtrados:', this.pedidosFiltrados);
   }
-  
+
   // Mostrar el formulario y detener la propagación del evento
   mostrarFormulario(id: string, event: Event) {
     event.stopPropagation(); // Detener la propagación del evento
@@ -133,13 +139,18 @@ export class PedidosPage implements OnInit {
           handler: async () => {
             try {
               const pedidoEntregado = await this.supabaseService.obtenerDetallesPedidoEntregado(pedidoId);
+              console.log('Detalles del pedido entregado:', pedidoEntregado); // Añade esta línea
               if (!pedidoEntregado) {
                 console.error('No se encontraron los detalles del pedido entregado');
                 return;
               }
   
+              // Concatenar el prefijo con el número de teléfono al momento de la confirmación
+              const TelefonoFinal = this.prefijo + this.telefonoCambio;
+  
+              // Crear el objeto pedidoCambio con el teléfono concatenado
               const pedidoCambio = {
-                nombrePedido: this.tituloCambio,
+                nombrePedido: pedidoEntregado.nombre_pedido + this.prefijoNombreCambio,
                 descripcionPedido: this.observaciones,
                 direccionPedido: this.direccionPedidoCambio,
                 direccionEntrega: this.direccionEntregaCambio,
@@ -147,12 +158,12 @@ export class PedidosPage implements OnInit {
                 numeracionCasa: '1234',
                 vivienda: 'Nueva vivienda',
                 comuna: pedidoEntregado.comuna,
-                telefono: this.telefonoCambio,
+                telefono: TelefonoFinal, // Aquí usamos el teléfono concatenado
                 cantidadPaquetes: this.cantidadPaquetesCambio,
                 dimensiones: pedidoEntregado.dimensiones,
                 fragil: pedidoEntregado.fragil,
                 cambio: true,
-                excedeKilos: false,
+                excedeKilos: pedidoEntregado.excede_Kilos,
                 fecha: new Date().toISOString(),
                 costoTotal: this.valorCambioPedido,
                 estado: 'por tomar',
@@ -180,10 +191,8 @@ export class PedidosPage implements OnInit {
                 if (pedido) {
                   pedido.cambioRealizado = true;
                 }
-                // evitamos que sigua utilizando el formulario para hacer cambios
-                this.router.navigate(['menu/detalles-pedido']);
-
-
+  
+               pedido.mostrarFormulario = false;
               }
   
             } catch (error) {
@@ -197,7 +206,7 @@ export class PedidosPage implements OnInit {
   
     await alert.present();
   }
-  
+
   isFormValid() {
     return this.observaciones && this.direccionPedidoCambio && this.direccionEntregaCambio &&
            this.destinatarioCambio && this.cantidadPaquetesCambio >= 1 &&
@@ -260,7 +269,6 @@ generarEtiquetaPDF(pedido: any) {
 generarQRValue(pedido: any): string {
   const qrValue = `valor envío $ : ${pedido.costo}, Origen: ${pedido.direccion_pedido}, Destino: ${pedido.direccion_entrega},
   teléfono: ${pedido.telefono}`;
-  console.log('Valor del QR:', qrValue); // Verificar el valor generado
   return qrValue;
 }
 
