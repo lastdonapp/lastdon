@@ -1001,32 +1001,6 @@ async getToken(): Promise<any> {
     };
   }
 
-// método para actualizar el estado de verificado del usuario, se utilizará en la administración de usuarios
-  public async updateVerificado(userId: string, verificado: boolean): Promise<void> {
-    try {
-      const response = await fetch(`${this.apiUrl}/${userId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': this.apiKey,
-          'Authorization': `Bearer ${this.apiKey}`
-        },
-        body: JSON.stringify({ verificado })
-      });
-  
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error('Error al actualizar el estado de verificado:', errorData);
-        throw new Error(errorData.message || 'No se pudo actualizar el estado de verificado');
-      }
-  
-      console.log(`Estado de verificado actualizado correctamente para el usuario con ID: ${userId}`);
-    } catch (error) {
-      console.error('Error en la actualización de verificado:', error);
-      throw error;
-    }
-  }
-
 
   async iniciarTracking(trackingData: any): Promise<string> {
     const { data, error } = await this.supabase
@@ -1509,7 +1483,8 @@ async obtenerDetallesPedidoEntregado(pedidoId: string): Promise<any> {
       usuario: pedido.usuario,
       excede_Kilos: pedido.excede_Kilos, // Verifica también el nombre correcto aquí
       fragil: pedido.fragil,
-      dimensiones: pedido.dimensiones
+      dimensiones: pedido.dimensiones,
+      cambio : pedido.cambio
     };
   } catch (error) {
     console.error('Error al obtener los detalles del pedido:', error);
@@ -1536,6 +1511,63 @@ async actualizarCambioRealizado(pedidoId: string, cambioRealizado: boolean) {
 
 
 
+async entregaFallida(pedidoId: string): Promise<void> {
+  try {
+      const response = await fetch(`${this.pedidos}?id=eq.${encodeURIComponent(pedidoId)}`, {
+          method: 'PATCH',
+          headers: {
+              'Content-Type': 'application/json',
+              'apikey': this.apiKey,
+              'Authorization': `Bearer ${this.apiKey}`
+          },
+          body: JSON.stringify({
+              estado: 'Entrega Fallida' // Actualiza el estado del pedido
+          })
+      });
+
+      if (!response.ok) {
+          const errorText = await response.text();
+          console.error('Error al actualizar el estado del pedido:', errorText);
+          throw new Error(errorText || 'Error al actualizar el estado del pedido');
+      }
+
+      console.log('Estado del pedido actualizado exitosamente a "Entrega Fallida.');
+
+  } catch (error) {
+      console.error('Error al actualizar el estado del pedido:', error);
+      throw error;
+  }
+}
+
+
+
+async recepcionFallida(pedidoId: string): Promise<void> {
+  try {
+      const response = await fetch(`${this.pedidos}?id=eq.${encodeURIComponent(pedidoId)}`, {
+          method: 'PATCH',
+          headers: {
+              'Content-Type': 'application/json',
+              'apikey': this.apiKey,
+              'Authorization': `Bearer ${this.apiKey}`
+          },
+          body: JSON.stringify({
+              estado: 'Recepcion Fallida' // Actualiza el estado del pedido
+          })
+      });
+
+      if (!response.ok) {
+          const errorText = await response.text();
+          console.error('Error al actualizar el estado del pedido:', errorText);
+          throw new Error(errorText || 'Error al actualizar el estado del pedido');
+      }
+
+      console.log('Estado del pedido actualizado exitosamente a "Recepcion Fallida.');
+
+  } catch (error) {
+      console.error('Error al actualizar el estado del pedido:', error);
+      throw error;
+  }
+}
 
 
 
@@ -1543,8 +1575,6 @@ async actualizarCambioRealizado(pedidoId: string, cambioRealizado: boolean) {
 
 
 
-  
-  
 
 
 

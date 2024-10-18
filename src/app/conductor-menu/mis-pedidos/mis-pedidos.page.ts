@@ -16,7 +16,7 @@ export class MisPedidosPage implements OnInit {
   capturedPhoto: string = ''; // Variable para almacenar la URL de la foto capturada 
   photoUrl: string = ''; // URL de la foto del pedido
 
-  constructor(private supabaseService: SupabaseService, private toastController: ToastController, private router: Router, private alertController: AlertController) {}
+  constructor(private readonly supabaseService: SupabaseService, private readonly toastController: ToastController, private readonly router: Router, private readonly alertController: AlertController) {}
 
   ngOnInit() {
     this.loadPedidos();

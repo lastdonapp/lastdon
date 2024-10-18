@@ -37,6 +37,16 @@
 
 
 
+         <!-- Botón "Recepcionado" solo si el pedido está en estado "tomado" -->
+         <ion-button 
+         *ngIf="pedido.estado === 'tomado'" 
+         color="secondary">
+         Recepcionado fallido
+       </ion-button>
+
+
+
+
          <!-- Botón "envío rápido" solo si el pedido está en estado "recepcionado" -->
          <ion-button 
          (click)="marcarEnvioRapido(pedido.id)"
@@ -55,6 +65,14 @@
         color="primary">
         Entregado
       </ion-button>
+
+         <!-- Botón "Entregado" solo si el pedido está en estado "Ingresado a centro de distribución" -->
+         <ion-button 
+         *ngIf="pedido.estado === 'reanudado' || pedido.estado === 'Envio rápido'" 
+         color="primary">
+         Entrega Falllida
+       </ion-button>
+
 
       <!-- Botón "Ingresar a Centro de Distribución" solo si el pedido está en estado "recepcionado" -->
       <ion-button 

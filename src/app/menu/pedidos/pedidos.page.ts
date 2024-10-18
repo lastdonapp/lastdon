@@ -245,6 +245,15 @@ generarEtiquetaPDF(pedido: any) {
       doc.text(`¿Excede 2,5 kilos? ${excedeKilos}`, 10, currentY);
       currentY += 10; // Incrementar si agregas más texto después
 
+
+
+      const cambio = pedido.cambio ? 'Sí' : 'No'; 
+      doc.text(`¿Es un Cambio? ${cambio}`, 10, currentY);
+      currentY += 10; // Incrementar si agregas más texto después
+
+
+
+
       // Añadir el código QR al PDF
       const qrWidth = canvas.width;
       const qrHeight = canvas.height;
