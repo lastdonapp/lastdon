@@ -377,21 +377,125 @@ export class MisPedidosPage implements OnInit {
 
 
 
-  marcarEntregaFallida(pedidoId: string) {
-    // Lógica para marcar la entrega como fallida
-    console.log(`Entrega fallida para el pedido con ID: ${pedidoId}`);
-    // Aquí puedes agregar la lógica de actualización en la base de datos, etc.
-  }
 
-
-
-
-  marcarRecepcionFallida(pedidoId: string) {
-    // Lógica para marcar la entrega como fallida
-    console.log(`Entrega fallida para el pedido con ID: ${pedidoId}`);
-    // Aquí puedes agregar la lógica de actualización en la base de datos, etc.
+  async recepcionFallidaYLiberar(pedidoId: string) {
+    try {
+      const alert = await this.alertController.create({
+        header: '¿Confirmar Recepción Fallida?',
+        message: '¿Está seguro de que desea marcar este pedido como "Recepción Fallida" y liberar al conductor?',
+        buttons: [
+          {
+            text: 'Cancelar',
+            role: 'cancel',
+            handler: () => {
+              console.log('Acción cancelada por el usuario');
+            }
+          },
+          {
+            text: 'Confirmar',
+            handler: async () => {
+              try {
+                // Actualizar el estado del pedido a "por tomar" (Recepción Fallida)
+                await this. supabaseService.recepcionFallida(pedidoId);
+                
+                // Liberar al conductor asociado con el pedido
+                await this. supabaseService.liberarConductor(pedidoId);
+  
+                const toast = await this.toastController.create({
+                  message: 'Recepción fallida y conductor liberado exitosamente',
+                  duration: 2000,
+                  color: 'success'
+                });
+                await toast.present();
+  
+                // Recargar la lista de pedidos, si aplica
+                this.loadPedidos(); 
+              } catch (error) {
+                console.error('Error al procesar la recepción fallida y liberar conductor:', error);
+                const toast = await this.toastController.create({
+                  message: 'Error al procesar la acción',
+                  duration: 2000,
+                  color: 'danger'
+                });
+                await toast.present();
+              }
+            }
+          }
+        ]
+      });
+  
+      await alert.present();
+    } catch (error) {
+      console.error('Error al mostrar la alerta de confirmación:', error);
+    }
   }
   
+  async marcarEntregaFallida(pedidoId: string) {
+    try {
+      // Obtener el trackingId basado en el pedidoId
+      const trackingId = await this.supabaseService.getTrackingById(pedidoId);
+  
+      if (!trackingId) {
+        const alert = await this.alertController.create({
+          header: 'Error',
+          message: 'No se pudo obtener el tracking del pedido.',
+          buttons: ['Aceptar']
+        });
+        await alert.present();
+        return; // Detener la ejecución si no se encuentra el tracking
+      }
+  
+      const alert = await this.alertController.create({
+        header: '¿Confirmar entrega fallida?',
+        message: '¿Está seguro de que desea marcar este pedido como "Entrega Fallida"?',
+        buttons: [
+          {
+            text: 'Cancelar',
+            role: 'cancel',
+            handler: () => {
+              console.log('Cambio de estado cancelado por el usuario');
+            }
+          },
+          {
+            text: 'Confirmar',
+            handler: async () => {
+              try {
+  
+                await this.supabaseService.almacenarPedido(pedidoId);
+  
+                // Liberar al conductor
+                await this.supabaseService.liberarConductor(pedidoId);
+  
+                // Liberar el tracking del conductor
+                await this.supabaseService.liberarTrackingConductor(trackingId);
+  
+                const toast = await this.toastController.create({
+                  message: 'Pedido marcado como "Entrega Fallida"',
+                  duration: 2000,
+                  color: 'success'
+                });
+                await toast.present();
+  
+                this.loadPedidos(); // Recargar la lista de pedidos
+              } catch (error) {
+                console.error('Error al actualizar el pedido:', error);
+                const toast = await this.toastController.create({
+                  message: 'Error al marcar como "Entrega Fallida"',
+                  duration: 2000,
+                  color: 'danger'
+                });
+                await toast.present();
+              }
+            }
+          }
+        ]
+      });
+  
+      await alert.present();
+    } catch (error) {
+      console.error('Error al cambiar el estado del pedido:', error);
+    }
+  }
   
 
 

@@ -1511,34 +1511,6 @@ async actualizarCambioRealizado(pedidoId: string, cambioRealizado: boolean) {
 
 
 
-async entregaFallida(pedidoId: string): Promise<void> {
-  try {
-      const response = await fetch(`${this.pedidos}?id=eq.${encodeURIComponent(pedidoId)}`, {
-          method: 'PATCH',
-          headers: {
-              'Content-Type': 'application/json',
-              'apikey': this.apiKey,
-              'Authorization': `Bearer ${this.apiKey}`
-          },
-          body: JSON.stringify({
-              estado: 'Entrega Fallida' // Actualiza el estado del pedido
-          })
-      });
-
-      if (!response.ok) {
-          const errorText = await response.text();
-          console.error('Error al actualizar el estado del pedido:', errorText);
-          throw new Error(errorText || 'Error al actualizar el estado del pedido');
-      }
-
-      console.log('Estado del pedido actualizado exitosamente a "Entrega Fallida.');
-
-  } catch (error) {
-      console.error('Error al actualizar el estado del pedido:', error);
-      throw error;
-  }
-}
-
 
 
 async recepcionFallida(pedidoId: string): Promise<void> {
@@ -1551,7 +1523,7 @@ async recepcionFallida(pedidoId: string): Promise<void> {
               'Authorization': `Bearer ${this.apiKey}`
           },
           body: JSON.stringify({
-              estado: 'Recepcion Fallida' // Actualiza el estado del pedido
+              estado: 'por tomar' // Actualiza el estado del pedido
           })
       });
 

@@ -53,7 +53,8 @@
         
         <ion-row>
           <ion-col>
-            <ion-button 
+            <ion-button
+            (click)="recepcionFallidaYLiberar(pedido.id)"
               *ngIf="pedido.estado === 'tomado'" 
               expand="block" 
               color="secondary">
@@ -106,6 +107,7 @@
         <ion-row>
           <ion-col>
             <ion-button 
+            (click)="marcarEntregaFallida(pedido.id)"
               *ngIf="pedido.estado === 'reanudado' || pedido.estado === 'Envio rápido'" 
               expand="block" 
               color="primary">
