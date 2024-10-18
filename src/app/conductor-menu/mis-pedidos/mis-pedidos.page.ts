@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { SupabaseService } from 'src/app/services/supabase.service';// Asegúrate de ajustar la ruta según tu estructura
-import { ToastController } from '@ionic/angular';
+import { ToastController, AlertController } from '@ionic/angular';
 import { Router } from '@angular/router';
-import { AlertController } from '@ionic/angular';
+
 
 @Component({
   selector: 'app-mis-pedidos',
@@ -52,10 +52,6 @@ export class MisPedidosPage implements OnInit {
     }
   }
   
-
-
-
-
 
   async entregarPedido(pedidoId: string) {
     try {
@@ -356,6 +352,50 @@ export class MisPedidosPage implements OnInit {
       console.error('Error al procesar el Envío Rápido:', error);
     }
   }
+
+
+
+
+
+
+  async contactarPorWsp(pedidoId: string) {
+    try {
+      // Obtener el número de teléfono usando el nuevo método
+      const telefono = await this.supabaseService.getTelefonoPorPedido(pedidoId);
+  
+      if (telefono) {
+        const url = `https://wa.me/${telefono}`;
+        window.open(url, '_blank');
+      } else {
+        console.error('No se encontró un número de teléfono para este pedido.');
+      }
+    } catch (error) {
+      console.error('Error al contactar por WhatsApp:', error);
+    }
+  }
+  
+
+
+
+  marcarEntregaFallida(pedidoId: string) {
+    // Lógica para marcar la entrega como fallida
+    console.log(`Entrega fallida para el pedido con ID: ${pedidoId}`);
+    // Aquí puedes agregar la lógica de actualización en la base de datos, etc.
+  }
+
+
+
+
+  marcarRecepcionFallida(pedidoId: string) {
+    // Lógica para marcar la entrega como fallida
+    console.log(`Entrega fallida para el pedido con ID: ${pedidoId}`);
+    // Aquí puedes agregar la lógica de actualización en la base de datos, etc.
+  }
+  
+  
+
+
+  
   
   
 

@@ -26,27 +26,44 @@
         <p>Fecha tomado: {{ pedido.fecha_tomado | date }}</p>
       </ion-label>
 
-      <!-- Botón "Recepcionado" solo si el pedido está en estado "tomado" -->
-      <ion-button 
-        (click)="recepcionar(pedido.id)"
-        *ngIf="pedido.estado === 'tomado'" 
-        color="secondary">
-        Recepcionado
-      </ion-button>
+      <ion-grid>
+        <ion-row>
+          <ion-col>
+            <ion-button 
+              (click)="recepcionar(pedido.id)"
+              *ngIf="pedido.estado === 'tomado'" 
+              expand="block" 
+              color="secondary">
+              Recepcionado
+            </ion-button>
+          </ion-col>
+        </ion-row>
+        
+        <ion-row>
+          <ion-col>
+            <ion-button 
+              (click)="contactarPorWsp(pedido.id)"
+              *ngIf="pedido.estado === 'tomado'" 
+              expand="block" 
+              color="secondary">
+              Contactar Cliente 
+            </ion-button>
+          </ion-col>
+        </ion-row>
+        
+        <ion-row>
+          <ion-col>
+            <ion-button 
+              *ngIf="pedido.estado === 'tomado'" 
+              expand="block" 
+              color="secondary">
+              Recepción fallida
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
 
-
-
-
-         <!-- Botón "Recepcionado" solo si el pedido está en estado "tomado" -->
-         <ion-button 
-         *ngIf="pedido.estado === 'tomado'" 
-         color="secondary">
-         Recepcionado fallido
-       </ion-button>
-
-
-
-
+      
          <!-- Botón "envío rápido" solo si el pedido está en estado "recepcionado" -->
          <ion-button 
          (click)="marcarEnvioRapido(pedido.id)"
@@ -58,21 +75,46 @@
 
 
 
-      <!-- Botón "Entregado" solo si el pedido está en estado "Ingresado a centro de distribución" -->
-      <ion-button 
-        (click)="entregarPedido(pedido.id)" 
-        *ngIf="pedido.estado === 'reanudado' || pedido.estado === 'Envio rápido'" 
-        color="primary">
-        Entregado
-      </ion-button>
-
-         <!-- Botón "Entregado" solo si el pedido está en estado "Ingresado a centro de distribución" -->
-         <ion-button 
-         *ngIf="pedido.estado === 'reanudado' || pedido.estado === 'Envio rápido'" 
-         color="primary">
-         Entrega Falllida
-       </ion-button>
-
+       <ion-grid>
+        <!-- Fila para el botón "Entregado" -->
+        <ion-row>
+          <ion-col>
+            <ion-button 
+              (click)="entregarPedido(pedido.id)" 
+              *ngIf="pedido.estado === 'reanudado' || pedido.estado === 'Envio rápido'" 
+              expand="block" 
+              color="primary">
+              Entregado
+            </ion-button>
+          </ion-col>
+        </ion-row>
+        
+        <!-- Fila para el botón "Contactar Cliente Entrega" -->
+        <ion-row>
+          <ion-col>
+            <ion-button 
+              (click)="contactarPorWsp(pedido.id)"
+              *ngIf="pedido.estado === 'reanudado' || pedido.estado === 'Envio rápido'" 
+              expand="block" 
+              color="primary">
+              Contactar Cliente 
+            </ion-button>
+          </ion-col>
+        </ion-row>
+        
+        <!-- Fila para el botón "Entrega Fallida" -->
+        <ion-row>
+          <ion-col>
+            <ion-button 
+              *ngIf="pedido.estado === 'reanudado' || pedido.estado === 'Envio rápido'" 
+              expand="block" 
+              color="primary">
+              Entrega Fallida
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+ 
 
       <!-- Botón "Ingresar a Centro de Distribución" solo si el pedido está en estado "recepcionado" -->
       <ion-button 

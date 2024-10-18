@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { SupabaseService } from '../../services/supabase.service';
 import { Router } from '@angular/router';
-import { ToastController } from '@ionic/angular';
+import { ToastController, AlertController } from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { AlertController } from '@ionic/angular';
+
 
 @Component({
   selector: 'app-agregar-pedidos',
@@ -138,11 +138,11 @@ export class AgregarPedidosPage implements OnInit {
   photoUrl: string = ''; // URL de la foto del pedido
 
   constructor(
-    private http: HttpClient,
-    private supabaseService: SupabaseService,
-    private router: Router,
-    private toastController: ToastController,
-    private alertController: AlertController
+    private readonly http: HttpClient,
+    private readonly supabaseService: SupabaseService,
+    private readonly router: Router,
+    private readonly toastController: ToastController,
+    private readonly alertController: AlertController
   ) {}
 
   ngOnInit() {

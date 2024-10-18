@@ -1573,6 +1573,44 @@ async recepcionFallida(pedidoId: string): Promise<void> {
 
 
 
+async getTelefonoPorPedido(pedidoId: string): Promise<string | null> {
+  try {
+    // Construir la query para obtener el número de teléfono del pedido específico
+    const query = `?id=eq.${encodeURIComponent(pedidoId)}`;
+    const response = await fetch(`${this.pedidos}${query}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': this.apiKey,
+        'Authorization': `Bearer ${this.apiKey}`
+      }
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Error al obtener el teléfono del pedido:', errorText);
+      throw new Error(errorText || 'Error al obtener el teléfono del pedido');
+    }
+
+    const pedido = await response.json();
+
+    // Verificar que el pedido contiene un teléfono
+    if (pedido && pedido.length > 0 && pedido[0].telefono) {
+      return pedido[0].telefono; // Retornar el número de teléfono
+    } else {
+      return null; // Retornar null si no se encontró un número de teléfono
+    }
+  } catch (error) {
+    console.error('Error al obtener el teléfono del pedido:', error);
+    throw error;
+  }
+}
+
+
+
+
+
+
 
 
 

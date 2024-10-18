@@ -1,9 +1,8 @@
 // pedidos.page.ts
 import { Component, OnInit } from '@angular/core';
 import { SupabaseService } from 'src/app/services/supabase.service';
-import { ToastController } from '@ionic/angular';
+import { ToastController, AlertController } from '@ionic/angular';
 import { Router } from '@angular/router';
-import { AlertController } from '@ionic/angular';
 import { jsPDF } from 'jspdf';  // Importar jsPDF para el PDF
 import html2canvas from 'html2canvas'; // Para convertir la parte visual a un PDF
 
@@ -37,7 +36,7 @@ export class PedidosPage implements OnInit {
 
  
 
-  constructor(private supabaseService: SupabaseService, private toastController: ToastController, private router: Router, private alertController: AlertController
+  constructor(private readonly supabaseService: SupabaseService, private readonly toastController: ToastController, private readonly router: Router, private readonly alertController: AlertController
   ) { }
 
   ngOnInit() {
