@@ -15,17 +15,17 @@ import emailjs from '@emailjs/browser';
   providedIn: 'root'
 })
 export class SupabaseService {
-  private tokensUrl = environment.tokensUrl; // URL para tokens
-  private apiUrl = environment.apiUrl; // Usa la URL de la API del entorno
-  private apiKey = environment.apiKey; // Usa la API Key del entorno
-  private pedidos = environment.pedUrl;
-  private URL = environment.URL; // url base
-  private tracking = environment.trackUrl;
-  private hashingService = new HashingService();
-  private supabase = createClient(this.URL, this.apiKey);
+  private readonly tokensUrl = environment.tokensUrl; // URL para tokens
+  private  readonly apiUrl = environment.apiUrl; // Usa la URL de la API del entorno
+  private readonly apiKey = environment.apiKey; // Usa la API Key del entorno
+  private readonly pedidos = environment.pedUrl;
+  private readonly URL = environment.URL; // url base
+  private  readonly tracking = environment.trackUrl;
+  private readonly hashingService = new HashingService();
+  private readonly supabase = createClient(this.URL, this.apiKey);
 
 
-  private httpOptions = {
+  private  readonly httpOptions = {
     headers: new HttpHeaders({
       'apikey': this.apiKey,
       'Authorization': `Bearer ${this.apiKey}`,
@@ -33,7 +33,7 @@ export class SupabaseService {
     })
   };
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   async takePicture(): Promise<File> {
     const image = await Camera.getPhoto({
@@ -1497,7 +1497,7 @@ async obtenerDetallesPedidoEntregado(pedidoId: string): Promise<any> {
 
 
 async actualizarCambioRealizado(pedidoId: string, cambioRealizado: boolean) {
-  const { data, error } = await this.supabase
+  const {  error } = await this.supabase
     .from('pedidos')
     .update({ cambio_realizado: cambioRealizado })
     .eq('id', pedidoId);
