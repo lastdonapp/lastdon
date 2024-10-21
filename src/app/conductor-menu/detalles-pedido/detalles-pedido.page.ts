@@ -27,11 +27,11 @@ export class DetallesPedidoPage implements OnInit {
 
 
   constructor(
-    private route: ActivatedRoute,
-    private supabaseService: SupabaseService,
-    private googleMapsService: GoogleMapsService,
-    private geolocationService: GeolocationService,
-    private toastController: ToastController
+    private readonly route: ActivatedRoute,
+    private readonly supabaseService: SupabaseService,
+    private readonly googleMapsService: GoogleMapsService,
+    private readonly geolocationService: GeolocationService,
+    private readonly toastController: ToastController
   ) {}
 
   async ngOnInit() {

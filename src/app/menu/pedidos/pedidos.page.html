@@ -69,11 +69,11 @@
             <ion-input [(ngModel)]="observaciones" placeholder="Escribe tus observaciones" required></ion-input>
             <p *ngIf="observaciones.length > 250" style="color: red;">La longitud máxima de las observaciones es de 250 caracteres.</p>
 
-            <ion-label position="stacked">Dirección de Pedido</ion-label>
+            <ion-label position="stacked">Origen</ion-label>
             <ion-input [(ngModel)]="direccionPedidoCambio" placeholder="Escribe la dirección de pedido" required></ion-input>
             <p *ngIf="direccionPedidoCambio.length > 60" style="color: red;">La longitud máxima de la dirección de pedido es de 60 caracteres.</p>
 
-            <ion-label position="stacked">Dirección de Entrega</ion-label>
+            <ion-label position="stacked">Destino</ion-label>
             <ion-input [(ngModel)]="direccionEntregaCambio" placeholder="Escribe la dirección de entrega" required></ion-input>
             <p *ngIf="direccionEntregaCambio.length > 60" style="color: red;">La longitud máxima de la dirección de entrega es de 60 caracteres.</p>
 

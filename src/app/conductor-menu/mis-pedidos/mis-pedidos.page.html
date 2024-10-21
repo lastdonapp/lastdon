@@ -102,6 +102,7 @@
             </ion-button>
           </ion-col>
         </ion-row>
+
         
         <!-- Fila para el botón "Entrega Fallida" -->
         <ion-row>
@@ -115,7 +116,32 @@
             </ion-button>
           </ion-col>
         </ion-row>
+
+
+
+
+           <!-- Botón "Ingresar a Centro de Distribución" solo si el pedido está en estado "recepcionado" -->
+           <ion-row>  
+            <ion-col>
+            <ion-button 
+            (click)="tomarFotoEntrega(pedido.id)"
+            *ngIf="pedido.estado === 'reanudado' || pedido.estado === 'Envio rápido'"
+            color="primary">
+            Foto de entrega
+          </ion-button>
+          </ion-col>
+        </ion-row>
+  
+
       </ion-grid>
+
+
+  
+       
+
+
+
+
  
 
       <!-- Botón "Ingresar a Centro de Distribución" solo si el pedido está en estado "recepcionado" -->
@@ -126,13 +152,7 @@
         Ingresar
       </ion-button>
 
-        <!-- Botón "Ingresar a Centro de Distribución" solo si el pedido está en estado "recepcionado" -->
-        <ion-button 
-        (click)="tomarFotoEntrega(pedido.id)"
-        *ngIf="pedido.estado === 'reanudado' || pedido.estado === 'Envio rápido'"
-        color="primary">
-        Foto de entrega
-      </ion-button>
+    
 
 
 

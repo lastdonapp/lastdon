@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { ToastController } from '@ionic/angular';
+import { ToastController, AlertController } from '@ionic/angular';
 import { SupabaseService } from 'src/app/services/supabase.service';
-import { AlertController } from '@ionic/angular';
+
 
 interface Pedido {
   id: string;
@@ -27,10 +27,10 @@ export class AgregarPedidosPage implements OnInit {
   usuario: any = this.supabaseService.getCurrentUser(); // Deberías obtener esto desde la sesión o estado del usuario
 
   constructor(
-    private supabaseService: SupabaseService,
-    private toastController: ToastController,
-    private router: Router,
-    private alertController: AlertController
+    private readonly supabaseService: SupabaseService,
+    private readonly toastController: ToastController,
+    private  readonly router: Router,
+    private readonly alertController: AlertController
   ) {}
 
   ngOnInit() {
