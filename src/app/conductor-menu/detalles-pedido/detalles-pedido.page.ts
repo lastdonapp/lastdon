@@ -3,7 +3,11 @@ import { ActivatedRoute } from '@angular/router';
 import { SupabaseService } from '../../services/supabase.service';
 import { GoogleMapsService } from '../../services/google-maps.service';
 import { GeolocationService } from '../../services/geolocation.service';
+import { TrackingService } from 'src/app/services/tracking.service';
 import { ToastController } from '@ionic/angular';
+
+
+
 
 
 @Component({
@@ -31,7 +35,10 @@ export class DetallesPedidoPage implements OnInit {
     private readonly supabaseService: SupabaseService,
     private readonly googleMapsService: GoogleMapsService,
     private readonly geolocationService: GeolocationService,
-    private readonly toastController: ToastController
+    private readonly toastController: ToastController,
+    private readonly trackingService: TrackingService  // Inyecta el TrackingService
+  
+
   ) {}
 
   async ngOnInit() {

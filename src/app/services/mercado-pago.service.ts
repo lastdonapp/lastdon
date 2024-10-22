@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
-import { throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable , throwError } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 
@@ -13,7 +12,7 @@ export class MercadoPagoService {
   private readonly publicKey: string = environment.mercadoPagoPublicKey;
   private readonly accessToken: string = environment.mercadoPagoAccessToken;
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
 
 
