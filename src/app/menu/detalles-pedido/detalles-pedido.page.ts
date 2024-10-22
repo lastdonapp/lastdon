@@ -15,9 +15,9 @@ export class DetallesPedidoPage implements OnInit {
   trackingActivo: boolean = false; // Indica si el tracking está activo
 
   constructor(
-    private route: ActivatedRoute,
-    private supabaseService: SupabaseService,
-    private googleMapsService: GoogleMapsService
+    private readonly route: ActivatedRoute,
+    private  readonly supabaseService: SupabaseService,
+    private  readonly googleMapsService: GoogleMapsService
   ) {}
 
   ngOnInit() {

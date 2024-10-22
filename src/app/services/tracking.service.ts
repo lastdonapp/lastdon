@@ -20,7 +20,7 @@ export class TrackingService {
 
   async iniciarTracking(pedidoId: string) {
     const estadoPedido = await this.supabaseService.obtenerEstadoPedido(pedidoId);
-    if (estadoPedido !== 'recepcionado') {
+    if (estadoPedido !== 'tomado') {
       console.error('El pedido no está en el estado correcto para iniciar el tracking.');
       return;
     }
