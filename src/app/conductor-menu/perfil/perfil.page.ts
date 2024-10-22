@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { ModalController } from '@ionic/angular';
+import { ModalController, AlertController } from '@ionic/angular'; // Import AlertController
 import { SupabaseService } from '../../services/supabase.service';
 import { ChangePasswordModalComponent } from 'src/app/change-password-modal/change-password-modal.component';
 
@@ -17,7 +17,8 @@ export class PerfilPage implements OnInit {
   constructor(
     private supabaseService: SupabaseService,
     private router: Router,
-    private modalController: ModalController
+    private modalController: ModalController,
+    private alertController: AlertController // Add AlertController
   ) {}
 
   async ngOnInit() {
@@ -82,4 +83,5 @@ export class PerfilPage implements OnInit {
       alert('Error inesperado');
     }
   }
+
 }

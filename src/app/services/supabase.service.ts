@@ -39,7 +39,7 @@ export class SupabaseService {
     const { data, error } = await this.supabase
       .from('pedidos')
       .select('*')
-      .eq('primer_conductor', emailConductor) // Filtrar por el conductor actual
+      .or(`primer_conductor.eq.${emailConductor}, and(primer_conductor.is.null, conductor.eq.${emailConductor}, estado.eq.entregado)`) // Filtrar por conductor actual o envíos rápidos con primer_conductor null      
       .gte('fecha_tomado', fechaInicio + 'T00:00:00Z')
       .lte('fecha_tomado', fechaFin + 'T23:59:59Z');
   
@@ -467,13 +467,6 @@ async getToken(): Promise<any> {
     }
   }
   
-
-  // Obtener el usuario actual
-  getCurrentUser(): any {
-    const user = localStorage.getItem('currentUser');
-    console.log('Current user from localStorage:', user);
-    return user ? JSON.parse(user) : null;
-  }
 
   // Cerrar sesión
   async signOut(): Promise<any> {
@@ -1552,16 +1545,79 @@ async getPedidosReanudar(): Promise<any> {
     }
 }
 
+// Obtener el usuario actual
+getCurrentUser(): any {
+  const user = localStorage.getItem('currentUser');
+  console.log('Current user from localStorage:', user); // Log para verificar el usuario actual
+  return user ? JSON.parse(user) : null;
+}
 
+// Guardar los datos del usuario eliminado
+async saveDeletedUserData(userData: any) {
+  const { data, error } = await this.supabase
+    .from('usuario_eliminado')
+    .insert([userData]);
 
+  if (error) {
+    console.error('Error al guardar los datos del usuario eliminado:', error);
+  } else {
+    console.log('Datos del usuario guardados correctamente:', data);
+  }
 
+  return { data, error };
+}
 
+// Desactivar la cuenta (o marcarla como eliminada)
+async deactivateAccount(userId: string, user: string): Promise<{ error?: any }> {
+  try {
+    // Verificar si el usuario tiene pedidos pagados que no han sido entregados
+    const { data: pedidosNoEntregados, error: pedidosError } = await this.supabase
+      .from('pedidos')
+      .select('id')
+      .eq('usuario', user)
+      .eq('pagado', true)
+      .neq('estado', 'entregado');
 
+    if (pedidosError) {
+      console.error('Error al verificar pedidos no entregados:', pedidosError);
+      return { error: pedidosError };
+    }
 
-  
-  
+    // Si hay pedidos no entregados y pagados, impedir la eliminación
+    if (pedidosNoEntregados && pedidosNoEntregados.length > 0) {
+      console.log('Pedidos no entregados encontrados:', pedidosNoEntregados);
+      return { error: new Error('No puedes eliminar la cuenta hasta que todos tus pedidos pagados hayan sido entregados.') };
+    }
 
+    // Eliminar los pedidos con pagado = false
+    const { error: deleteError } = await this.supabase
+      .from('pedidos')
+      .delete()
+      .eq('usuario', user)
+      .eq('pagado', false);  // Asegurarse de usar eq para todas las condiciones
 
+    if (deleteError) {
+      console.error('Error al eliminar pedidos no pagados:', deleteError);
+      return { error: deleteError };
+    }
 
-  
+    // Finalmente, eliminar el usuario
+    const { error: userDeleteError } = await this.supabase
+      .from('users')
+      .delete()
+      .eq('id', userId);  // Usar eq para eliminar al usuario
+
+    if (userDeleteError) {
+      console.error('Error al eliminar el usuario:', userDeleteError);
+      return { error: userDeleteError };
+    }
+
+    console.log('Usuario eliminado correctamente');
+    return {}; // Eliminación exitosa
+
+  } catch (error) {
+    console.error('Error inesperado durante la eliminación de la cuenta:', error);
+    return { error };
+  }
+}
 }

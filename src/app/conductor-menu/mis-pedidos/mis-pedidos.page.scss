@@ -1,56 +1,79 @@
-
-/* Contenedor para la tabla que permite el desplazamiento horizontal en pantallas pequeñas */
+/* Contenedor para la tabla */
 .table-container {
     overflow-x: auto;
-    margin-top: 15px;
+    margin-top: 1rem; /* Unidades relativas para mejor adaptación */
+    border-radius: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
 }
 
-/* Estilos generales para la tabla de pedidos */
+/* Tabla de pedidos con bordes redondeados */
 .pedidos-table {
     width: 100%;
-    border-collapse: collapse;
-    text-align: left;
-    table-layout: fixed; /* Para evitar que las celdas se ajusten dinámicamente */
+    border-radius: 10px;
+    overflow: hidden;
+    border-collapse: collapse; /* Unifica los bordes de la tabla */
+    border-spacing: 0;
+    background-color: #fff; /* Fondo uniforme */
 }
 
-/* Estilos para celdas y encabezados */
-.pedidos-table th, .pedidos-table td {
-    padding: 12px;
-    border: 1px solid #ddd;
-    white-space: nowrap; /* Evita que el texto se divida en varias líneas */
-    overflow: hidden; /* Para que el contenido largo no desborde */
-    text-overflow: ellipsis; /* Añade puntos suspensivos si el contenido es demasiado largo */
-}
-
-/* Encabezados con fondo diferenciado */
+/* Encabezados */
 .pedidos-table th {
-    background-color: #f1f1f1;
+    background-color: #FF5722; /* Color del encabezado */
+    color: white;
+    text-align: center;
+    letter-spacing: 0.05em; /* Espaciado ligeramente ajustado */
+    padding: 1rem;
+    font-size: 1rem;
+}
+
+/* Estilos de celdas */
+.pedidos-table td {
+    padding: 0.75rem 1rem; /* Espaciado más uniforme */
+    border: 1px solid #ddd; /* Bordes más suaves */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Texto truncado con puntos suspensivos */
+    font-size: 0.9rem;
+    color: #000; /* Negro para el texto */
     text-align: center;
 }
 
-/* Botón adicional para acciones de la tabla */
-.add-button {
-    margin: 10px 0;
+/* Estilo de las filas */
+.pedidos-table tr:nth-child(even) {
+    background-color: #f9f9f9;
 }
 
-/* Estilo para el mensaje de 'sin pedidos' */
+.pedidos-table tr:hover {
+    background-color: #0b0202;
+}
+
+/* Mensaje 'sin pedidos' */
 .no-pedidos {
     text-align: center;
-    margin-top: 20px;
+    margin-top: 1.5rem;
+    font-size: 1rem;
+    color: #888;
 }
 
-/* Estilos para pantallas pequeñas */
+/* Mejora para pantallas con alta resolución */
+.pedidos-table th, .pedidos-table td {
+    border-radius: 0; /* Evitar efectos de redondeado pixelados */
+    -webkit-font-smoothing: antialiased; /* Suavizado de texto */
+    -moz-osx-font-smoothing: grayscale; /* Suavizado de texto en Mac */
+}
+
+/* Adaptación para pantallas pequeñas */
 @media (max-width: 768px) {
     .pedidos-table th, .pedidos-table td {
-        font-size: 14px;
-        padding: 8px;
+        font-size: 0.85rem;
+        padding: 0.5rem;
     }
 
     .pedidos-table th {
-        font-size: 16px;
+        font-size: 0.95rem;
     }
 
     ion-button {
-        font-size: 12px;
+        font-size: 0.8rem;
     }
 }

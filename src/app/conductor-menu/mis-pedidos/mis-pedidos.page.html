@@ -46,7 +46,7 @@
          (click)="marcarEnvioRapido(pedido.id)"
          *ngIf="pedido.estado === 'recepcionado'" 
          color="primary">
-         <ion-icon slot="start" name="fast-forward"></ion-icon>
+         <ion-icon slot="start"  name="repeat-outline"></ion-icon>
          Envío rápido
        </ion-button>
 
@@ -101,8 +101,6 @@
     <ion-card-content>
       <p>Pedidos Tomados: {{ totalPedidosTomados }}</p>
       <p>Pedidos Entregados: {{ totalPedidosEntregados }}</p>
-     <!-- <p>Pedidos Tomados para Envio Rapido: {{ totalPedidosTomadosEnvioRapido }}</p> -->
-
     </ion-card-content>
   </ion-card>
 
@@ -118,6 +116,9 @@
       <ion-col>
         <ion-button expand="block" (click)="filtrarPedidos('semana')" color="primary">Última Semana</ion-button>
       </ion-col>
+      <ion-col>
+        <ion-button expand="block" (click)="filtrarPedidos('todos')" color="primary">Todos</ion-button>
+      </ion-col>
     </ion-row>
   </ion-grid>
 
@@ -130,7 +131,7 @@
     <ion-card-content>
       <div class="table-container">
         <ion-grid>
-          <table class="vehiculos-table">
+          <table class="pedidos-table">
             <thead>
                <tr>
                <th>Nombre</th>
@@ -146,9 +147,9 @@
           <tr *ngFor="let pedido of pedidosFiltrados" (click)="verDetalles(pedido.id)">
             <td>{{ pedido.nombre_pedido }}</td>
             <td>{{ pedido.estado }}</td>
-            <td>{{ pedido.primer_conductor || pedido.conductor }}</td>
+            <td *ngIf="pedido.primer_conductor === null || pedido.primer_conductor !== ''">{{ pedido.primer_conductor || pedido.conductor }}</td>
             <td>{{ pedido.fecha_tomado | date:'shortDate' }}</td>
-            <td *ngIf="pedido.primer_conductor !== null && pedido.primer_conductor !== ''" >{{ pedido.conductor }}</td>
+            <td *ngIf="pedido.primer_conductor !== null && pedido.primer_conductor !== '' || pedido.primer_conductor === null && pedido.estado === 'entregado' ">{{ pedido.conductor }}</td>
             <td>{{ pedido.fecha_entrega | date:'shortDate' }}</td>
           </tr>
         </tbody>
