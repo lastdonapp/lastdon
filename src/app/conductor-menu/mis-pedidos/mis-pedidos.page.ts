@@ -112,33 +112,7 @@ export class MisPedidosPage implements OnInit {
 
 async recepcionar(pedidoId: string) {
   try {
-    // Verificar si el tracking ha sido iniciado
-    const trackingIniciado = await this.supabaseService.verificarTrackingIniciado(pedidoId);
-
-    if (!trackingIniciado) {
-      // Intentar iniciar el tracking si no ha sido iniciado
-      try {
-        await this.trackingService.iniciarTracking(pedidoId); // Asumiendo que tienes un método para iniciar el tracking
-        // Opcional: mostrar un mensaje de éxito al iniciar el tracking
-        const toastTracking = await this.toastController.create({
-          message: 'Tracking iniciado exitosamente',
-          duration: 2000,
-          color: 'success'
-        });
-        await toastTracking.present();
-      } catch (error) {
-        // Manejar el error al iniciar el tracking
-        const alert = await this.alertController.create({
-          header: 'Error al iniciar tracking',
-          message: error instanceof Error ? error.message : 'Error desconocido',
-          buttons: ['Aceptar']
-        });
-        await alert.present();
-        return; // Detener la ejecución si hay un error al iniciar el tracking
-      }
-    }
-
-    // Continuar con la lógica para marcar el pedido como recibido
+    // Crear el alert para la confirmación
     const alert = await this.alertController.create({
       header: 'Confirmar Entrega',
       message: '¿Está seguro de que desea marcar este pedido como recibido?',
@@ -147,30 +121,75 @@ async recepcionar(pedidoId: string) {
           text: 'Cancelar',
           role: 'cancel',
           handler: () => {
-            console.log('recepción cancelada por el usuario');
+            console.log('Recepción cancelada por el usuario');
           }
         },
         {
           text: 'Confirmar',
           handler: async () => {
-            await this.supabaseService.recepcionarPedido(pedidoId);
-            const toast = await this.toastController.create({
-              message: 'Pedido marcado como recepcionado',
-              duration: 2000,
-              color: 'success'
-            });
-            await toast.present();
-            this.loadPedidos(); // Recargar la lista de pedidos
+            try {
+              // Primero, marcar el pedido como recepcionado
+              await this.supabaseService.recepcionarPedido(pedidoId);
+              const toast = await this.toastController.create({
+                message: 'Pedido marcado como recepcionado',
+                duration: 2000,
+                color: 'success'
+              });
+              await toast.present();
+
+              // Luego de confirmar la recepción, verificar e iniciar el tracking
+              const trackingIniciado = await this.supabaseService.verificarTrackingIniciado(pedidoId);
+
+              if (!trackingIniciado) {
+                try {
+                  await this.trackingService.iniciarTracking(pedidoId); // Iniciar tracking
+                  const toastTracking = await this.toastController.create({
+                    message: 'Tracking iniciado exitosamente',
+                    duration: 2000,
+                    color: 'success'
+                  });
+                  await toastTracking.present();
+                } catch (error) {
+                  const alert = await this.alertController.create({
+                    header: 'Error al iniciar tracking',
+                    message: error instanceof Error ? error.message : 'Error desconocido',
+                    buttons: ['Aceptar']
+                  });
+                  await alert.present();
+                }
+              }
+
+              // Recargar la lista de pedidos
+              this.loadPedidos(); 
+
+            } catch (error) {
+              console.error('Error al recepcionar el pedido:', error);
+              const alert = await this.alertController.create({
+                header: 'Error',
+                message: 'Hubo un error al marcar el pedido como recepcionado.',
+                buttons: ['Aceptar']
+              });
+              await alert.present();
+            }
           }
         }
       ]
     });
 
+    // Mostrar el alert para que el conductor confirme
     await alert.present();
+
   } catch (error) {
-    console.error('Error al entregar el pedido:', error);
+    console.error('Error al iniciar la recepción del pedido:', error);
+    const alert = await this.alertController.create({
+      header: 'Error',
+      message: 'Hubo un error al procesar su solicitud.',
+      buttons: ['Aceptar']
+    });
+    await alert.present();
   }
 }
+
 
 
   async ingresarCentroDistribucion(pedidoId: string) {

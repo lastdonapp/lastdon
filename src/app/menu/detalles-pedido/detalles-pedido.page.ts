@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { SupabaseService } from '../../services/supabase.service';
 import { GoogleMapsService } from '../../services/google-maps.service';
@@ -8,29 +8,28 @@ import { GoogleMapsService } from '../../services/google-maps.service';
   templateUrl: './detalles-pedido.page.html',
   styleUrls: ['./detalles-pedido.page.scss'],
 })
-export class DetallesPedidoPage implements OnInit {
+export class DetallesPedidoPage implements OnInit, OnDestroy {
   pedido: any;
   mostrarMapa: boolean = false; // Controla la visibilidad del mapa
   ubicacionPaquete: { lat: number, lng: number } | undefined; // Guarda la ubicación del conductor
   trackingActivo: boolean = false; // Indica si el tracking está activo
+  intervaloTracking: any; // Variable para almacenar el intervalo
 
   constructor(
     private readonly route: ActivatedRoute,
-    private  readonly supabaseService: SupabaseService,
-    private  readonly googleMapsService: GoogleMapsService
+    private readonly supabaseService: SupabaseService,
+    private readonly googleMapsService: GoogleMapsService
   ) {}
 
   ngOnInit() {
     this.loadPedido();
-
-
     this.verificarTrackingActivo();
-    setInterval(() => {
-      this.verificarTrackingActivo();
-    }, 20000); // Ejecutar cada 20 segundos
   }
 
-
+  ngOnDestroy() {
+    // Detener la consulta periódica cuando se destruya el componente
+    this.detenerConsultaPeriodica();
+  }
 
   async loadPedido() {
     const id = this.route.snapshot.paramMap.get('id');
@@ -51,24 +50,21 @@ export class DetallesPedidoPage implements OnInit {
     }
   }
 
-
-  
   async verificarTrackingActivo() {
     if (this.pedido && this.pedido.id) {
       try {
         const trackingData = await this.supabaseService.getTracking(this.pedido.id);
-        
         if (trackingData && trackingData.length > 0) {
-          // Verificar el estado del tracking
           const estadoTracking = trackingData[0].estado_tracking;
           
           if (estadoTracking === 'iniciado' || estadoTracking === 'reanudado') {
-            this.trackingActivo = true;  // El tracking está activo
-          } else if (estadoTracking === 'finalizado' || estadoTracking === 'En pausa') {
-            this.trackingActivo = false;  // El tracking no está activo
-            this.mostrarMapa = false;     // Ocultar el mapa si el tracking ha finalizado o está en pausa
-            
-            if (estadoTracking === 'En pausa') {
+            this.trackingActivo = true;
+            this.iniciarConsultaPeriodica(); // Iniciar la consulta periódica
+          } else {
+            this.trackingActivo = false;
+            this.mostrarMapa = false;
+            this.detenerConsultaPeriodica(); // Detener la consulta periódica si el tracking está finalizado o en pausa
+            if (estadoTracking === 'En pausa' || estadoTracking === 'finalizado') {
               console.log('El tracking está en pausa. No se está realizando seguimiento activo.');
             }
           }
@@ -78,7 +74,36 @@ export class DetallesPedidoPage implements OnInit {
       }
     }
   }
-  
+
+  // Función para iniciar la consulta periódica de tracking
+  iniciarConsultaPeriodica() {
+    this.detenerConsultaPeriodica(); // Asegurarse de que no haya otro intervalo corriendo
+
+    this.intervaloTracking = setInterval(async () => {
+      if (this.trackingActivo && this.pedido) {
+        try {
+          const trackingData = await this.supabaseService.getTracking(this.pedido.id);
+          if (trackingData && trackingData.length > 0) {
+            this.ubicacionPaquete = {
+              lat: trackingData[0].latitud,
+              lng: trackingData[0].longitud,
+            };
+            this.actualizarMapa(); // Actualizar el mapa con la nueva ubicación
+          }
+        } catch (error) {
+          console.error('Error al obtener la ubicación del conductor:', error);
+        }
+      }
+    }, 10000); // Consultar cada 10 segundos (ajusta el intervalo si es necesario)
+  }
+
+  // Función para detener la consulta periódica
+  detenerConsultaPeriodica() {
+    if (this.intervaloTracking) {
+      clearInterval(this.intervaloTracking);
+      this.intervaloTracking = null;
+    }
+  }
 
   // Función para mostrar el mapa con la ubicación del conductor
   async mostrarUbicacionConductor() {
@@ -99,6 +124,7 @@ export class DetallesPedidoPage implements OnInit {
     }
   }
 
+  // Función para inicializar el mapa
   inicializarMapa() {
     const mapElement = document.getElementById('map');
     if (mapElement && this.ubicacionPaquete) {
@@ -109,13 +135,12 @@ export class DetallesPedidoPage implements OnInit {
     }
   }
 
-
-
-  
-
-
-
+  actualizarMapa() {
+    if (this.mostrarMapa && this.ubicacionPaquete) {
+      // Supongamos que el tercer argumento es un título o descripción del marcador
+      const markerTitle = 'Ubicación del paquete'; // Título del marcador, ajusta según sea necesario
+      this.googleMapsService.updateMarker(this.ubicacionPaquete.lat, this.ubicacionPaquete.lng, markerTitle);
+    }
+  }
 }
-
-
 

@@ -32,13 +32,6 @@
       <p><strong>Costo:</strong> {{ pedido.costo }}</p>
       <p><strong>Estado:</strong> {{ pedido.estado }}</p>
       
-      <ion-button 
-      *ngIf="estadoPedido === 'recepcionado'" 
-      [disabled]="trackingIniciado"  
-      (click)="iniciarTracking(pedido.id)"
-    >
-      Iniciar Tracking
-    </ion-button>
     
     <!-- Botón para mostrar el mapa -->
     <ion-button expand="block" (click)="toggleMapa()" [disabled]="botonDeshabilitado">

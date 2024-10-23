@@ -65,13 +65,7 @@
       </ion-grid>
 
       
-         <!-- Botón "envío rápido" solo si el pedido está en estado "recepcionado" -->
-         <ion-button 
-         (click)="marcarEnvioRapido(pedido.id)"
-         *ngIf="pedido.estado === 'recepcionado'" 
-         color="primary">
-         Envío rápido
-       </ion-button>
+     
 
 
 
@@ -136,26 +130,35 @@
       </ion-grid>
 
 
-  
-       
-
-
-
-
  
 
-      <!-- Botón "Ingresar a Centro de Distribución" solo si el pedido está en estado "recepcionado" -->
-      <ion-button 
-        (click)="ingresarCentroDistribucion(pedido.id)"
-        *ngIf="pedido.estado === 'recepcionado'" 
-        color="primary">
-        Ingresar
-      </ion-button>
-
-    
-
-
-
+      <ion-grid>
+        <ion-row>
+          <ion-col>
+            <!-- Botón "Ingresar a Centro de Distribución" solo si el pedido está en estado "recepcionado" -->
+            <ion-button 
+              expand="block"
+              (click)="ingresarCentroDistribucion(pedido.id)"
+              *ngIf="pedido.estado === 'recepcionado'" 
+              color="primary">
+              Ingresar
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      
+        <ion-row>
+          <ion-col>
+            <!-- Botón "envío rápido" solo si el pedido está en estado "recepcionado" -->
+            <ion-button 
+              expand="block"
+              (click)="marcarEnvioRapido(pedido.id)"
+              *ngIf="pedido.estado === 'recepcionado'" 
+              color="primary">
+              Envío rápido
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
 
     </ion-item>
   </ion-list>
