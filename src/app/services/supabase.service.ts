@@ -211,6 +211,17 @@ async registerUser(email: string, password: string, userType: string, verificado
       throw new Error('La contraseña debe tener al menos 8 caracteres, incluir una letra mayúscula y un carácter especial');
     }
 
+
+    // Determinar valor de 'verificado' según el tipo de usuario
+    let verificado: boolean;
+    if (userType === 'normal') {
+      verificado = true;
+    } else if (userType === 'conductor') {
+      verificado = false;
+    } else {
+      throw new Error('Tipo de usuario inválido');
+    }
+
     const salt = crypto.randomUUID(); // Genera una sal usando una función disponible en la Web Crypto API
     const hashedPassword = await this.hashingService.hashPassword(password, salt); // Hashea la contraseña con la sal
 
@@ -248,29 +259,21 @@ async registerUser(email: string, password: string, userType: string, verificado
 
 //Google
 
-
-async checkUserExists(email: string): Promise<boolean> {
-  const { data, error } = await this.supabase
-    .from('users')
-    .select('email')
-    .eq('email', email)
-    .single();
-
-  if (error && error.code === 'PGRST116') {
-    return false; // El usuario no existe
-  }
-
-  if (data) {
-    return true; // El usuario ya está registrado
-  }
-
-  throw new Error('Error al verificar el usuario');
-} 
-
-async registerGoogleUser(email: string, password: string, userType: string, verificado: boolean): Promise<any> {
+async registerGoogleUser(email: string, password: string, userType: string): Promise<any> {
   const userExists = await this.checkUserExists(email);
   if (userExists) {
     throw new Error('El usuario ya está registrado');
+  }
+
+
+  // Verificar el tipo de usuario y establecer el valor de 'verificado'
+  let verificado: boolean;
+  if (userType === 'normal') {
+    verificado = true;
+  } else if (userType === 'conductor') {
+    verificado = false;
+  } else {
+    throw new Error('Tipo de usuario inválido');
   }
 
   // Generar una sal única
@@ -297,6 +300,7 @@ async registerGoogleUser(email: string, password: string, userType: string, veri
 }
 
 
+
 // Método para enviar el correo usando EmailJS
 async sendEmail(email: string, password: string): Promise<void> {
   const templateParams = {
@@ -313,7 +317,24 @@ async sendEmail(email: string, password: string): Promise<void> {
   }
 }
 
+//Checkear que el usuario no exista
+async checkUserExists(email: string): Promise<boolean> {
+  const { data, error } = await this.supabase
+    .from('users')
+    .select('email')
+    .eq('email', email)
+    .single();
 
+  if (error && error.code === 'PGRST116') {
+    return false; // El usuario no existe
+  }
+
+  if (data) {
+    return true; // El usuario ya está registrado
+  }
+
+  throw new Error('Error al verificar el usuario');
+} 
 
   // Obtener el token desde la base de datos
 async getToken(): Promise<any> {
@@ -1567,8 +1588,8 @@ async saveDeletedUserData(userData: any) {
   return { data, error };
 }
 
-// Desactivar la cuenta (o marcarla como eliminada)
-async deactivateAccount(userId: string, user: string): Promise<{ error?: any }> {
+// Elimnar Cuenta
+async deletAccount(userId: string, user: string): Promise<{ error?: any }> {
   try {
     // Verificar si el usuario tiene pedidos pagados que no han sido entregados
     const { data: pedidosNoEntregados, error: pedidosError } = await this.supabase
@@ -1619,5 +1640,113 @@ async deactivateAccount(userId: string, user: string): Promise<{ error?: any }> 
     console.error('Error inesperado durante la eliminación de la cuenta:', error);
     return { error };
   }
+}
+
+
+
+
+async getUsuarios() {
+  try {
+    const { data, error } = await this.supabase
+      .from('users') // Ajusta el nombre de la tabla
+      .select('*')
+      .eq('user_type', 'normal');
+
+
+    if (error) throw error;
+
+    return { data, error: null };
+  } catch (error) {
+    console.error('Error al obtener usuarios:', error);
+    return { data: null, error };
+  }
+}
+
+async getConductores() {
+  try {
+    const { data, error } = await this.supabase
+      .from('users') // Ajusta el nombre de la tabla
+      .select('*')
+      .eq('user_type', 'conductor');
+
+    if (error) throw error;
+
+    return { data, error: null };
+  } catch (error) {
+    console.error('Error al obtener conductores:', error);
+    return { data: null, error };
+  }
+}
+
+async getPedidosAdmin() {
+  try {
+    const { data, error } = await this.supabase
+      .from('pedidos') // Ajusta el nombre de la tabla
+      .select('*');
+
+    if (error) throw error;
+
+    return { data, error: null };
+  } catch (error) {
+    console.error('Error al obtener pedidos:', error);
+    return { data: null, error };
+  }
+}
+async updateUsuarioVerificado(usuarioId: string, verificado: boolean) {
+  const { data, error } = await this.supabase
+    .from('users')
+    .update({ verificado })
+    .eq('id', usuarioId); // Cambia 'id' por el nombre correcto de la columna ID en tu tabla
+
+  return { data, error };
+}
+
+
+
+async deactivateAccount(userId: string, email: string) {
+  try {
+    const { data, error } = await this.supabase
+      .from('usuarios')
+      .update({ active: false })
+      .eq('id', userId)
+      .single();
+
+    if (error) {
+      console.error('Supabase Error:', error);
+      return { error };  // Ensure error is returned correctly
+    }
+
+    return { data };  // Return data if no error
+  } catch (error) {
+    console.error('Unexpected error in deactivateAccount:', error);
+    return { error };  // Handle unexpected errors
+  }
+}
+ 
+
+// Función para guardar datos de usuarios eliminados
+async saveDeletedUserConductor(userData: { email: string; user_type: string; created_at: string }) {
+  const { data, error } = await this.supabase
+    .from('usuario_eliminado')
+    .insert([
+      {
+        email: userData.email,
+        user_type: userData.user_type,
+        created_at: userData.created_at,
+        /*deleted_at: new Date(), // Agregar fecha de eliminación*/
+      },
+    ]);
+
+  return { data, error };
+}
+
+// Función para desactivar (eliminar) un usuario
+async deleteAccountChofer(userId: string, email: string) {
+  const { data, error } = await this.supabase
+    .from('users')
+    .delete()
+    .eq('id', userId);
+
+  return { data, error };
 }
 }

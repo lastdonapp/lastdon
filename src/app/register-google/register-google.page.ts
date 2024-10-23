@@ -66,7 +66,7 @@ async RegisterGoogle() {
 async registerUserWithGoogle() {
   try {
     // Registrar al usuario en la base de datos con la contraseña hasheada
-    const response = await this.supabaseService.registerGoogleUser(this.email, this.password, this.userType, this.verificado);
+    const response = await this.supabaseService.registerGoogleUser(this.email, this.password, this.userType);
 
     if (response.success) {
       // Notificar al usuario que revise su correo para la contraseña

@@ -15,7 +15,7 @@ export class PerfilPage implements OnInit {
   currentUser: any;
 
   constructor(
-    private supabaseService: SupabaseService,
+    private   supabaseService: SupabaseService,
     private router: Router,
     private modalController: ModalController,
     private alertController: AlertController // Add AlertController
@@ -149,7 +149,7 @@ export class PerfilPage implements OnInit {
     };
 
     // Guardar en la tabla 'usuarioseliminados'
-    const { data, error } = await this.supabaseService.saveDeletedUserData(userData);
+    const { error } = await this.supabaseService.saveDeletedUserData(userData);
 
     if (error) {
       console.error('Error al guardar los datos antes de la eliminación:', error);
@@ -177,7 +177,7 @@ async deleteAccount() {
 
 
       // Intentar desactivar la cuenta
-      const { error } = await this.supabaseService.deactivateAccount(user.id, user.email);
+      const { error } = await this.supabaseService.deletAccount(user.id, user.email);
       if (error) {
           // Verificar si el error es debido a pedidos pendientes de entrega
           if (error.message.includes('No puedes eliminar la cuenta')) {

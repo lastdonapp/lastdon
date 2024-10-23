@@ -68,11 +68,15 @@ export class LoginPage {
       if (session) {
         localStorage.setItem('userType', userType);
         if (userType === 'normal') {
+          if (!verificado) {
+            await this.showPopup('Acceso denegado', 'Su cuenta está en proceso de validación. Por favor, contacte al soporte.');
+            return;
+          }
           await this.showToast('Inicio de sesión exitoso', 'success');
           this.router.navigate(['/menu']);
         } else if (userType === 'conductor') {
           if (!verificado) {
-            await this.showPopup('Acceso denegado', 'Su cuenta está en proceso de validación. Por favor, contacte al soporte.');
+            await this.showPopup('Acceso denegado', 'Su cuenta Conductor está en proceso de validación. Por favor, contacte al soporte.');
             return;
           }
           await this.showToast('Inicio de sesión exitoso', 'success');

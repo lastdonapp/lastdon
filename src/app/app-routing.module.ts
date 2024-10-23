@@ -27,7 +27,7 @@ const routes: Routes = [
   { 
     path: 'admin-menu', 
     loadChildren: () => import('./admin-menu/admin-menu.module').then(m => m.AdminMenuPageModule),
-    canActivate: [demonGuard] 
+    //canActivate: [demonGuard] 
   },
   {
     path: 'pago-aprobado',
