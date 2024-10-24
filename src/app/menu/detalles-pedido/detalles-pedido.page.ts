@@ -65,7 +65,7 @@ export class DetallesPedidoPage implements OnInit, OnDestroy {
             this.mostrarMapa = false;
             this.detenerConsultaPeriodica(); // Detener la consulta periódica si el tracking está finalizado o en pausa
             if (estadoTracking === 'En pausa' || estadoTracking === 'finalizado') {
-              console.log('El tracking está en pausa. No se está realizando seguimiento activo.');
+              console.log('El tracking está en pausa o su paquete ya se ha entregado. No se está realizando seguimiento activo.');
             }
           }
         }
@@ -75,15 +75,23 @@ export class DetallesPedidoPage implements OnInit, OnDestroy {
     }
   }
 
-  // Función para iniciar la consulta periódica de tracking
-  iniciarConsultaPeriodica() {
-    this.detenerConsultaPeriodica(); // Asegurarse de que no haya otro intervalo corriendo
+ // Función para iniciar la consulta periódica de tracking
+iniciarConsultaPeriodica() {
+  this.detenerConsultaPeriodica(); // Asegurarse de que no haya otro intervalo corriendo
 
-    this.intervaloTracking = setInterval(async () => {
-      if (this.trackingActivo && this.pedido) {
-        try {
-          const trackingData = await this.supabaseService.getTracking(this.pedido.id);
-          if (trackingData && trackingData.length > 0) {
+  this.intervaloTracking = setInterval(async () => {
+    if (this.trackingActivo && this.pedido) {
+      try {
+        const trackingData = await this.supabaseService.getTracking(this.pedido.id);
+        if (trackingData && trackingData.length > 0) {
+          const estadoTracking = trackingData[0].estado_tracking;
+
+          // Si el tracking está finalizado, detener la consulta periódica
+          if (estadoTracking === 'finalizado') {
+            console.log('El tracking ha finalizado. Deteniendo la consulta periódica.');
+            this.detenerConsultaPeriodica();
+            this.mostrarMapa = false; // Opcionalmente, puedes ocultar el mapa
+          } else {
             this.ubicacionPaquete = {
               lat: trackingData[0].latitud,
               lng: trackingData[0].longitud,
@@ -91,12 +99,13 @@ export class DetallesPedidoPage implements OnInit, OnDestroy {
             this.actualizarMapa(); // Actualizar el mapa con la nueva ubicación
             console.log(this.ubicacionPaquete, 'ubicacionPaquete');
           }
-        } catch (error) {
-          console.error('Error al obtener la ubicación del conductor:', error);
         }
+      } catch (error) {
+        console.error('Error al obtener la ubicación del conductor:', error);
       }
-    }, 10000); // Consultar cada 10 segundos (ajusta el intervalo si es necesario)
-  }
+    }
+  }, 10000); // Consultar cada 10 segundos (ajusta el intervalo si es necesario)
+}
 
   // Función para detener la consulta periódica
   detenerConsultaPeriodica() {

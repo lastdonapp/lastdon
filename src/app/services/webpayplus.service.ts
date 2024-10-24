@@ -8,9 +8,9 @@ import { Observable } from 'rxjs';
 export class WebpayplusService {
 
   
-private apiUrl = 'https://api.transbank.cl/webpayplus'; // Endpoint de la API Webpay Plus
+private  readonly apiUrl = 'https://api.transbank.cl/webpayplus'; // Endpoint de la API Webpay Plus
 
-  constructor(private http: HttpClient) { }
+  constructor(private readonly http: HttpClient) { }
 
 
 
