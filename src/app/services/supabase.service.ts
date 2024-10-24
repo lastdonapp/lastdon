@@ -1581,51 +1581,27 @@ async getTelefonoPorPedido(pedidoId: string): Promise<string | null> {
 
 
 
+  // Método para obtener el estado de un tracking dado su trackingId
+  async obtenerEstadoTrackingById(trackingId: string): Promise<string | null> {
+    try {
+      // Realizar la consulta en la tabla tracking
+      const { data, error } = await this.supabase
+        .from('tracking') // Asegúrate de que el nombre de la tabla sea correcto
+        .select('estado_tracking')
+        .eq('id', trackingId)
+        .single(); // Queremos un único resultado
 
-async obtenerEstadoPedidoPorTrackingId(trackingId: string): Promise<string> {
-  try {
-    // Hacemos una llamada a la API de Supabase para obtener el estado del pedido basado en el trackingId
-    const response = await fetch(`${this.tracking}?id=eq.${encodeURIComponent(trackingId)}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': this.apiKey,
-        'Authorization': `Bearer ${this.apiKey}`
+      if (error) {
+        console.error('Error obteniendo el estado del tracking:', error);
+        return null;
       }
-    });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Error al obtener el estado del Tracking:', errorText);
-      throw new Error(errorText || 'Error al obtener el estado del Tracking');
+      return data?.estado_tracking || null; // Retornar el estado o null si no existe
+    } catch (error) {
+      console.error('Error inesperado al obtener el estado del tracking:', error);
+      return null;
     }
-
-    // Suponemos que el tracking está en una tabla que contiene el campo "estado"
-    const [tracking] = await response.json();
-
-    // Verificamos si el tracking existe y si tiene un estado válido
-    if (!tracking || !tracking.estado) {
-      throw new Error('No se encontró el tracking o no tiene un estado válido.');
-    }
-
-    // Retornamos el estado del pedido
-    return tracking.estado;
-  } catch (error) {
-    console.error('Error al obtener el estado del Tracking:', error);
-    throw error;
   }
-}
-
-
-
-
-
-
-
-
-
-
-
 
   
 }
