@@ -89,6 +89,7 @@ export class DetallesPedidoPage implements OnInit, OnDestroy {
               lng: trackingData[0].longitud,
             };
             this.actualizarMapa(); // Actualizar el mapa con la nueva ubicación
+            console.log(this.ubicacionPaquete, 'ubicacionPaquete');
           }
         } catch (error) {
           console.error('Error al obtener la ubicación del conductor:', error);
