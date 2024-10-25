@@ -15,9 +15,9 @@ export class PerfilPage implements OnInit {
   currentUser: any;
 
   constructor(
-    private supabaseService: SupabaseService,
-    private router: Router,
-    private modalController: ModalController
+    private readonly supabaseService: SupabaseService,
+    private readonly router: Router,
+    private readonly modalController: ModalController
   ) {}
 
   async ngOnInit() {

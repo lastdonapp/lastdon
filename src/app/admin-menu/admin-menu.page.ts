@@ -76,7 +76,7 @@ export class AdminMenuPage implements OnInit {
 
   private async activarDesactivarUsuario(usuarioId: string, estado: boolean) {
     try {
-      const { data, error } = await this.supabaseService.updateUsuarioVerificado(usuarioId, estado); // Llamar al método en Supabase para actualizar el estado
+      const {  error } = await this.supabaseService.updateUsuarioVerificado(usuarioId, estado); // Llamar al método en Supabase para actualizar el estado
       if (error) throw error;
       await this.showToast(estado ? 'Usuario activado exitosamente.' : 'Usuario desactivado exitosamente.');
       this.loadData(); // Recargar los datos después de la actualización
@@ -206,11 +206,25 @@ async saveUserDataBeforeDeletion(user: { email: string; user_type: string; creat
   }
 }
 
-cerrarSesion(){
-  this.router.navigate(['/login']);
+
+
+
+async logout() {
+  try {
+    const { error } = await this.supabaseService.signOut();
+    localStorage.removeItem('userType');
+    if (error) {
+      alert('Error al cerrar sesión');
+    } else {
+      this.router.navigate(['/login']);
+    }
+  } catch (err) {
+    console.error(err);
+    alert('Error inesperado');
+  }
+}
 }
 
 
 
 
-}

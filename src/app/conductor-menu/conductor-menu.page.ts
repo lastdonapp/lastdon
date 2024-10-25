@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
 })
 export class ConductorMenuPage implements OnInit {
 
-  constructor(private router: Router) { }
+  constructor(private readonly router: Router) { }
 
   ngOnInit() {
     // Redirigir a la página de "Mis Pedidos" por defecto
