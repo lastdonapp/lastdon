@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { ModalController } from '@ionic/angular';
+import { ModalController, AlertController } from '@ionic/angular';
 import { SupabaseService } from '../../services/supabase.service';
 import { ChangePasswordModalComponent } from 'src/app/change-password-modal/change-password-modal.component';
+
 
 @Component({
   selector: 'app-perfil',
@@ -15,9 +16,10 @@ export class PerfilPage implements OnInit {
   currentUser: any;
 
   constructor(
-    private supabaseService: SupabaseService,
-    private router: Router,
-    private modalController: ModalController
+    private readonly supabaseService: SupabaseService,
+    private readonly router: Router,
+    private readonly modalController: ModalController,
+    private readonly alertController: AlertController
   ) {}
 
   async ngOnInit() {
@@ -82,4 +84,132 @@ export class PerfilPage implements OnInit {
       alert('Error inesperado');
     }
   }
-}
+
+
+
+
+    // Función para confirmar la eliminación de la cuenta
+    async confirmDeleteAccount() {
+      const alert = await this.alertController.create({
+        header: 'Confirmar eliminación',
+        message: '¿Estás seguro de que deseas eliminar tu cuenta? Esta acción no se puede deshacer.',
+        buttons: [
+          {
+            text: 'Cancelar',
+            role: 'cancel',
+            cssClass: 'secondary',
+            handler: () => {
+              console.log('Eliminación cancelada');
+            }
+          },
+          {
+            text: 'Confirmar',
+            handler: async () => {
+              // Mostrar segunda confirmación
+              await this.secondConfirmation();
+            }
+          }
+        ]
+      });
+  
+      await alert.present();
+    }
+  
+    // Segunda confirmación
+    async secondConfirmation() {
+      const alert = await this.alertController.create({
+        header: 'Última confirmación',
+        message: '¿Estás absolutamente seguro de que deseas eliminar tu cuenta?',
+        buttons: [
+          {
+            text: 'Cancelar',
+            role: 'cancel',
+            cssClass: 'secondary',
+            handler: () => {
+              console.log('Eliminación cancelada');
+            }
+          },
+          {
+            text: 'Eliminar cuenta',
+            handler: async () => {
+              await this.deleteAccount();
+            }
+          }
+        ]
+      });
+  
+      await alert.present();
+    }
+  
+    // Guardar los datos antes de eliminar la cuenta
+    async saveUserDataBeforeDeletion(email: any) { // Add user parameter
+      const userData = {
+        email: email.email,
+        user_type: email.user_type,
+        created_at: email.created_at,
+      };
+  
+      // Guardar en la tabla 'usuarioseliminados'
+      const { error } = await this.supabaseService.saveDeletedUserData(userData);
+  
+      if (error) {
+        console.error('Error al guardar los datos antes de la eliminación:', error);
+        alert('Error al guardar la información antes de eliminar la cuenta.');
+      } else {
+        console.log('Datos guardados correctamente en usuarioseliminados.');
+      }
+    }
+  
+   // perfil.page.ts
+  
+  async deleteAccount() {
+    try {
+        const user = this.getCurrentUser();
+        if (!user) {
+            alert('Usuario no encontrado.');
+            return;
+        }
+        // Verificar si el user.id es un número entero válido
+        const userId = parseInt(user.id, 10);
+        if (isNaN(userId)) {
+            alert('ID de usuario inválido.');
+            return;
+        }
+  
+  
+        // Intentar desactivar la cuenta
+        const { error } = await this.supabaseService.deletAccount(user.id, user.email);
+        if (error) {
+            // Verificar si el error es debido a pedidos pendientes de entrega
+            if (error.message.includes('No puedes eliminar la cuenta')) {
+                alert('No puedes eliminar la cuenta hasta que todos tus pedidos hayan sido entregados.');
+            } else {
+                console.error('Error al desactivar la cuenta:', error);
+                alert('Hubo un error al eliminar la cuenta.');
+            }
+        } else {
+            // Guardar los datos antes de la eliminación
+            await this.saveUserDataBeforeDeletion(user);
+        
+            // Si la eliminación es exitosa
+            localStorage.clear(); // Limpiar datos locales
+            this.router.navigate(['/login']);
+            alert('Cuenta eliminada correctamente.');
+        }
+    } catch (error) {
+        console.error('Error durante la eliminación de la cuenta:', error);
+        alert('Error inesperado al eliminar la cuenta.');
+    }
+  }
+  
+    
+  }  
+  
+
+
+
+
+
+
+
+
