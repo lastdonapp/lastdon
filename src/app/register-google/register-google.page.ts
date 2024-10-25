@@ -21,11 +21,11 @@ export class RegisterGooglePage {
 
   constructor(
    
-    private supabaseService: SupabaseService,
-    private router: Router,
-    private toastController: ToastController,
-    private alertController: AlertController,
-    private authService: AuthService
+    private readonly supabaseService: SupabaseService,
+    private readonly router: Router,
+    private readonly toastController: ToastController,
+    private readonly alertController: AlertController,
+    private readonly authService: AuthService
   ) {}
 
   // Método para iniciar sesión con Google

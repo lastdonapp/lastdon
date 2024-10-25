@@ -18,6 +18,16 @@ export class MisPedidosPage implements OnInit {
   usuario: any = this.supabaseService.getCurrentUser();
   capturedPhoto: string = ''; // Variable para almacenar la URL de la foto capturada 
   photoUrl: string = ''; // URL de la foto del pedido
+  pedidosFiltrados: any[] = [];
+  pedidosTabla: any[] = []; // Para mostrar los pedidos en la tabla (filtrados por fecha)
+
+
+  totalPedidosTomados: number = 0;
+  totalPedidosEntregados: number = 0;
+  filtroActual: string = 'hoy';
+  totalPedidosTomadosEnvioRapido: number =0;
+
+
 
   constructor(private readonly supabaseService: SupabaseService, private readonly toastController: ToastController, private readonly router: Router, private readonly alertController: AlertController,
     private readonly trackingService: TrackingService
@@ -547,6 +557,98 @@ async recepcionar(pedidoId: string) {
       console.error('Error al cambiar el estado del pedido:', error);
     }
   }
+
+
+
+
+
+  async contarPedidosPorEstado(): Promise<void> {
+    const emailConductor = this.usuario.email; // Obtener el email del conductor actual 
+
+    let  contadorHistoricoTomados = 0;  // Inicialmente en 0
+    let  contadorHistoricoEntregados = 0;  // Inicialmente en 0
+
+    // Contar pedidos tomados
+    const pedidosTomados = await this.supabaseService.getPedidosPorFechaRango('2024-01-01', '2044-12-31', emailConductor);
+    this.totalPedidosTomados = pedidosTomados.filter(pedido => pedido.primer_conductor === emailConductor ).length;
+    // Incrementar el contador histórico por cada pedido que haya pasado por el conductor
+    pedidosTomados.forEach(pedido => {
+      if (pedido.historicoEstados.includes(emailConductor)) {
+        contadorHistoricoTomados += 1;
+      }
+    });
+
+    // Contar pedidos entregados
+    const pedidosEntregados = await this.supabaseService.getPedidosEntregadosPorFechaRango('2024-01-01', '2044-12-31', emailConductor);
+    this.totalPedidosEntregados = pedidosEntregados.filter(pedido => pedido.conductor === emailConductor).length;
+  pedidosEntregados.forEach(pedido => {
+    if (pedido.historicoEstados.includes(emailConductor)) {
+      contadorHistoricoEntregados += 1;
+    }
+  });
+
+}
+
+  // Método para aplicar el filtro según la opción seleccionada
+  async filtrarPedidos(filtro: string) {
+    this.filtroActual = filtro;
+    await this.loadPedidos(); // Recargar los pedidos aplicando los filtros unificados
+
+    let fechaInicio: string;
+    let fechaFin: string;
+
+    const hoy = new Date();
+    const ayer = new Date(hoy);
+    const todos = new Date('01/01/2000');
+
+    ayer.setDate(hoy.getDate() - 1);
+
+    switch (filtro) {
+      case 'hoy':
+        fechaInicio = hoy.toISOString().split('T')[0];
+        fechaFin = fechaInicio;
+        break;
+      case 'ayer':
+        fechaInicio = ayer.toISOString().split('T')[0];
+        fechaFin = fechaInicio;
+        break;
+      case 'semana':
+        const semanaInicio = new Date(hoy);
+        semanaInicio.setDate(hoy.getDate() - 7);
+        fechaInicio = semanaInicio.toISOString().split('T')[0];
+        fechaFin = hoy.toISOString().split('T')[0];
+        break;
+      case 'todos':
+        fechaInicio = todos.toISOString().split('T')[0]; // Muy antigua
+        fechaFin = hoy.toISOString().split('T')[0]; // Fecha actual
+        break;
+      default:
+        
+        return;
+    }
+    const emailConductor = this.usuario.email;
+
+    // Obtener los pedidos según el filtro
+    const pedidosTomados = await this.supabaseService.getPedidosPorFechaRango(fechaInicio, fechaFin, emailConductor);
+    const pedidosEntregados = await this.supabaseService.getPedidosEntregadosPorFechaRango(fechaInicio, fechaFin, emailConductor);
+    // Combinar los resultados de pedidos tomados y entregados sin duplicados
+    const pedidosCombinados = [...pedidosTomados, ...pedidosEntregados];
+
+    // Eliminar duplicados basados en el id del pedido
+    this.pedidosFiltrados = pedidosCombinados.filter((pedido, index, self) => index === self.findIndex((p) => p.id === pedido.id));
+    console.log(pedidosTomados);
+    console.log(pedidosEntregados);
+
+    this.totalPedidosTomados = pedidosTomados.length;
+    this.totalPedidosEntregados = pedidosEntregados.length;
+  }
+
+
+
+
+
+
+
   
 
 
