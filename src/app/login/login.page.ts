@@ -18,11 +18,11 @@ export class LoginPage {
   user:any;
 
   constructor(
-    private authService: AuthService,
-    private supabaseService: SupabaseService, 
-    private router: Router,
-    private toastController: ToastController,
-    private alertController: AlertController
+    private readonly authService: AuthService,
+    private readonly supabaseService: SupabaseService, 
+    private  readonly router: Router,
+    private readonly toastController: ToastController,
+    private readonly alertController: AlertController
   ) {}
 
 
@@ -48,9 +48,6 @@ export class LoginPage {
 
 
 
-
-
-
   async login() {
     try {
       let session;
@@ -68,11 +65,15 @@ export class LoginPage {
       if (session) {
         localStorage.setItem('userType', userType);
         if (userType === 'normal') {
+          if (!verificado) {
+            await this.showPopup('Acceso denegado', 'Su cuenta está en proceso de validación. Por favor, contacte al soporte.');
+            return;
+          }
           await this.showToast('Inicio de sesión exitoso', 'success');
           this.router.navigate(['/menu']);
         } else if (userType === 'conductor') {
           if (!verificado) {
-            await this.showPopup('Acceso denegado', 'Su cuenta está en proceso de validación. Por favor, contacte al soporte.');
+            await this.showPopup('Acceso denegado', 'Su cuenta Conductor está en proceso de validación. Por favor, contacte al soporte.');
             return;
           }
           await this.showToast('Inicio de sesión exitoso', 'success');

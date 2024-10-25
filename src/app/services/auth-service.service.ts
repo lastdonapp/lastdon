@@ -12,8 +12,8 @@ export class AuthService {
   user: any;
 
   constructor(
-    private platform: Platform,
-    private supabaseService: SupabaseService
+    private readonly platform: Platform,
+    private readonly supabaseService: SupabaseService
   ) { 
     this.platform.ready().then(() => {
       GoogleAuth.initialize({

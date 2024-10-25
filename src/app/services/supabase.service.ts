@@ -1603,5 +1603,130 @@ async getTelefonoPorPedido(pedidoId: string): Promise<string | null> {
     }
   }
 
+
+
+
+
+
+  async getUsuarios() {
+    try {
+      const { data, error } = await this.supabase
+        .from('users') // Ajusta el nombre de la tabla
+        .select('*')
+        .eq('user_type', 'normal');
+  
+  
+      if (error) throw error;
+  
+      return { data, error: null };
+    } catch (error) {
+      console.error('Error al obtener usuarios:', error);
+      return { data: null, error };
+    }
+  }
+  
+  async getConductores() {
+    try {
+      const { data, error } = await this.supabase
+        .from('users') // Ajusta el nombre de la tabla
+        .select('*')
+        .eq('user_type', 'conductor');
+  
+      if (error) throw error;
+  
+      return { data, error: null };
+    } catch (error) {
+      console.error('Error al obtener conductores:', error);
+      return { data: null, error };
+    }
+  }
+  
+  async getPedidosAdmin() {
+    try {
+      const { data, error } = await this.supabase
+        .from('pedidos') // Ajusta el nombre de la tabla
+        .select('*');
+  
+      if (error) throw error;
+  
+      return { data, error: null };
+    } catch (error) {
+      console.error('Error al obtener pedidos:', error);
+      return { data: null, error };
+    }
+  }
+  async updateUsuarioVerificado(usuarioId: string, verificado: boolean) {
+    const { data, error } = await this.supabase
+      .from('users')
+      .update({ verificado })
+      .eq('id', usuarioId); // Cambia 'id' por el nombre correcto de la columna ID en tu tabla
+  
+    return { data, error };
+  }
+
+
+
+
+  async deactivateAccount(userId: string, email: string) {
+    try {
+      const { data, error } = await this.supabase
+        .from('usuarios')
+        .update({ active: false })
+        .eq('id', userId)
+        .single();
+  
+      if (error) {
+        console.error('Supabase Error:', error);
+        return { error };  // Ensure error is returned correctly
+      }
+  
+      return { data };  // Return data if no error
+    } catch (error) {
+      console.error('Unexpected error in deactivateAccount:', error);
+      return { error };  // Handle unexpected errors
+    }
+  }
+   
+  
+  // Función para guardar datos de usuarios eliminados
+  async saveDeletedUserConductor(userData: { email: string; user_type: string; created_at: string }) {
+    const { data, error } = await this.supabase
+      .from('usuario_eliminado')
+      .insert([
+        {
+          email: userData.email,
+          user_type: userData.user_type,
+          created_at: userData.created_at,
+          /*deleted_at: new Date(), // Agregar fecha de eliminación*/
+        },
+      ]);
+  
+    return { data, error };
+  }
+  
+  // Función para desactivar (eliminar) un usuario
+  async deleteAccountChofer(userId: string, email: string) {
+    const { data, error } = await this.supabase
+      .from('users')
+      .delete()
+      .eq('id', userId);
+  
+    return { data, error };
+  }
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   
 }
