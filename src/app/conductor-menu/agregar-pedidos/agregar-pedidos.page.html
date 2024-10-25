@@ -4,7 +4,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+
   <!-- Mostrar pedidos disponibles para tomar -->
   <ion-list *ngIf="pedidos.length > 0; else noPedidos">
     <ion-item *ngFor="let pedido of pedidos" (click)="verDetalles(pedido.id)">
@@ -54,4 +54,4 @@
       <h2>No hay pedidos disponibles para reanudar.</h2>
     </ion-text>
   </ng-template>
-</ion-content>
+
