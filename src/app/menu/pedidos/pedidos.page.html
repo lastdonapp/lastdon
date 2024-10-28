@@ -61,7 +61,8 @@
           <p *ngIf="pedido.cambio" style="color: orange;">
             No se puede gestionar un cambio de un pedido que ya ha sido modificado.
           </p>
-
+           <!-- Modal -->
+          <ion-modal [isOpen]="isModalOpen" (didDismiss)="cerrarFormulario(pedido.id, $event)">
           <!-- Formulario de cambio condicional -->
           <ion-item *ngIf="pedido.mostrarFormulario">
             <ion-label position="stacked">Observaciones</ion-label>
@@ -89,7 +90,8 @@
             <ion-button [disabled]="!isFormValid()" (click)="generarNuevoPedidoDesdeEntregado(pedido.id)">Confirmar Cambio</ion-button>
 
             <ion-button color="danger" (click)="cerrarFormulario(pedido.id, $event)">Cerrar formulario</ion-button>
-          </ion-item>
+          </ion-item >
+        </ion-modal>
 
         </ion-card-content>
       </ion-card>

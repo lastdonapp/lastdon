@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subscription, interval } from 'rxjs';
 import { GeolocationService } from './geolocation.service';
 import { SupabaseService } from './supabase.service';
 import { ToastController } from '@ionic/angular';
@@ -12,6 +12,7 @@ export class TrackingService {
   private readonly currentLocationSubject = new BehaviorSubject<{ lat: number, lng: number }>({ lat: 0, lng: 0 });
   public readonly currentLocation$ = this.currentLocationSubject.asObservable();
   private trackingInterval: any;
+  private trackingStateSubscription!: Subscription;
 
   constructor(
     private readonly geolocationService: GeolocationService,
@@ -28,26 +29,24 @@ export class TrackingService {
       console.log('Reiniciando tracking con ID desde localStorage:', storedTrackingId);
       this.trackingId = storedTrackingId;
       this.startTrackingUpdates(this.trackingId);
+      this.monitorTrackingStatus();
     }
   }
 
   async iniciarTracking(pedidoId: string) {
     try {
-      // Verificar el estado del pedido
       const estadoPedido = await this.supabaseService.obtenerEstadoPedido(pedidoId);
       if (estadoPedido !== 'recepcionado') {
         console.error('El pedido no está en el estado correcto para iniciar el tracking.');
         return;
       }
 
-      // Verificar si el tracking ya ha sido iniciado
       const trackingIniciado = await this.supabaseService.verificarTrackingIniciado(pedidoId);
       if (trackingIniciado) {
         console.warn('El tracking ya ha sido iniciado para este pedido.');
         return;
       }
 
-      // Obtener la ubicación actual del conductor
       const coords = await this.geolocationService.getCurrentPosition();
       const pedidoDetails = await this.supabaseService.obtenerDetallesPedido(pedidoId);
       const conductorEmail = pedidoDetails.conductor;
@@ -62,7 +61,6 @@ export class TrackingService {
         estado_tracking: 'iniciado'
       };
 
-      // Iniciar tracking y obtener el trackingId
       this.trackingId = await this.supabaseService.iniciarTracking(trackingData);
 
       if (!this.trackingId) {
@@ -72,21 +70,16 @@ export class TrackingService {
 
       console.log('Tracking iniciado con ID:', this.trackingId);
 
-      // Guardar el trackingId en localStorage para mantener persistencia
       localStorage.setItem('trackingId', this.trackingId);
-
-      // Inicia la actualización automática con el trackingId
       this.startTrackingUpdates(this.trackingId);
-      console.log(this.trackingId, 'id al momento de utilizar la actualización');
+      this.monitorTrackingStatus();
 
     } catch (error) {
       console.error('Error al iniciar el tracking:', error);
-
-      // Mostrar mensaje de fallo al usuario
       const toast = await this.toastController.create({
         message: 'Error al iniciar el tracking: Operación fallida',
-        duration: 2000, // Duración del mensaje en milisegundos
-        color: 'danger' // Color del mensaje para fallos
+        duration: 10000,
+        color: 'danger'
       });
       await toast.present();
     }
@@ -99,43 +92,73 @@ export class TrackingService {
       return;
     }
 
-    // Escuchar cambios en la ubicación en tiempo real
     this.geolocationService.watchPosition(async (coords) => {
       try {
-        // Obtener el estado del tracking usando el trackingId
         const estadoTracking = await this.supabaseService.obtenerEstadoTrackingById(trackingId);
-        console.log(this.trackingId, 'Id al momento de entregar el argumento a la función obtener');
 
-        // Detener el tracking si el estado es 'finalizado'
-        if (estadoTracking === 'finalizado') {
-          console.log('El tracking ha sido finalizado, deteniendo el tracking.');
-          this.stopTrackingUpdates();
+        if (estadoTracking === 'finalizado' || estadoTracking === 'En pausa') {
+          console.log('El tracking ha sido finalizado o pausado, deteniendo el tracking.');
+          this.stopTrackingUpdates(estadoTracking === 'finalizado');
           return;
         }
 
         const newLat = coords.latitude;
         const newLng = coords.longitude;
 
-        // Actualizar el tracking en Supabase
         await this.supabaseService.updateTrackingLocation(trackingId, newLat, newLng);
-
         console.log('Tracking actualizado automáticamente:', newLat, newLng);
       } catch (error) {
         console.error('Error al actualizar la ubicación del tracking:', error);
-        console.log(coords.latitude, coords.longitude);
       }
     });
   }
 
   // Método para detener la actualización de tracking
-  stopTrackingUpdates() {
+  stopTrackingUpdates(finalizado: boolean = false) {
     if (this.trackingInterval) {
       clearInterval(this.trackingInterval);
       this.trackingInterval = null;
       console.log('Actualización de tracking detenida.');
     }
     
-    // Limpiar localStorage cuando se detiene el tracking
-    localStorage.removeItem('trackingId');
+    if (finalizado) {
+      localStorage.removeItem('trackingId');
+      this.trackingId = ''; // Limpiar el trackingId en la clase
+      console.log('Tracking ID eliminado de localStorage debido a finalización.');
+    }
+  }
+
+  // Monitorea el estado del tracking para pausar o reanudar la actualización
+  private monitorTrackingStatus() {
+    this.trackingStateSubscription = interval(10000).subscribe(async () => {
+      if (!this.trackingId) {
+        console.warn("trackingId está vacío o no ha sido asignado, omitiendo la verificación de estado.");
+        return;
+      }
+      
+      try {
+        const estadoTracking = await this.supabaseService.obtenerEstadoTrackingById(this.trackingId);
+        
+        if (estadoTracking === 'finalizado') {
+          console.log('El tracking ha sido finalizado, deteniendo completamente el tracking.');
+          this.stopTrackingUpdates(true);
+        } else if (estadoTracking === 'En pausa') {
+          console.log('El tracking está en pausa, deteniendo actualizaciones temporalmente.');
+          this.stopTrackingUpdates(false);
+        } else if (estadoTracking === 'reanudado') {
+          console.log('Tracking reanudado, reiniciando actualizaciones de ubicación.');
+          this.startTrackingUpdates(this.trackingId);
+        }
+      } catch (error) {
+        console.error('Error al verificar el estado del tracking:', error);
+      }
+    });
+  }
+
+  // Método para limpiar suscripciones al destruir el servicio
+  ngOnDestroy() {
+    if (this.trackingStateSubscription) {
+      this.trackingStateSubscription.unsubscribe();
+    }
   }
 }

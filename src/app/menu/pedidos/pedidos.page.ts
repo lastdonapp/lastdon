@@ -30,6 +30,7 @@ export class PedidosPage implements OnInit {
   pedidosFiltrados: any[] = [];
   prefijo : string= '+569';
   prefijoNombreCambio : string ='Cambio';
+  isModalOpen: boolean = false;
 
 
 
@@ -78,6 +79,7 @@ export class PedidosPage implements OnInit {
 
   // Mostrar el formulario y detener la propagación del evento
   mostrarFormulario(id: string, event: Event) {
+    this.isModalOpen = true;
     event.stopPropagation(); // Detener la propagación del evento
     const pedido = this.pedidos.find(p => p.id === id);
     if (pedido) {
@@ -87,6 +89,15 @@ export class PedidosPage implements OnInit {
 
   // Función para cerrar el formulario
   cerrarFormulario(id: string, event: Event) {
+
+    //Cerra Modal
+    this.isModalOpen = false;
+
+    const modalEvent = event as CustomEvent;  // Cast to CustomEvent if you expect custom data
+    const dismissedData = modalEvent.detail?.data;  // Access any details from the modal event
+    // Your logic goes here, for example:
+    console.log('Modal dismissed with:', dismissedData);
+
     event.stopPropagation(); // Detener la propagación del evento
     const pedido = this.pedidos.find(p => p.id === id);
     if (pedido) {
@@ -122,6 +133,7 @@ export class PedidosPage implements OnInit {
 
 
   async generarNuevoPedidoDesdeEntregado(pedidoId: string) {
+    this.isModalOpen = false;
     const alert = await this.alertController.create({
       header: 'Confirmar cambio',
       message: '¿Está seguro de querer generar el cambio de pedido?',
@@ -279,6 +291,14 @@ generarQRValue(pedido: any): string {
   teléfono: ${pedido.telefono}`;
   return qrValue;
 }
+
+
+// Método para abrir el modal
+openModal() {
+  this.isModalOpen = true;
+}
+
+
 
 
 
