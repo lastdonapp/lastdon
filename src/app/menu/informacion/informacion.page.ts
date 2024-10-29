@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
@@ -6,11 +6,8 @@ import { Router } from '@angular/router';
   templateUrl: './informacion.page.html',
   styleUrls: ['./informacion.page.scss'],
 })
-export class InformacionPage implements OnInit {
+export class InformacionPage  {
 
   constructor(private readonly router: Router) { }
-
-  ngOnInit() { /*  document why this method 'ngOnInit' is empty */ }
-
 
 }

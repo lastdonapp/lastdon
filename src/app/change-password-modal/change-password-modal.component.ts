@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component} from '@angular/core';
 import { ModalController, ToastController } from '@ionic/angular';
 import { SupabaseService } from '../services/supabase.service';
 
@@ -7,7 +7,7 @@ import { SupabaseService } from '../services/supabase.service';
   templateUrl: './change-password-modal.component.html',
   styleUrls: ['./change-password-modal.component.scss'],
 })
-export class ChangePasswordModalComponent implements OnInit {
+export class ChangePasswordModalComponent  {
   currentPassword: string = '';
   newPassword: string = '';
   confirmPassword: string = '';
@@ -19,7 +19,7 @@ export class ChangePasswordModalComponent implements OnInit {
     private readonly toastController: ToastController
   ) {}
 
-  ngOnInit(): void { /* document why this method 'ngOnInit' is empty */  }
+
 
   async changePassword() {
     if (this.newPassword !== this.confirmPassword) {

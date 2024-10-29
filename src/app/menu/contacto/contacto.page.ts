@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component} from '@angular/core';
 
 
 @Component({
@@ -6,11 +6,10 @@ import { Component, OnInit } from '@angular/core';
   templateUrl: './contacto.page.html',
   styleUrls: ['./contacto.page.scss'],
 })
-export class ContactoPage implements OnInit {
+export class ContactoPage  {
 
   constructor() { }
 
-  ngOnInit() { /*  document why this method 'ngOnInit' is empty */ }
 
 
 }
