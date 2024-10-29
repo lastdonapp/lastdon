@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { SupabaseService } from '../../services/supabase.service';
 import { GoogleMapsService } from '../../services/google-maps.service';
@@ -12,7 +12,7 @@ import { GeolocationService } from '../../services/geolocation.service';
   templateUrl: './detalles-pedido.page.html',
   styleUrls: ['./detalles-pedido.page.scss'],
 })
-export class DetallesPedidoPage implements OnInit {
+export class DetallesPedidoPage implements OnInit, OnDestroy {
   pedido: any;
   mostrarMapa: boolean = false; // Para mostrar u ocultar el mapa
   currentLocation: { lat: number, lng: number } | undefined; // localización actual del mapa

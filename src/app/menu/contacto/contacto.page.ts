@@ -10,8 +10,7 @@ export class ContactoPage implements OnInit {
 
   constructor() { }
 
-  ngOnInit() {
-  }
+  ngOnInit() { /*  document why this method 'ngOnInit' is empty */ }
 
 
 }

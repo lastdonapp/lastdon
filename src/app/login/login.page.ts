@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { SupabaseService } from '../services/supabase.service';
 import { ToastController,AlertController } from '@ionic/angular';
@@ -9,7 +9,7 @@ import { AuthService } from '../services/auth-service.service';
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
 })
-export class LoginPage {
+export class LoginPage implements OnInit {
   email: string = "";
   password: string = "";
   verificado: boolean = false;

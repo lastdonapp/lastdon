@@ -14,12 +14,12 @@ export class ChangePasswordModalComponent implements OnInit {
   errorMessage: string | null = null;
 
   constructor(
-    private modalController: ModalController,
-    private supabaseService: SupabaseService,
-    private toastController: ToastController
+    private readonly modalController: ModalController,
+    private readonly supabaseService: SupabaseService,
+    private readonly toastController: ToastController
   ) {}
 
-  ngOnInit() {}
+  ngOnInit(): void { /* document why this method 'ngOnInit' is empty */  }
 
   async changePassword() {
     if (this.newPassword !== this.confirmPassword) {

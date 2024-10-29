@@ -8,10 +8,9 @@ import { Router } from '@angular/router';
 })
 export class InformacionPage implements OnInit {
 
-  constructor(private router: Router) { }
+  constructor(private readonly router: Router) { }
 
-  ngOnInit() {
-  }
+  ngOnInit() { /*  document why this method 'ngOnInit' is empty */ }
 
 
 }

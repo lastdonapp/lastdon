@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Subscription, interval } from 'rxjs';
 import { GeolocationService } from './geolocation.service';
 import { SupabaseService } from './supabase.service';
@@ -7,7 +7,7 @@ import { ToastController } from '@ionic/angular';
 @Injectable({
   providedIn: 'root'
 })
-export class TrackingService {
+export class TrackingService implements OnDestroy {
   private trackingId: string = '';
   private readonly currentLocationSubject = new BehaviorSubject<{ lat: number, lng: number }>({ lat: 0, lng: 0 });
   public readonly currentLocation$ = this.currentLocationSubject.asObservable();
