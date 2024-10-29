@@ -188,35 +188,14 @@
         </ion-list>
         </ion-accordion>
 
-        <!-- Cantidad de Paquetes y Dimensiones -->
+        <!-- Dimensiones -->
         <ion-accordion>
         <ion-item slot="header">
-          <ion-label>Cantidad de Paquetes y Dimensiones</ion-label>
+          <ion-label>Dimensiones del paquete</ion-label>
         </ion-item>
         <ion-list slot="content">
 
-          <ion-item>
-            <ion-label position="stacked">Cantidad de Paquetes</ion-label>
-            <ion-input
-              [(ngModel)]="pedido.cantidadPaquetes"
-              name="cantidadPaquetes"
-              #cantidadPaquetes="ngModel"
-              type="number"
-              min="1" 
-              placeholder="Ej. 2"
-              required
-              (ionInput)="updateCosto()"
-            ></ion-input>
-          </ion-item>
           
-          <!-- Mostrar mensaje de error si no es válido -->
-          <div *ngIf="cantidadPaquetes.invalid && cantidadPaquetes.touched">
-            <p style="color: red;">Debe ingresar al menos 1 paquete.</p>
-            <p *ngIf="cantidadPaquetes.errors?.['required']">El número de paquetes es requerido.</p>
-          </div>
-          
-        
-        
         
         <ion-item>
           <ion-label position="stacked">Alto</ion-label>

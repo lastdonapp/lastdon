@@ -28,7 +28,7 @@ export class AgregarPedidosPage implements OnInit {
     vivienda: '',
     comuna: '',
     telefono: '+569',
-    cantidadPaquetes: 0,
+    cantidadPaquetes: 1,
     dimensiones: {
       valor: 0,
       unidad: 'cm'
