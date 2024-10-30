@@ -81,9 +81,6 @@
             <ion-input [(ngModel)]="destinatarioCambio" placeholder="Escribe el nombre del destinatario" required></ion-input>
             <p *ngIf="destinatarioCambio.length > 20" style="color: red;">La longitud máxima del nombre del destinatario es de 20 caracteres.</p>
 
-            <ion-label position="stacked">Cantidad de Paquetes</ion-label>
-            <ion-input [(ngModel)]="cantidadPaquetesCambio" type="number" min="1" placeholder="Ingrese cantidad de paquetes" required></ion-input>
-
             <ion-label position="stacked">Teléfono del Destinatario</ion-label>
             <ion-input [(ngModel)]="telefonoCambio" type="tel" minlength="8" maxlength="8" placeholder="Ingrese un número de teléfono" required></ion-input>
 

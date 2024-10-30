@@ -7,6 +7,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 
+
 @Component({
   selector: 'app-agregar-pedidos',
   templateUrl: './agregar-pedidos.page.html',
@@ -142,7 +143,8 @@ export class AgregarPedidosPage implements OnInit {
     private readonly supabaseService: SupabaseService,
     private readonly router: Router,
     private readonly toastController: ToastController,
-    private readonly alertController: AlertController
+    private readonly alertController: AlertController,
+
   ) {}
 
   ngOnInit() {
@@ -280,11 +282,10 @@ export class AgregarPedidosPage implements OnInit {
                 }
   
                 // Guardar la URL de la foto
-                this.photoUrl = publicURL || '';
+                this.photoUrl = publicURL ?? '';
                 this.pedido.image_url = this.photoUrl; // Guarda la URL en el objeto pedido
                 console.log('imagen url ', this.pedido.image_url);
               }
-              this.pedido.costoTotal 
               this.onTelefonoChange(this.telefonoInput);
               const { data, error } = await this.supabaseService.addPedido(this.pedido);
               if (error) {

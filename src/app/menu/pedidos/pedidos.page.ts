@@ -22,7 +22,7 @@ export class PedidosPage implements OnInit {
   direccionPedidoCambio :string = '';
   direccionEntregaCambio :string = '';
   destinatarioCambio :string = '';
-  cantidadPaquetesCambio :number = 0;
+  cantidadPaquetesCambio :number = 1;
   valorCambioPedido : number =1000;
   telefonoCambio : string = '';
   cambioRealizado : boolean = true;
@@ -220,7 +220,7 @@ export class PedidosPage implements OnInit {
 
   isFormValid() {
     return this.observaciones && this.direccionPedidoCambio && this.direccionEntregaCambio &&
-           this.destinatarioCambio && this.cantidadPaquetesCambio >= 1 &&
+           this.destinatarioCambio  &&
            this.telefonoCambio && this.telefonoCambio.length === 8;
   }
 
@@ -245,6 +245,11 @@ generarEtiquetaPDF(pedido: any) {
 
       doc.text(`Dirección de Entrega: ${pedido.direccion_entrega}`, 10, currentY);
       currentY += 10;
+
+
+      doc.text(`Comuna: ${pedido.comuna}`, 10, currentY);
+      currentY += 10;
+
 
       // Reemplazar true/false por "Sí"/"No"
       const esFragil = pedido.fragil ? 'Sí' : 'No';
@@ -287,7 +292,7 @@ generarEtiquetaPDF(pedido: any) {
 }
 
 generarQRValue(pedido: any): string {
-  const qrValue = `valor envío $ : ${pedido.costo}, Origen: ${pedido.direccion_pedido}, Destino: ${pedido.direccion_entrega},
+  const qrValue = `Valor envío $ : ${pedido.costo}, Origen: ${pedido.direccion_pedido}, Destino: ${pedido.direccion_entrega},
   teléfono: ${pedido.telefono}`;
   return qrValue;
 }
