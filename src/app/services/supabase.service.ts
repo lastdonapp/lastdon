@@ -1819,8 +1819,22 @@ async getPedidosEntregadosPorFechaRango(fechaInicio: string, fechaFin: string, e
   return data;
 }
 
-  
 
+
+
+subscribeToPedidosUpdates(callback: (pedido: any) => void) {
+  this.supabase
+    .channel('realtime-pedidos')  // nombre único para la suscripción
+    .on(
+      'postgres_changes', 
+      { event: '*', schema: 'public', table: 'pedidos' },
+      (payload) => {
+        console.log('Cambio detectado en pedidos:', payload);
+        callback(payload.new);  // callback con los datos actualizados
+      }
+    )
+    .subscribe();
+}
 
 
 

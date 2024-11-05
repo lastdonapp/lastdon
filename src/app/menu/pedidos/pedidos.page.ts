@@ -42,7 +42,7 @@ export class PedidosPage implements OnInit {
 
   ngOnInit() {
     this.loadPedidos();
-
+    this.suscribirseAPedidos();
   }
 
   
@@ -304,10 +304,16 @@ openModal() {
 }
 
 
-
-
-
-
+suscribirseAPedidos() {
+  this.supabaseService.subscribeToPedidosUpdates((nuevoPedido) => {
+    console.log('Pedido actualizado:', nuevoPedido);
+    const index = this.pedidos.findIndex(p => p.id === nuevoPedido.id);
+    if (index !== -1) {
+      this.pedidos[index] = nuevoPedido;  // Actualizar el pedido en la lista
+      this.pedidosFiltrados = [...this.pedidos];  // Actualizar los pedidos filtrados
+    }
+  });
+}
 
 }
 
