@@ -35,6 +35,7 @@ export class MisPedidosPage implements OnInit {
 
   ngOnInit() {
     this.loadPedidos();
+    this.suscribirseAPedidos();
   }
 
   async loadPedidos() {
@@ -645,18 +646,17 @@ async recepcionar(pedidoId: string) {
 
 
 
-
-
-
-
+  suscribirseAPedidos() {
+    this.supabaseService.subscribeToPedidosUpdates((nuevoPedido) => {
+      console.log('Pedido actualizado:', nuevoPedido);
+      const index = this.pedidos.findIndex(p => p.id === nuevoPedido.id);
+      if (index !== -1) {
+        this.pedidos[index] = nuevoPedido;  // Actualizar el pedido en la lista
+        this.pedidosFiltrados = [...this.pedidos];  // Actualizar los pedidos filtrados
+      }
+    });
+  }
   
-
-
-  
-  
-  
-
-
 
 
 }
