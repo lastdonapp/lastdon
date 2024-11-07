@@ -14,6 +14,8 @@ export class DetallesPedidoPage implements OnInit, OnDestroy {
   ubicacionPaquete: { lat: number, lng: number } | undefined; // Guarda la ubicación del conductor
   trackingActivo: boolean = false; // Indica si el tracking está activo
   intervaloTracking: any; // Variable para almacenar el intervalo
+ private pedidosUpdateSubscription: any; // Suscripción para actualizaciones de pedidos
+  
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -24,6 +26,7 @@ export class DetallesPedidoPage implements OnInit, OnDestroy {
   ngOnInit() {
     this.loadPedido();
     this.verificarTrackingActivo();
+    this.suscribirseAPedidosUpdates();
   }
 
   ngOnDestroy() {
@@ -152,5 +155,21 @@ iniciarConsultaPeriodica() {
       this.googleMapsService.updateMarker(this.ubicacionPaquete.lat, this.ubicacionPaquete.lng, markerTitle);
     }
   }
+
+
+
+
+
+    // Función que maneja la suscripción a las actualizaciones de pedidos
+    suscribirseAPedidosUpdates() {
+      this.pedidosUpdateSubscription = this.supabaseService.subscribeToPedidosUpdates((updatedPedido) => {
+        // Aquí puedes actualizar los datos del pedido en tiempo real
+        if (updatedPedido.id === this.pedido.id) {
+          this.pedido = updatedPedido;
+          console.log('Pedido actualizado en tiempo real:', this.pedido);
+          this.verificarTrackingActivo(); // Verificar el estado del tracking en caso de actualización
+        }
+      });
+    }
 }
 
