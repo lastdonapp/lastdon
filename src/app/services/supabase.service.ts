@@ -1840,6 +1840,32 @@ subscribeToPedidosUpdates(callback: (pedido: any) => void) {
 
 
 
+// En tu servicio de Supabase (supabaseService)
+async verificarTrackingCreado(pedidoId: string): Promise<boolean> {
+  try {
+    const { data, error } = await this.supabase
+      .from('tracking')
+      .select('id')  // Selecciona el campo `id` o cualquier campo para verificar la existencia del tracking
+      .eq('pedido_id', pedidoId)  // Busca el tracking correspondiente al pedido
+      .single();  // Solo debe haber un registro si el tracking existe
+
+    if (error) {
+      console.error('Error al verificar la creación del tracking:', error);
+      return false;  // Retorna false si ocurre un error en la consulta
+    }
+
+    return !!data;  // Retorna true si `data` tiene contenido, indicando que el tracking fue creado
+  } catch (error) {
+    console.error('Error al ejecutar la consulta de verificación de tracking:', error);
+    return false;
+  }
+}
+
+
+
+
+
+
 
 
 

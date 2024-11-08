@@ -139,21 +139,20 @@ async recepcionar(pedidoId: string) {
           text: 'Confirmar',
           handler: async () => {
             try {
-              // Primero, marcar el pedido como recepcionado
-              await this.supabaseService.recepcionarPedido(pedidoId);
-              const toast = await this.toastController.create({
-                message: 'Pedido marcado como recepcionado',
-                duration: 2000,
-                color: 'success'
-              });
-              await toast.present();
-
-              // Luego de confirmar la recepción, verificar e iniciar el tracking
+              // Verificar e iniciar el tracking antes de cambiar el estado del pedido
               const trackingIniciado = await this.supabaseService.verificarTrackingIniciado(pedidoId);
 
               if (!trackingIniciado) {
                 try {
                   await this.trackingService.iniciarTracking(pedidoId); // Iniciar tracking
+                  
+                  // Verificar si el tracking fue realmente creado
+                  const trackingConfirmado = await this.supabaseService.verificarTrackingCreado(pedidoId);
+
+                  if (!trackingConfirmado) {
+                    throw new Error('No se pudo verificar la creación del tracking en la base de datos.');
+                  }
+
                   const toastTracking = await this.toastController.create({
                     message: 'Tracking iniciado exitosamente',
                     duration: 2000,
@@ -167,8 +166,18 @@ async recepcionar(pedidoId: string) {
                     buttons: ['Aceptar']
                   });
                   await alert.present();
+                  return; // Salir si no se pudo iniciar el tracking
                 }
               }
+
+              // Marcar el pedido como recepcionado solo si el tracking fue iniciado exitosamente
+              await this.supabaseService.recepcionarPedido(pedidoId);
+              const toast = await this.toastController.create({
+                message: 'Pedido marcado como recepcionado',
+                duration: 2000,
+                color: 'success'
+              });
+              await toast.present();
 
               // Recargar la lista de pedidos
               this.loadPedidos(); 
@@ -309,7 +318,7 @@ async recepcionar(pedidoId: string) {
         const path = `pedidos/${pedidoId}/fotoEnvio_final-${new Date().getTime()}.jpeg`;
   
         // Subir la imagen a Supabase
-        const { data, error } = await this.supabaseService.uploadImage(foto, path);
+        const {  error } = await this.supabaseService.uploadImage(foto, path);
   
         if (error) {
           console.error('Error subiendo la imagen:', error);
