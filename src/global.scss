@@ -1,3 +1,4 @@
+/*
 :root {
   --ion-background-color: #121212;
   --ion-text-color: #FFFFFF;
@@ -9,27 +10,453 @@
   --ion-color-primary-tint: #FF7043;
 }
 
-/* Otros estilos personalizados */
+/* Otros estilos personalizados 
 body {
   background-color: var(--ion-background-color);
   color: var(--ion-text-color);
 }
+*/
 
+ion-button{
+  width: 100%;
+  max-width: 97%;
+  border-radius: 14px;
+  text-transform: math-auto;
+  text-align: center; 
+}
+ion-item{  
+  margin-top: 3%;
+  border: 1px solid black; /* Borde invisible */
+  border-radius: 14px; /* Bordes redondeados */
+
+}
+.with-content{
+  --background:#FFFFFF;
+  color:#0F0F0F;
+}
+.black-content{
+  --background: #0F0F0F;
+  color: #FFFFFF;
+}
+.gris-content{
+  --background: #e7e7e7;
+  color: #0F0F0F;
+  width: 100%;
+  max-width: 97%;
+  border-radius: 14px;
+
+}
+.display-flex{  
+  gap: 10% ; /* Espaciado entre los párrafos */
+  display: flex; /* Organiza las cards en fila */
+  justify-content: center;  /* Centrar las cards horizontalmente */
+  align-items: center;  /* Centrar las cards verticalmente */
+}
+/* Centrar el ion-card en la pantalla */
+.main-container {
+  pointer-events: auto; /* Asegúrate de que los elementos sean clickeables */
+  display: flex;
+  flex-direction: column;  /* Cambiar la dirección a columna para apilar las cards */
+  justify-content: center;  /* Centrar las cards horizontalmente */
+  align-items: center;  /* Centrar las cards verticalmente */
+  height: 100vh;
+  gap: 20px;  /* Espacio entre las cards */
+}
+
+.card-centerr{
+  border-radius: 25px !important; /* Bordes redondeados */
+  margin: 0 auto;  /* Centra horizontalmente */
+  text-align: center;
+  width: 100%;
+  max-width: 80%;  
+  box-shadow: none; /* Sin sombra */
+  border: 1px solid transparent; /* Borde invisible */
+}
+
+/* Estilo para el título "" */
+#title {
+  font-size: 44px;
+  font-weight: bold;
+  color: #FFFFFF; /* Cambia el color si lo deseas */
+  text-align: center;
+  margin: 16px 0;
+  margin-bottom: 30px;
+
+}
+
+/* Estilo para el título "oRANGE" */
+#title2 {
+  font-size: 40px;
+  color: #FF9500; /* Cambia el color si lo deseas */
+  text-align: center;
+  margin: 16px 0;
+  margin-bottom: 30px;
+
+}
+/* Estilo para el título "oRANGE" */
+#title3 {
+  font-size: 40px;
+  color: #FF9500; /* Cambia el color si lo deseas */
+  margin-bottom: 10px;
+  text-align: left; /* Alinea el texto a la izquierda */
+
+}
+/* Estilo para el título "oRANGE" */
+#title4 {
+  margin-top: 10px;
+  font-size: 26px;
+  color: #FF9500; /* Cambia el color si lo deseas */
+  text-align: left; /* Alinea el texto a la izquierda */
+  text-align: center;  /* Centrar las cards verticalmente */
+
+}
+
+#title5 {
+  font-size: 20px;
+  color:black; /* Cambia el color si lo deseas */
+  margin-bottom: 10px;
+  text-align: left; /* Alinea el texto a la izquierda */
+
+}
+/* Estilo para las imágenes */
+.responsive-img {
+  width: 100%;
+  height: auto;
+  max-width: 200px;
+  margin: 0 auto;
+}
+
+/* Estilo Botones*/
+
+/* Estilo del botón "Blanco con borde naranjos" */
+#first-of-type {
+  --background: white;
+  border: solid #FF9500;
+  --color: #FF9500;
+  --border-radius: 10px;
+
+}
+/* Estilo del botón "Blanco" */
+#first-of-type-login {
+  --background: white;
+  --color: #FF9500;
+  --border-radius: 10px;
+
+}
+
+
+/* Estilo del borde  naranjo de items */
+#second-of-type {
+  --color: #FF9500;
+  border: 0.18em solid #FF9500;
+  --border-radius: 10px;
+
+}
+
+/* Estilo del botón "Naranja" */
+#last-of-type {
+  --background: #FF9500;
+  --color: white;
+  margin-top: 25px;
+  --border-radius: 10px;
+
+}  
+
+/* Estilo de texto alineado a la izquierda */
+#left {
+  text-align: left; /* Alinea el texto a la izquierda */
+}
+
+
+
+
+/* Modifica el tamaño y el estilo del ion-radio-group */
+ion-radio-group {
+  display: flex;
+  gap: 1em; /* Espaciado entre los items */
+  background: transparent;
+  width: 100%;
+
+}
+
+/* Modifica el ion-item dentro del radio-group */
+.custom-radio-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 1em; /* Espaciado entre los items */
+  margin-bottom: 8px; /* Espaciado entre los items */
+  --background: transparent !important;
+  transition: background-color 0.3s ease, color 0.3s ease; /* Transición suave para el cambio de color */
+}
+
+/* Estilo para los iconos */
+.custom-icon {
+  font-size: 3em; /* Icono grande */
+  color: #0F0F0F; /* Color azul para los iconos */
+  transition: color 0.3s ease; /* Transición suave para el cambio de color del icono */
   
+}
+
+/* Estilo para el radio (aumentar el tamaño del radio) */
+ion-radio {
+  display: none;
+  --background-color: transparent;
+}
+
+/* Cambiar fondo y color del item cuando el radio está seleccionado */
+.selected {
+  background-color: #FF9500; /* Fondo verde cuando seleccionado */
+  color: #0F0F0F;  /* Cambia el color del texto a blanco */
+}
+
+/* Estilo para los iconos cuando el item está seleccionado */
+.selected .custom-icon {
+  color: #0F0F0F; /* Cambia el color del icono a blanco cuando seleccionado */
+  --background: #FF9500 !important; /* Cambiar el color del radio cuando seleccionado */
+}
+
+/* Cambiar el color del radio cuando está seleccionado */
+.selected ion-radio {
+  --color-checked: #0F0F0F !important; /* Cambiar el color del radio cuando seleccionado */
+  --background: #FF9500 !important; /* Cambiar el color del radio cuando seleccionado */
+}
+
+.selected ion-icon {
+
+  --color-checked: #0F0F0F !important; /* Cambiar el color del radio cuando seleccionado */
+  --background: #FF9500 !important; /* Cambiar el color del radio cuando seleccionado */
+}
+
+/* Cambiar color del label cuando el item está seleccionado */
+.selected ion-label {
+  color: #0F0F0F !important; /* Cambia el color del label a blanco cuando seleccionado */
+}
+
+/* Cambios de fondo y color cuando el ion-radio está seleccionado o deseleccionado */
+ion-radio:checked ~ ion-item.custom-radio-item {
+  background-color: #FF9500 !important; /* Fondo verde cuando seleccionado */
+  color: #0F0F0F; /* Texto blanco */
+}
+
+/* Cuando el radio no está seleccionado, cambiar a fondo gris claro */
+ion-radio:not(:checked) ~ ion-item.custom-radio-item {
+  background-color: #f0f0f0; /* Fondo gris claro cuando no seleccionado */
+  color: #0F0F0F; /* Texto negro */
+}
+
+/* Asegúrate de que el icono cambie de color cuando el radio se deselecciona */
+ion-radio:not(:checked) ~ ion-item.custom-radio-item .custom-icon {
+  background-color: #f0f0f0; /* Fondo gris claro cuando no seleccionado */
+  color: #0F0F0F; /* Color original del icono */
+}
+
+
+
+
+/* Estilo para el logo de Google dentro del botón */
+.google-logo {
+  width: 24px; /* Ajusta el tamaño del logo */
+  height: auto; 
+  margin-right: 10px; /* Espacio entre el logo y el texto */
+}
+
+/* Estilo para el texto dentro del botón */
+.google-text {
+  color: #4285F4; /* Color típico de Google (azul) */
+}  
+
+/* Contenedor de icono y label */
+.icon-label-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centra el contenido horizontalmente */
+  justify-content: center; /* Centra el contenido verticalmente */
+  text-align: center; /* Centra el texto dentro de los elementos */
+  margin-left: auto; /* Centra el contenedor en su contexto */
+  margin-right: auto; /* Centra el contenedor en su contexto */
+}
+
+.icon-label-container2 {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centra el contenido horizontalmente */
+  justify-content: center; /* Centra el contenido verticalmente */
+  text-align: center; /* Centra el texto dentro de los elementos */
+  margin-left: auto; /* Centra el contenedor en su contexto */
+  margin-right: auto; /* Centra el contenedor en su contexto */
+  margin-top: 4em;  /* Espacio arriba */
+  margin-bottom: 4em;  /* Espacio abajo */
+}
+
+
+
+.oval-background {
+  background-color: #FF9500; /* Fondo naranja */
+  width: 98%; /* Ancho del */
+  height: 16%; /* Altura  de la ventana */
+  border-bottom-left-radius: 5% 20px; /* Radio de curvatura en la parte inferior izquierda */
+  border-bottom-right-radius: 5% 20px; /* Radio de curvatura en la parte inferior derecha */
+  margin: 0 auto; /* Centra el div horizontalmente */
+}
+
+
+
+
+/* Estilo para la segunda tarjeta */
+.slide-up-card3 {
+  border-radius: 25px !important; /* Bordes redondeados */
+  transition: transform 0.5s ease-in-out;  /* Para la animación */
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 60%;  /* Controla el ancho máximo de la tarjeta */
+  margin: 0 auto;  /* Centra horizontalmente */
+  margin-bottom: 40px;
+}
+
+
+
+/* Estilo para la segunda tarjeta */
+.slide-up-card2 {
+  border-radius: 25px !important; /* Bordes redondeados */
+  transition: transform 0.5s ease-in-out;  /* Para la animación */
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  width: 100%;
+  max-width: 80%;  /* Controla el ancho máximo de la tarjeta */
+  margin: 0 auto;  /* Centra horizontalmente */
+  justify-content: center;  /* Centrar los elementos dentro de la tarjeta */
+  display: flex;  /* Hacer de la tarjeta un contenedor flexible */
+  flex-direction: column;  /* Si deseas apilar el contenido dentro de la tarjeta */
+  margin-bottom: 40px;
+  align-items: center;  /* Centrar los elementos en el eje horizontal */
+}
+
+/* Estilo para la segunda tarjeta */
+.slide-up-card3 {
+  background-color: #f8f6f6; /* Fondo naranja */
+  border-radius: 25px !important; /* Bordes redondeados */
+  transition: transform 0.5s ease-in-out;  /* Para la animación */
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  width: 100%;
+  max-width: 80%;  /* Controla el ancho máximo de la tarjeta */
+  margin: 0 auto;  /* Centra horizontalmente */
+  margin-bottom: 40px;
+}
+
+
+
+
+/* Estilo para la segunda tarjeta */
+.slide-up-card {
+  border-radius: 25px !important; /* Bordes redondeados */
+  transition: transform 0.5s ease-in-out;  /* Para la animación */
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  width: 100%;
+  max-width: 80%;  /* Controla el ancho máximo de la tarjeta */
+  margin: 0 auto;  /* Centra horizontalmente */
+  justify-content: center;  /* Centrar los elementos dentro de la tarjeta */
+  display: flex;  /* Hacer de la tarjeta un contenedor flexible */
+  flex-direction: column;  /* Si deseas apilar el contenido dentro de la tarjeta */
+  align-items: center;  /* Centrar los elementos en el eje horizontal */
+  margin-top: -20%;  /* Ajusta el valor de este margen para el efecto de superposición */
+}
+
+/* Cuando se oculta la primera tarjeta, desplazamos la segunda hacia arriba */
+.slide-up-card {
+  margin-top: -10%;  /* Ajusta este valor para el efecto de superposición */
+}
+
+ion-menu {
+  background: transparent; /* Establece el fondo como transparente para que la imagen sea visible */
+}
+
+
+
+
+
+
+
+/*img de localizadores*/
+
+.row {
+  display: flex; /* Alineación en fila */
+  align-items: center; /* Centrar verticalmente */
+}
+
+.direccion{
+  width: 24px; /* Tamaño del ícono */
+  height: 24px; /* Asegúrate de que sea cuadrado */
+  margin-left: 0px; /* Espacio entre el ícono y el texto */
+  margin-right: 10px; /* Espacio entre el ícono y el texto */
+}
+
+.text {
+  flex: 1; /* Asegura que el texto ocupe el espacio restante */
+  font-size: 16px; /* Ajusta el tamaño del texto según sea necesario */
+}
+.answer {
+  display: block; /* Hace que el "Sí" o "No" esté en su propia línea */
+  margin-top: 5px;
+  text-align: center; /* Centra el texto */
+  font-weight: bold;
+  color: #FF9500; /* Color azul predeterminado de Ionic */
+}
+
+
+
+
+
+
+/* ID #espacio */
+#espacio {
+  margin-top: 10rem;   /* Espacio arriba */
+  margin-bottom: 10rem; /* Espacio abajo */
+}
+
+/* Media Queries Responsivas */
+@media (max-width: 1024px) { /* Tablets y pantallas medianas */
+  #espacio {
+      margin-top: 10rem;  /* Menos espacio en pantallas medianas */
+      margin-bottom: 10rem; /* Menos espacio abajo */
+  }
+}
+
+@media (max-width: 768px) { /* Móviles grandes */
+  #espacio {
+      margin-top: 6rem;   /* Reducir más en móviles grandes */
+      margin-bottom: 6rem; /* Reducir margen abajo */
+  }
+}
+
+@media (max-width: 480px) { /* Móviles pequeños */
+  #espacio {
+      margin-top: 4rem;   /* Menos espacio en pantallas pequeñas */
+      margin-bottom: 4rem; /* Menos espacio abajo */
+  }
+}
+
 @import "@ionic/angular/css/core.css";
 
-/* Basic CSS for apps built with Ionic */
+/* Basic CSS for apps built with Ionic
 @import "@ionic/angular/css/normalize.css";
 @import "@ionic/angular/css/structure.css";
 @import "@ionic/angular/css/typography.css";
-@import "@ionic/angular/css/display.css";
+@import "@ionic/angular/css/display.css"; */
 
-/* Optional CSS utils that can be commented out */
+/* Optional CSS utils that can be commented out 
 @import "@ionic/angular/css/padding.css";
 @import "@ionic/angular/css/float-elements.css";
 @import "@ionic/angular/css/text-alignment.css";
 @import "@ionic/angular/css/text-transformation.css";
-@import "@ionic/angular/css/flex-utils.css";
+@import "@ionic/angular/css/flex-utils.css";*/
 
 /**
  * Ionic Dark Mode
@@ -40,4 +467,4 @@ body {
 
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import "@ionic/angular/css/palettes/dark.system.css";
+/*@import "@ionic/angular/css/palettes/dark.system.css";*/

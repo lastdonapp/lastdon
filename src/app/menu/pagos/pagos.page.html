@@ -1,12 +1,5 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>pagos</ion-title>
-  </ion-toolbar>
-</ion-header>
-
-
   <!-- Filtro de estado -->
-  <ion-item>
+  <ion-item class="card-centerr">
     <ion-label>Filtrar por estado</ion-label>
     <ion-select [(ngModel)]="selectedState" (ionChange)="filterPedidos()">
       <ion-select-option value="">Todos</ion-select-option>
@@ -17,48 +10,47 @@
   </ion-item>
 
   <!-- Mostrar el costo total de pedidos no pagados -->
-  <ion-item>
+  <ion-item class="card-centerr">
     <ion-label>Total: {{ totalCosto | currency :'CLP $':'symbol':'1.0-0' }}</ion-label>
   </ion-item>
 
   <!-- Lista de pedidos -->
   <ion-list>
-    <ion-item *ngFor="let pedido of pedidos">
+    <ion-card class="slide-up-card2"  *ngFor="let pedido of pedidos">
+
       <ion-label>
-        <h2>{{ pedido.nombre_pedido }}</h2>
+        <h2  id="title4">{{ pedido.nombre_pedido }}</h2>
         <p>{{ pedido.descripcion_pedido }}</p>
         <p>Estado: {{ pedido.estado }}</p>
         <p>Fecha tomado: {{ pedido.fecha_tomado | date }}</p>
         <p>Estado: {{ pedido.pagado }}</p>
         <h3>costo: {{ pedido.costo | currency:'CLP $':'symbol':'1.0-0' }}</h3>
 
+            
+            <ion-title  >
+              <ion-label >Seleccione Método de Pago</ion-label>
+            </ion-title>
 
-        <ion-item>
-
-          <ion-input [value]="pedido.costo | currency:'CLP $ ':'symbol':'1.0-0'" readonly></ion-input>
-        </ion-item>
-
-
-        <ion-list>
-          <ion-radio-group [(ngModel)]="metodoPago">
-            <ion-list-header>
-              <ion-label>Seleccione Método de Pago</ion-label>
-            </ion-list-header>
-            <ion-item>
+          <ion-radio-group  [(ngModel)]="metodoPago">
+        
+            <ion-item class="custom-radio-item ">
+              <div class="icon-label-container">
               <ion-label>Mercado Pago</ion-label>
               <ion-radio slot="start" value="mercadoPago"></ion-radio>
+              </div>
             </ion-item>
-            <ion-item>
-              <ion-label>Webpay Plus</ion-label>
+            <ion-item class="custom-radio-item">
+              <div class="icon-label-container">
+              <ion-label >Webpay Plus</ion-label>
               <ion-radio slot="start" value="webpayPlus"></ion-radio>
+            </div>
             </ion-item>
           </ion-radio-group>
-        </ion-list>
 
 
-        <ion-button (click)="pagarPedido(pedido.id)" color="primary">Pagar</ion-button>
+        <ion-button (click)="pagarPedido(pedido.id)" id="last-of-type">Pagar</ion-button>
  
       </ion-label>
-    </ion-item>
+    </ion-card>
   </ion-list>
 

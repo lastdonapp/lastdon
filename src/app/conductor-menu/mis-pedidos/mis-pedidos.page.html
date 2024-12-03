@@ -1,93 +1,23 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Mis Entregas</ion-title>
-  </ion-toolbar>
-</ion-header>
-
-
-  <!-- Filtro de estado -->
-  <ion-item>
-    <ion-label>Filtrar por estado</ion-label>
-    <ion-select [(ngModel)]="selectedState" (ionChange)="filterPedidos()">
-      <ion-select-option value="">Todos</ion-select-option>
-      <ion-select-option value="tomado">Tomado</ion-select-option>
-      <ion-select-option value="recepcionado">Recepcionado</ion-select-option>
-      <ion-select-option value="entregado">Entregado</ion-select-option>
-    </ion-select>
-  </ion-item>
-
-  <!-- Lista de pedidos -->
-  <ion-list>
-    <ion-item *ngFor="let pedido of pedidos" (click)="verDetalles(pedido.id)">
-      <ion-label>
-        <h2>{{ pedido.nombre_pedido }}</h2>
-        <p>{{ pedido.descripcion_pedido }}</p>
-        <p>Estado: {{ pedido.estado }}</p>
-        <p>Fecha tomado: {{ pedido.fecha_tomado | date }}</p>
-      </ion-label>
-
-      <!-- Botones de acción para cada pedido -->
-      <ion-grid>
-        <ion-row>
-          <ion-col>
-            <ion-button (click)="recepcionar(pedido.id)" *ngIf="pedido.estado === 'tomado'" expand="block" color="secondary">Recepcionado</ion-button>
-          </ion-col>
-        </ion-row>
-        
-        <ion-row>
-          <ion-col>
-            <ion-button (click)="contactarPorWsp(pedido.id)" *ngIf="pedido.estado === 'tomado'" expand="block" color="secondary">Contactar Cliente</ion-button>
-          </ion-col>
-        </ion-row>
-        
-        <ion-row>
-          <ion-col>
-            <ion-button (click)="recepcionFallidaYLiberar(pedido.id)" *ngIf="pedido.estado === 'tomado'" expand="block" color="secondary">Recepción fallida</ion-button>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
-
-      <ion-grid>
-        <!-- Botones de entrega -->
-        <ion-row>
-          <ion-col>
-            <ion-button (click)="entregarPedido(pedido.id)" *ngIf="pedido.estado === 'reanudado' || pedido.estado === 'Envio rápido'" expand="block" color="primary">Entregado</ion-button>
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col>
-            <ion-button (click)="contactarPorWsp(pedido.id)" *ngIf="pedido.estado === 'reanudado' || pedido.estado === 'Envio rápido'" expand="block" color="primary">Contactar Cliente</ion-button>
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col>
-            <ion-button (click)="marcarEntregaFallida(pedido.id)" *ngIf="pedido.estado === 'reanudado' || pedido.estado === 'Envio rápido'" expand="block" color="primary">Entrega Fallida</ion-button>
-          </ion-col>
-        </ion-row>
-        <ion-row>  
-          <ion-col>
-            <ion-button (click)="tomarFotoEntrega(pedido.id)" *ngIf="pedido.estado === 'reanudado' || pedido.estado === 'Envio rápido'" color="primary">Foto de entrega</ion-button>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
-
-      <ion-grid>
-        <ion-row>
-          <ion-col>
-            <ion-button expand="block" (click)="ingresarCentroDistribucion(pedido.id)" *ngIf="pedido.estado === 'recepcionado'" color="primary">Ingresar</ion-button>
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col>
-            <ion-button expand="block" (click)="marcarEnvioRapido(pedido.id)" *ngIf="pedido.estado === 'recepcionado'" color="primary">Envío rápido</ion-button>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
-    </ion-item>
-  </ion-list>
+    <!-- Botones para filtrar pedidos -->
+  <ion-grid class="card-centerr">
+    <ion-row >
+      <ion-col>
+        <ion-button id="last-of-type"(click)="filtrarPedidos('hoy')" >Hoy</ion-button>
+      </ion-col>
+      <ion-col>
+        <ion-button id="last-of-type" (click)="filtrarPedidos('ayer')" >Ayer</ion-button>
+      </ion-col>
+      <ion-col>
+        <ion-button id="last-of-type" (click)="filtrarPedidos('semana')" >Última Semana</ion-button>
+      </ion-col>
+      <ion-col>
+        <ion-button id="last-of-type" (click)="filtrarPedidos('todos')" >Todos</ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 
   <!-- Contadores de pedidos -->
-  <ion-card>
+  <ion-card class="slide-up-card3">
     <ion-card-header>
       <ion-card-title>Contador de Pedidos</ion-card-title>
     </ion-card-header>
@@ -97,23 +27,6 @@
     </ion-card-content>
   </ion-card>
 
-  <!-- Botones para filtrar pedidos -->
-  <ion-grid>
-    <ion-row>
-      <ion-col>
-        <ion-button expand="block" (click)="filtrarPedidos('hoy')" color="primary">Hoy</ion-button>
-      </ion-col>
-      <ion-col>
-        <ion-button expand="block" (click)="filtrarPedidos('ayer')" color="primary">Ayer</ion-button>
-      </ion-col>
-      <ion-col>
-        <ion-button expand="block" (click)="filtrarPedidos('semana')" color="primary">Última Semana</ion-button>
-      </ion-col>
-      <ion-col>
-        <ion-button expand="block" (click)="filtrarPedidos('todos')" color="primary">Todos</ion-button>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
 
   <!-- Tabla de pedidos filtrados 
   <ion-card>
@@ -150,3 +63,114 @@
     </ion-card-content>
   </ion-card> -->
 
+
+<ion-title  id="title2" >Mis Pedidos</ion-title>
+
+<!-- Filtro de lista de pedidos por estado -->
+  <ion-item class="card-centerr">
+    <ion-label>Filtrar por estado</ion-label>
+    <ion-select [(ngModel)]="selectedState" (ionChange)="filterPedidos()">
+      <ion-select-option value="">Todos</ion-select-option>
+      <ion-select-option value="tomado">Tomado</ion-select-option>
+      <ion-select-option value="recepcionado">Recepcionado</ion-select-option>
+      <ion-select-option value="entregado">Entregado</ion-select-option>
+    </ion-select>
+  </ion-item>
+  <!-- Lista de pedidos -->
+  <ion-list>
+    <ion-card class="slide-up-card3" *ngFor="let pedido of pedidos" (click)="verDetalles(pedido.id)">
+        <h1 id="title3">{{ pedido.nombre_pedido }}</h1>
+      <hr />
+
+      <div id="left" class="row">
+        <ion-img id="left"class="direccion" src="assets/img/localizador-bordes.png"></ion-img>
+        <h2 class="text">{{ pedido.direccion_entrega }}</h2>
+      </div>
+      <div id="left" class="row">
+        <ion-img class="direccion" src="assets/img/localizador-naranjo.png"></ion-img>
+        <h2 class="text">{{ pedido.direccion_pedido }}</h2>
+      </div>
+      
+  <ion-card class= "gris-content" >
+    <h2 id="left">Datos del Pedido</h2>
+      <hr />
+      <div class="display-flex">
+      <p>
+        <strong>Fragil:</strong>
+        <span class="answer">{{ pedido.fragil ? 'Sí' : 'No' }}</span>
+      </p>
+      <p>
+        <strong>Cambio:</strong> 
+        <span class="answer">{{ pedido.cambio ? 'Sí' : 'No' }}</span>
+      </p>
+      <p>
+        <strong>Excede 2,5 Kilos:</strong>      
+        <span class="answer">{{ pedido.excedeKilos ? 'Sí' : 'No' }}</span>
+      </p>
+      </div>
+      </ion-card>
+     <ion-card class= "gris-content" >
+    <h2 id="left">Descripcion del paquete</h2>
+    <h2><strong>{{ pedido.descripcion_pedido }}</strong></h2>
+   </ion-card>
+
+
+      <!-- Botones de acción para cada pedido -->
+      <ion-grid>
+        <ion-row>
+          <ion-col>
+            <ion-button (click)="recepcionar(pedido.id)" *ngIf="pedido.estado === 'tomado'" id="last-of-type">Recepcionado</ion-button>
+          </ion-col>
+        </ion-row>
+        
+        <ion-row>
+          <ion-col>
+            <ion-button (click)="contactarPorWsp(pedido.id)" *ngIf="pedido.estado === 'tomado'" id="first-of-type">Contactar Cliente</ion-button>
+          </ion-col>
+        </ion-row>
+        
+        <ion-row>
+          <ion-col>
+            <ion-button (click)="recepcionFallidaYLiberar(pedido.id)" *ngIf="pedido.estado === 'tomado'" color="danger">Recepción fallida</ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+
+      <ion-grid>
+        <!-- Botones de entrega -->
+        <ion-row>
+          <ion-col>
+            <ion-button (click)="entregarPedido(pedido.id)" *ngIf="pedido.estado === 'reanudado' || pedido.estado === 'Envio rápido'" id="last-of-type">Entregado</ion-button>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+            <ion-button (click)="contactarPorWsp(pedido.id)" *ngIf="pedido.estado === 'reanudado' || pedido.estado === 'Envio rápido'" id="last-of-type">Contactar Cliente</ion-button>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+            <ion-button (click)="marcarEntregaFallida(pedido.id)" *ngIf="pedido.estado === 'reanudado' || pedido.estado === 'Envio rápido'" id="last-of-type">Entrega Fallida</ion-button>
+          </ion-col>
+        </ion-row>
+        <ion-row>  
+          <ion-col>
+            <ion-button (click)="tomarFotoEntrega(pedido.id)" *ngIf="pedido.estado === 'reanudado' || pedido.estado === 'Envio rápido'" id="last-of-type">Foto de entrega</ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+
+      <ion-grid>
+        <ion-row>
+          <ion-col>
+            <ion-button expand="block" (click)="ingresarCentroDistribucion(pedido.id)" *ngIf="pedido.estado === 'recepcionado'" id="last-of-type">Ingresar</ion-button>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+            <ion-button expand="block" (click)="marcarEnvioRapido(pedido.id)" *ngIf="pedido.estado === 'recepcionado'" id="last-of-type">Envío rápido</ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card>
+  </ion-list>

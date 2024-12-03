@@ -1,16 +1,10 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Agregar Entrega</ion-title>
-  </ion-toolbar>
-</ion-header>
 
 
   <!-- Mostrar pedidos disponibles para tomar -->
   <ion-list *ngIf="pedidos.length > 0; else noPedidos">
-    <ion-item *ngFor="let pedido of pedidos" (click)="verDetalles(pedido.id)">
-      <ion-card>
+      <ion-card *ngFor="let pedido of pedidos" (click)="verDetalles(pedido.id)" class="card-centerr">
         <ion-card-header>
-          <ion-card-title>{{ pedido.nombre_pedido }}</ion-card-title>
+          <ion-card-title id="title4">{{ pedido.nombre_pedido }}</ion-card-title>
           <ion-card-subtitle>{{ pedido.fecha }}</ion-card-subtitle>
         </ion-card-header>
         <ion-card-content>
@@ -18,18 +12,16 @@
           <p><strong>Dirección de Entrega:</strong> {{ pedido.direccion_entrega }}</p>
           <p><strong>Comuna:</strong> {{ pedido.comuna }}</p>
           <p><strong>Teléfono:</strong> {{ pedido.telefono }}</p>
-          <ion-button (click)="tomarPedido(pedido.id)" color="primary">Tomar</ion-button>
+          <ion-button (click)="tomarPedido(pedido.id)" id="last-of-type" >Tomar</ion-button>
         </ion-card-content>
       </ion-card>
-    </ion-item>
   </ion-list>
 
   <!-- Mostrar pedidos en centro de distribución -->
   <ion-list *ngIf="pedidosReanudar.length > 0; else noPedidosReanudar">
-    <ion-item *ngFor="let pedido of pedidosReanudar" (click)="verDetalles(pedido.id)">
-      <ion-card>
+      <ion-card *ngFor="let pedido of pedidosReanudar" (click)="verDetalles(pedido.id)" class="card-centerr">
         <ion-card-header>
-          <ion-card-title>{{ pedido.nombre_pedido }}</ion-card-title>
+          <ion-card-title id="title4">{{ pedido.nombre_pedido }}</ion-card-title>
           <ion-card-subtitle>{{ pedido.fecha }}</ion-card-subtitle>
         </ion-card-header>
         <ion-card-content>
@@ -37,10 +29,9 @@
           <p><strong>Dirección de Entrega:</strong> {{ pedido.direccion_entrega }}</p>
           <p><strong>Comuna:</strong> {{ pedido.comuna }}</p>
           <p><strong>Teléfono:</strong> {{ pedido.telefono }}</p>
-          <ion-button (click)="tomarPedidoIngresado(pedido.id)" color="primary">Reanudar</ion-button>
+          <ion-button (click)="tomarPedidoIngresado(pedido.id)"id="last-of-type">Reanudar</ion-button>
         </ion-card-content>
       </ion-card>
-    </ion-item>
   </ion-list>
 
   <ng-template #noPedidos>

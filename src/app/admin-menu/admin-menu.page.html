@@ -1,35 +1,31 @@
 <ion-app>
     <!-- Encabezado de la página -->
     <ion-header>
-        <ion-toolbar color="primary">
-            <ion-title>Panel de Administración</ion-title>
+        <ion-toolbar id="first-of-type-login">
+            <ion-title  id="title3">Panel de Administración</ion-title>
         </ion-toolbar>
     </ion-header>
+    <ion-button  id="last-of-type" (click)="logout()">Cerrar sesión</ion-button>
 
     <!-- Contenido principal -->
     <ion-content>
         <!-- Sección de Clientes -->
-        <ion-card>
-            <ion-card-header>
-                <ion-card-title >Administrar Clientes</ion-card-title>
-            </ion-card-header>
-            <ion-card-content>
-                <ion-list *ngIf="usuarios?.length ; else noClientes">
-                    <ion-item  color="primary" *ngFor="let usuario of usuarios">
+       
+                <ion-title id="title2" >Administrar Clientes</ion-title>
+                    <ion-list *ngIf="usuarios?.length ; else noClientes">
+                    <ion-card *ngFor="let usuario of usuarios" class="slide-up-card3">
                         <ion-label>
                             <h2>Usuario: {{ sanitizeEmail(usuario.email) }} </h2>
                             <p>Activada: {{ usuario.verificado ? 'Sí' : 'No' }}</p>
                         </ion-label>
 
                         <ion-buttons >
-                            <ion-button color="success" (click)="activarUsuario(usuario.id)">Activar</ion-button>
+                            <ion-button color="success" (click)="activarUsuario(usuario.id)">Activar</ion-button>                        
+                            <ion-button color="danger" (click)="confirmDeleteAccount({ id: usuario.id, email: usuario.email, user_type: usuario.user_type, created_at: usuario.created_at })">Eliminar Cuenta</ion-button>
                             <ion-button color="danger" (click)="desactivarUsuario(usuario.id)">Desactivar</ion-button>
                         </ion-buttons>
-
-                    </ion-item>
-                </ion-list>
-            </ion-card-content>
-        </ion-card>
+                    </ion-card>
+                    </ion-list>
 
         <ng-template #noClientes>
             <ion-text>
@@ -38,25 +34,21 @@
         </ng-template>
 
         <!-- Sección de Conductores -->
-        <ion-card>
-            <ion-card-header>
-                <ion-card-title>Administrar Conductores</ion-card-title>
-            </ion-card-header>
-            <ion-card-content>
+
+            <ion-card-title id="title2">Administrar Conductores</ion-card-title>
                 <ion-list *ngIf="conductores?.length ; else noConductores">
-                    <ion-item *ngFor="let conductor of conductores">
+                  <ion-card *ngFor="let conductor of conductores" class="slide-up-card2">
                         <ion-label>
                             <h2>Conductor: {{ sanitizeEmail(conductor.email) }} </h2>
                             <p>Activada: {{ conductor.verificado ? 'Sí' : 'No' }}</p>
                         </ion-label>
+                    <ion-buttons >
                         <ion-button color="success" (click)="activarUsuario(conductor.id)">Activar</ion-button>
                         <ion-button color="danger" (click)="desactivarUsuario(conductor.id)">Desactivar</ion-button>
                         <ion-button color="danger" (click)="confirmDeleteAccount({ id: conductor.id, email: conductor.email, user_type: conductor.user_type, created_at: conductor.created_at })">Eliminar Cuenta</ion-button>
-
-                    </ion-item>
+                    </ion-buttons >
+                    </ion-card>
                 </ion-list>
-            </ion-card-content>
-        </ion-card>
 
         <ng-template #noConductores>
             <ion-text>
@@ -65,25 +57,19 @@
         </ng-template>
 
         <!-- Sección de Paquetes -->
-        <ion-card>
-            <ion-card-header>
-                <ion-card-title>Administrar Paquetes</ion-card-title>
-            </ion-card-header>
-            <ion-card-content>
+            <ion-card-title id="title2">Administrar Paquetes</ion-card-title>
                 <ion-list *ngIf="pedidos?.length; else noPedidos">
-                    <ion-item *ngFor="let pedido of pedidos">
+                    <ion-card  *ngFor="let pedido of pedidos" class="slide-up-card2">
                         <ion-label>
                             <h2>Paquete: {{ pedido.nombre_pedido }}</h2>
                             <p>Estado: {{ pedido.estado }}</p>
                         </ion-label>
+                    <ion-buttons >
                         <ion-button color="tertiary">Editar</ion-button>
                         <ion-button color="danger">Eliminar</ion-button>
-                    </ion-item>
+                    </ion-buttons >
+                    </ion-card>
                 </ion-list>
-                <ion-button color="primary" (click)="logout()">cerrar sesión</ion-button>
-
-            </ion-card-content>
-        </ion-card>
 
         <ng-template #noPedidos>
             <ion-text>

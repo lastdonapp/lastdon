@@ -1,31 +1,24 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>pagos</ion-title>
-  </ion-toolbar>
-</ion-header>
-
-
   <!-- Filtro de estado -->
-  <ion-item>
+  <ion-item class="card-centerr">
     <ion-label>Filtrar por estado</ion-label>
-    <ion-select [(ngModel)]="selectedState" (ionChange)="filterPedidos()">
-      <ion-select-option value="">Todos</ion-select-option>
-      <ion-select-option value="por tomar">Por Tomar</ion-select-option>
-      <ion-select-option value="tomado">Tomado</ion-select-option>
-      <ion-select-option value="entregado">Entregado</ion-select-option>
+    <ion-select  [(ngModel)]="selectedState" (ionChange)="filterPedidos()">
+      <ion-select-option  value="">Todos</ion-select-option>
+      <ion-select-option  value="por tomar">Por Tomar</ion-select-option>
+      <ion-select-option  value="tomado">Tomado</ion-select-option>
+      <ion-select-option  value="entregado">Entregado</ion-select-option>
     </ion-select>
   </ion-item>
 
   <ion-list>
-    <ion-item *ngFor="let pedido of pedidos">
+    <ion-card class="slide-up-card2" *ngFor="let pedido of pedidos">
       <ion-label>
-        <h2>{{ pedido.nombre_pedido }}</h2>
+        <h2 id="title4">{{ pedido.nombre_pedido }}</h2>
         <p>{{ pedido.descripcion_pedido }}</p>
         <p>Estado: {{ pedido.estado }}</p>
         <p>Fecha tomado: {{ pedido.fecha_tomado | date }}</p>
         <p>pagado: {{ pedido.pagado }}</p>
         <h3>costo: {{ pedido.costo | currency }}</h3>
       </ion-label>
-    </ion-item>
+    </ion-card>
   </ion-list>
 

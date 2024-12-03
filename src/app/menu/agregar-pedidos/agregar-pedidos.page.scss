@@ -1,0 +1,15 @@
+/* Borde de los elementos en naranja cuando están completos */
+.bordes-naranja {
+    border: 1.5px solid #FFA500 !important; /* Naranja */
+  }
+  
+  /* Cambiar el color del texto del ion-label en naranja cuando todos los campos están completos */
+  .naranja {
+    color: #FFA500 !important;
+  }
+  
+  /* Cambiar el color de fondo del acordeón cuando todos los campos están completos */
+  .completo {
+    --background: #FFE4B5 !important; /* Color claro de fondo */
+  }
+  

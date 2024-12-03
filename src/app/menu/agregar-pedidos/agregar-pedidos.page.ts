@@ -155,6 +155,7 @@ export class AgregarPedidosPage implements OnInit {
   }
 
 
+  
 
     // Método para actualizar el costo cuando cambia la comuna
     onComunaChange(comuna: string) {
@@ -168,7 +169,35 @@ export class AgregarPedidosPage implements OnInit {
 
 
 
+// Función que verifica si todos los campos del acordeón de "Información del Pedido" están completos
+get isInfoPedidoCompleta(): boolean {
+  return (
+    this.pedido.nombrePedido && 
+    this.pedido.descripcionPedido && 
+    this.pedido.direccionPedido && 
+    this.pedido.direccionEntrega
+  );
+}
 
+// Función que verifica si todos los campos del acordeón de "Información del Destinatario" están completos
+get isInfoDestinatarioCompleta(): boolean {
+  return (
+    this.pedido.nombreDestinatario && 
+    this.pedido.numeracionCasa && 
+    this.pedido.vivienda && 
+    this.pedido.comuna && 
+    this.pedido.telefono
+  );
+}
+
+// Función que verifica si todos los campos del acordeón de "Dimensiones" están completos
+get isDimensionesCompleta(): boolean {
+  return (
+    this.pedido.dimensiones.alto && 
+    this.pedido.dimensiones.ancho && 
+    this.pedido.dimensiones.largo 
+  );
+}
 
 
   async takePhoto() {
@@ -208,7 +237,7 @@ export class AgregarPedidosPage implements OnInit {
       message: message,
       duration: 2000,
       position: 'top',
-      color: color
+      color: "#FF9500"
     });
     toast.present();
   }
@@ -253,7 +282,7 @@ export class AgregarPedidosPage implements OnInit {
               console.log('Pedido cancelado por el usuario');
             }
           },
-          {
+          { 
             text: 'Confirmar',
             handler: async () => {
               if (this.capturedPhoto) {
@@ -294,7 +323,7 @@ export class AgregarPedidosPage implements OnInit {
                 console.log('Pedido agregado:', data);
                 await this.showToast('Pedido agregado exitosamente', 'success');
                 this.capturedPhoto = ''; // Limpiar la variable de la foto capturada
-                this.router.navigate(['/menu']);
+                this.router.navigate(['/menu/pedidos']);
               }
             }
           }

@@ -1,10 +1,11 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Menú Conductor</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-menu contentId="main-content">
+  <ion-header>
+    <ion-toolbar>
+      <ion-title  id="title4" >Menu Conductor</ion-title>
+    </ion-toolbar>
+  </ion-header>
 
-<ion-content>
+<ion-content class="ion-padding">
   <ion-list>
     <ion-item routerLink="/conductor-menu/mis-pedidos">
       <ion-label>Mis Entregas</ion-label>
@@ -16,5 +17,38 @@
       <ion-label>Perfil</ion-label>
     </ion-item>
   </ion-list>
-  <router-outlet></router-outlet>
 </ion-content>
+</ion-menu>
+
+
+<div class="ion-page" id="main-content">
+
+  <ion-header >
+    <ion-toolbar id="first-of-type-login" >
+      <ion-buttons slot="start">
+        <ion-menu-button></ion-menu-button>
+      </ion-buttons>
+      <ion-title>{{ currentTitle }}</ion-title> <!-- Aquí se cambia el título -->
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content >
+
+    <ion-card class="oval-background" *ngIf="currentUser">
+      <ion-card-header>
+      </ion-card-header>
+    </ion-card>
+
+    <ion-card class="slide-up-card">
+      <ion-card-content>
+        <ion-card-title id="title2">{{"Bienvenido/a: "+sanitizeEmail(currentUser.email) }}</ion-card-title>
+        <h2>{{getUserType() }}</h2>  <!-- Muestra "Conductor" o "Usuario" dependiendo del tipo -->
+      </ion-card-content> 
+    </ion-card>
+    <br><br>
+    <router-outlet ></router-outlet>
+
+  </ion-content>
+
+</div>
+

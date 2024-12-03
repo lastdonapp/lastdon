@@ -1,13 +1,7 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Agregar Pedido</ion-title>
-  </ion-toolbar>
-</ion-header>
 
-
-  <ion-card>
+  <ion-card class=" card-centerr">
     <ion-card-header>
-      <ion-card-title>Datos del Pedido</ion-card-title>
+      <ion-card-title id="title3">Datos del Pedido</ion-card-title>
       <ion-card-subtitle>
         Completa la información del pedido
       </ion-card-subtitle>
@@ -20,14 +14,18 @@
       <form (ngSubmit)="onSubmit()" #pedidoForm="ngForm">
         <!-- Nombre y Descripción -->
 
-        <ion-accordion>
-      <ion-item slot="header">
-        <ion-label>Información del Pedido</ion-label>
+        <ion-accordion 
+        [ngClass]="{'completo': isInfoPedidoCompleta}">
+     
+      <ion-item [ngClass]="{'bordes-naranja': isInfoPedidoCompleta}" slot="header">
+        <ion-label 
+        [ngClass]="{'naranja': isInfoPedidoCompleta}">
+        Información del Pedido</ion-label>
       </ion-item>
       <ion-list slot="content">
 
-        <ion-item>
-          <ion-label position="stacked">Nombre del Pedido</ion-label>
+        <ion-item [ngClass]="{'bordes-naranja': nombrePedido.valid}">
+          <ion-label [ngClass]="{'naranja': nombrePedido.valid}"position="stacked">Nombre del Pedido</ion-label>
           <ion-input
             [(ngModel)]="pedido.nombrePedido"
             name="nombrePedido"
@@ -39,8 +37,8 @@
           <p *ngIf="nombrePedido.errors?.['required']">El nombre del pedido es requerido.</p>
         </ion-text>
 
-        <ion-item>
-          <ion-label position="stacked">Descripción del Pedido</ion-label>
+        <ion-item [ngClass]="{'bordes-naranja': descripcionPedido.valid}">
+          <ion-label  [ngClass]="{'naranja': descripcionPedido.valid}"position="stacked">Descripción del Pedido</ion-label>
           <ion-textarea
             [(ngModel)]="pedido.descripcionPedido"
             name="descripcionPedido"
@@ -54,8 +52,8 @@
         </ion-text>
 
         <!-- Dirección de Pedido y Entrega -->
-        <ion-item>
-          <ion-label position="stacked">Origen</ion-label>
+        <ion-item [ngClass]="{'bordes-naranja': direccionPedido.valid}">
+          <ion-label [ngClass]="{'naranja': direccionPedido.valid}" position="stacked">Origen</ion-label>
           <ion-input
             [(ngModel)]="pedido.direccionPedido"
             name="direccionPedido"
@@ -74,8 +72,8 @@
           <p *ngIf="direccionPedido.errors?.['required']">La dirección del pedido es requerida.</p>
         </ion-text>
 
-        <ion-item>
-          <ion-label position="stacked">Destino</ion-label>
+        <ion-item [ngClass]="{'bordes-naranja': direccionEntrega.valid}">
+          <ion-label [ngClass]="{'naranja': direccionEntrega.valid}" position="stacked">Destino</ion-label>
           <ion-input
             [(ngModel)]="pedido.direccionEntrega"
             name="direccionEntrega"
@@ -97,14 +95,15 @@
         </ion-accordion>
 
         <!-- Información del Destinatario -->
-        <ion-accordion>
-        <ion-item slot="header">
-          <ion-label>Información del Destinatario</ion-label>
+        <ion-accordion    [ngClass]="{'completo': isInfoDestinatarioCompleta}">
+
+        <ion-item [ngClass]="{'bordes-naranja': isInfoDestinatarioCompleta}" slot="header" >
+          <ion-label [ngClass]="{'naranja': isInfoDestinatarioCompleta}">Información del Destinatario</ion-label>
         </ion-item>
         <ion-list slot="content">
 
-        <ion-item>
-          <ion-label position="stacked">Nombre del Destinatario</ion-label>
+        <ion-item  [ngClass]="{'bordes-naranja': nombreDestinatario.valid}">
+          <ion-label [ngClass]="{'naranja': nombreDestinatario.valid}" position="stacked">Nombre del Destinatario</ion-label>
           <ion-input
             [(ngModel)]="pedido.nombreDestinatario"
             name="nombreDestinatario"
@@ -118,8 +117,8 @@
         </ion-text>
 
         <!-- Datos Adicionales -->
-        <ion-item>
-          <ion-label position="stacked">Numeración de Vivienda </ion-label>
+        <ion-item [ngClass]="{'bordes-naranja': numeracionCasa.valid}">
+          <ion-label [ngClass]="{'naranja': numeracionCasa.valid}" position="stacked">Numeración de Vivienda </ion-label>
           <ion-input
             [(ngModel)]="pedido.numeracionCasa"
             name="numeracionCasa"
@@ -132,8 +131,8 @@
           <p *ngIf="numeracionCasa.errors?.['required']">La numeración de la Viviendo es requerida.</p>
         </ion-text>
 
-        <ion-item>
-          <ion-label>Vivienda</ion-label>
+        <ion-item [ngClass]="{'bordes-naranja': vivienda.valid}">
+          <ion-label [ngClass]="{'naranja': vivienda.valid}">Vivienda</ion-label>
           <ion-select
             [(ngModel)]="pedido.vivienda"
             name="vivienda"
@@ -149,8 +148,8 @@
           <p *ngIf="vivienda.errors?.['required']">La vivienda es requerida.</p>
         </ion-text>
 
-        <ion-item>
-          <ion-label>Comuna</ion-label>
+        <ion-item  [ngClass]="{'bordes-naranja': comuna.valid}">
+          <ion-label [ngClass]="{'naranja': comuna.valid}">Comuna</ion-label>
           <ion-select
             [(ngModel)]="pedido.comuna"
             name="comuna"
@@ -167,8 +166,8 @@
           <p *ngIf="comuna.errors?.['required']">La comuna es requerida.</p>
         </ion-text>
 
-        <ion-item>
-          <ion-label position="stacked">Teléfono</ion-label>
+        <ion-item [ngClass]="{'bordes-naranja': telefono.valid}">
+          <ion-label [ngClass]="{'naranja': telefono.valid}" position="stacked">Teléfono</ion-label>
           <ion-note slot="start">+569</ion-note>
           <ion-input
             [(ngModel)]="telefonoInput"
@@ -189,16 +188,16 @@
         </ion-accordion>
 
         <!-- Dimensiones -->
-        <ion-accordion>
-        <ion-item slot="header">
-          <ion-label>Dimensiones del paquete</ion-label>
+        <ion-accordion [ngClass]="{'completo': isDimensionesCompleta}">
+        <ion-item [ngClass]="{'bordes-naranja': isDimensionesCompleta}"slot="header">
+          <ion-label [ngClass]="{'naranja': isDimensionesCompleta}">Dimensiones del paquete</ion-label>
         </ion-item>
         <ion-list slot="content">
 
           
         
-        <ion-item>
-          <ion-label position="stacked">Alto</ion-label>
+        <ion-item [ngClass]="{'bordes-naranja': dimensionesAlto.valid}">
+          <ion-label [ngClass]="{'naranja': dimensionesAlto.valid}" position="stacked">Alto</ion-label>
           <ion-input
             [(ngModel)]="pedido.dimensiones.alto"
             name="dimensionesAlto"
@@ -224,8 +223,8 @@
         </div>
         
         
-        <ion-item>
-          <ion-label position="stacked">Ancho</ion-label>
+        <ion-item [ngClass]="{'bordes-naranja': dimensionesAncho.valid}">
+          <ion-label [ngClass]="{'naranja': dimensionesAncho.valid}" position="stacked">Ancho</ion-label>
           <ion-input
             [(ngModel)]="pedido.dimensiones.ancho"
             name="dimensionesAncho"
@@ -251,8 +250,8 @@
         </div>
         
         
-        <ion-item>
-          <ion-label position="stacked">Largo</ion-label>
+        <ion-item [ngClass]="{'bordes-naranja': dimensionesLargo.valid}">
+          <ion-label [ngClass]="{'naranja': dimensionesLargo.valid}"position="stacked">Largo</ion-label>
           <ion-input
             [(ngModel)]="pedido.dimensiones.largo"
             name="dimensionesLargo"
@@ -279,8 +278,8 @@
 
 
 
-        <ion-item lines="full">
-          <ion-label>¿Es frágil?</ion-label>
+        <ion-item [ngClass]="{'bordes-naranja': pedido.fragil.valid}" lines="full">
+          <ion-label >¿Es frágil?</ion-label>
           <ion-checkbox
             [(ngModel)]="pedido.fragil"
             name="fragil"
@@ -289,7 +288,7 @@
         </ion-item>
         
 
-        <ion-item lines="full">
+        <ion-item lines="full"  >
           <ion-label>¿Excede 2,5 kg de peso?</ion-label>
           <ion-checkbox
             [(ngModel)]="pedido.excedeKilos"
@@ -301,9 +300,9 @@
 
 
         <!-- Foto del Pedido -->
-        <ion-item>
+        <ion-item >
           <ion-label>Foto del Pedido</ion-label>
-          <ion-button (click)="takePhoto()">Tomar Foto</ion-button>
+          <ion-button id="last-of-type" (click)="takePhoto()">Tomar Foto</ion-button>
         </ion-item>
         
         <ion-item *ngIf="capturedPhoto">
@@ -319,7 +318,7 @@
       </ion-accordion>
 
         <!-- Botón de Envío -->
-        <ion-button expand="full" type="submit" [disabled]="pedidoForm.form.invalid">Agregar Pedido</ion-button>
+        <ion-button id="last-of-type" type="submit" [disabled]="pedidoForm.form.invalid">Agregar Pedido</ion-button>
 
       </form>
     </ion-accordion-group>

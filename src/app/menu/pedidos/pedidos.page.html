@@ -1,21 +1,18 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Mis Pedidos</ion-title>
-  </ion-toolbar>
-</ion-header>
-
   <!-- Barra de búsqueda -->
-  <ion-searchbar [(ngModel)]="searchTerm" (ionInput)="filtrarPedidos($event)" placeholder="Buscar pedidos por título"></ion-searchbar>
+  <ion-searchbar  [(ngModel)]="searchTerm" (ionInput)="filtrarPedidos($event)" placeholder="Buscar pedidos por título"></ion-searchbar>
   
   <!-- Lista de pedidos filtrados -->
+
+
+
+  <!-- Lista de pedidos filtrados -->
   <ion-list *ngIf="pedidosFiltrados.length > 0; else noPedidos">
-    <ion-item *ngFor="let pedido of pedidosFiltrados" (click)="verDetalles(pedido.id, pedido.mostrarFormulario)">
-      <ion-card>
+      <ion-card  *ngFor="let pedido of pedidosFiltrados" (click)="verDetalles(pedido.id, pedido.mostrarFormulario)"  class="slide-up-card3"  >
         <ion-card-header>
-          <ion-card-title>{{ pedido.nombre_pedido }}</ion-card-title>
+          <ion-card-title  id="title3">{{ pedido.nombre_pedido }}</ion-card-title>
           <ion-card-subtitle>{{ pedido.fecha }}</ion-card-subtitle>
         </ion-card-header>
-        <ion-card-content>
+        <ion-card-content class="slide-up-card2">
           <p><strong>Descripción:</strong> {{ pedido.descripcion_pedido }}</p>
           <p><strong>Dirección de Pedido:</strong> {{ pedido.direccion_pedido }}</p>
           <p><strong>Dirección de Entrega:</strong> {{ pedido.direccion_entrega }}</p>
@@ -40,7 +37,7 @@
             <qr-code [value]="generarQRValue(pedido)" [size]="100"></qr-code>
           </div>
 
-          <ion-button color="primary" (click)="generarEtiquetaPDF(pedido)" [disabled]="!pedido.pagado">
+          <ion-button id="first-of-type" (click)="generarEtiquetaPDF(pedido)" [disabled]="!pedido.pagado">
             Descargar Etiqueta
           </ion-button>
 
@@ -48,7 +45,7 @@
             Debe cancelar la entrega para solicitar la etiqueta virtual.
           </p>
 
-          <ion-button *ngIf="pedido.estado === 'entregado'" color="primary" 
+          <ion-button *ngIf="pedido.estado === 'entregado'" id="last-of-type" 
             [disabled]="pedido.cambioRealizado || pedido.cambio" 
             (click)="mostrarFormulario(pedido.id, $event)">
             Solicitar cambio
@@ -92,7 +89,6 @@
 
         </ion-card-content>
       </ion-card>
-    </ion-item>
   </ion-list>
 
   <!-- Mensaje cuando no hay pedidos -->
@@ -101,4 +97,3 @@
       <h2>No tienes pedidos actualmente.</h2>
     </ion-text>
   </ng-template>
-

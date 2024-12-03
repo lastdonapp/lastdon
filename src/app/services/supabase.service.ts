@@ -269,7 +269,7 @@ async sendEmail(email: string, password: string): Promise<void> {
   };
 
   try {
-    const response = await emailjs.send('service_z9qtwmo', 'template_9i5xk9a', templateParams, 'myh6jilHRl1Qg8DMJ');
+    const response = await emailjs.send('service_h51uyrs', 'template_ctmrwfi', templateParams, 'nvojz25AkGPsD6K59');
     console.log('Email sent successfully:', response);
   } catch (error) {
     console.error('Failed to send email:', error);

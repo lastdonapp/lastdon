@@ -1,12 +1,27 @@
-.responsive-img {
-    width: 30%;
-    height: auto;
-    display: block;
-    margin: 0 auto;
-    /* Centra la imagen */
+/* ID #espacio */
+#espacio {
+    margin-top: 10rem;   /* Espacio arriba */
+    margin-bottom: 10rem; /* Espacio abajo */
 }
-/* Agrega estilos para que los botones se vean bien */
-ion-button {
-    margin-top: 10px;
-  }
-  
+
+/* Media Queries Responsivas */
+@media (max-width: 1024px) { /* Tablets y pantallas medianas */
+    #espacio {
+        margin-top: 4rem;  /* Menos espacio en pantallas medianas */
+        margin-bottom: 6rem; /* Ajustar el espacio abajo */
+    }
+}
+
+@media (max-width: 768px) { /* Móviles grandes */
+    #espacio {
+        margin-top: 3rem;   /* Reducir más en móviles grandes */
+        margin-bottom: 4rem; /* Reducir margen abajo */
+    }
+}
+
+@media (max-width: 480px) { /* Móviles pequeños */
+    #espacio {
+        margin-top: 3rem;   /* Menos espacio en pantallas pequeñas */
+        margin-bottom: 2rem; /* Menos espacio abajo */
+    }
+}

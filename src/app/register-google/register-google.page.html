@@ -1,41 +1,38 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Registro Con Google</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content>
+<div class="main-container">
 
-<ion-content class="ion-padding">
-  <ion-card>
-    <ion-img class="responsive-img" src="assets/img/lastdon-logo.png"></ion-img>
-    <ion-card-header>
-      <ion-card-title class="ion-text-center">Crear Cuenta</ion-card-title>
-      <ion-card-subtitle class="ion-text-center">
-        Elige un tipo de cuenta y luego inicia sesión con Google
-      </ion-card-subtitle>
-    </ion-card-header>
-    <ion-card-content>
+  <ion-card class="card-centerr whith-content">
+      <h1 id="title3">Tipo de Usuario:</h1>
+      <p id="title5"><strong>Selecciona un tipo de usuario</strong></p>
 
-      <ion-item>
-        <ion-label>Tipo de Usuario</ion-label>
-      </ion-item>
+        <p id="espacio"></p>
+
       <ion-radio-group [(ngModel)]="userType">
-        <ion-item>
-          <ion-label>Usuario Normal</ion-label>
-          <ion-radio slot="start" value="normal"></ion-radio>
+
+        <ion-item [ngClass]="{'selected': userType === 'normal'}"  class="custom-radio-item ">
+          <div [ngClass]="{'selected': userType === 'normal'}" class="icon-label-container2">
+              <ion-radio slot="start" value="normal" ></ion-radio>
+              <ion-icon name="person-outline" class="custom-icon "></ion-icon>
+              <ion-label>Conductor</ion-label>
+            </div>
         </ion-item>
-        <ion-item>
-          <ion-label>Conductor</ion-label>
-          <ion-radio slot="start" value="conductor"></ion-radio>
+
+        <ion-item [ngClass]="{'selected': userType === 'conductor'}" class="custom-radio-item">
+          <div [ngClass]="{'selected': userType === 'conductor'}" class="icon-label-container2">
+              <ion-icon name="car-sport-outline" class="custom-icon"><ion-radio slot="start" value="conductor"></ion-radio>
+              </ion-icon>
+              <ion-label>Conductor</ion-label> 
+            </div>
         </ion-item>
       </ion-radio-group>
-      <ion-note slot="end">Selecciona un tipo de usuario</ion-note>
+        <p id="espacio"></p>
 
-      <ion-button id="open-modal" expand="full" (click)="RegisterGoogle()">Iniciar con Google</ion-button>
-      <ion-button id="open-modal" expand="full" (click)="goBack()">Volver</ion-button>
+      <ion-button id="last-of-type" (click)="RegisterGoogle()">Iniciar con Google</ion-button>
+      <ion-button id="second-of-type" fill="clear" expand="full" (click)="goBack()">Volver</ion-button>
       <ion-text color="danger" *ngIf="errorMessage">
         <p>{{ errorMessage }}</p>
       </ion-text>
 
-    </ion-card-content>
   </ion-card>
+  </div>
 </ion-content>

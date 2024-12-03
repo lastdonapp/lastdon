@@ -1,14 +1,13 @@
-<!-- detalles-pedido.page.html -->
-<ion-header>
+
+  <ion-card class="card-centerr" *ngIf="pedido">
   <ion-toolbar>
-    <ion-title>Detalles Entrega</ion-title>
-  </ion-toolbar>
-</ion-header>
-
-
-  <ion-card *ngIf="pedido">
+  <ion-buttons slot="start">
+    <ion-button routerLink="/conductor-menu/mis-pedidos" clas="naranja">
+    <ion-icon name="arrow-back-outline"></ion-icon>Volver</ion-button>
+  </ion-buttons>
+</ion-toolbar>
     <ion-card-header>
-      <ion-card-title>{{ pedido.nombre_pedido }}</ion-card-title>
+      <ion-card-title id="title4">{{ pedido.nombre_pedido }}</ion-card-title>
       <ion-card-subtitle>{{ pedido.fecha }}</ion-card-subtitle>
     </ion-card-header>
     <ion-card-content>
@@ -21,11 +20,9 @@
       <p><strong>Teléfono:</strong> {{ pedido.telefono }}</p>
       <p><strong>Cantidad de Paquetes:</strong> {{ pedido.cantidad_paquetes }}</p>
       <p><strong>Dimensiones:</strong></p>
-  <ul>
     <li><strong>Alto:</strong> {{ pedido.dimensiones.alto }} {{ pedido.dimensiones.unidad }}</li>
     <li><strong>Ancho:</strong> {{ pedido.dimensiones.ancho }} {{ pedido.dimensiones.unidad }}</li>
     <li><strong>Largo:</strong> {{ pedido.dimensiones.largo }} {{ pedido.dimensiones.unidad }}</li>
-  </ul>
       <p><strong>Fragil:</strong> {{ pedido.fragil ? 'Sí' : 'No' }}</p>
       <p><strong>Cambio:</strong> {{ pedido.cambio ? 'Sí' : 'No' }}</p>
       <p><strong>Excede 2,5 Kilos:</strong> {{ pedido.excedeKilos ? 'Sí' : 'No' }}</p>
@@ -34,7 +31,7 @@
       
     
     <!-- Botón para mostrar el mapa -->
-    <ion-button expand="block" (click)="toggleMapa()" [disabled]="botonDeshabilitado">
+    <ion-button id="last-of-type" (click)="toggleMapa()" [disabled]="botonDeshabilitado">
     {{ mostrarMapa ? 'Ocultar Referencia de Trayecto' : 'Mostrar Referencia de Trayecto' }}
     </ion-button>
     

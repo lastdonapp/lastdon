@@ -50,6 +50,12 @@ export class LoginPage implements OnInit {
 
   async login() {
     try {
+      // Verifica si los campos de email o contraseña están vacíos
+    if (!this.email || !this.password) {
+      await this.showToast('Campos vacíos: Por favor, rellene todos los campos.', 'danger');
+      return;
+    }
+
       let session;
       let userType;
       let verificado;

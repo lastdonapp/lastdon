@@ -1,17 +1,4 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Perfil</ion-title>
-    <ion-buttons slot="end">
-      <ion-toggle [(ngModel)]="isDayMode" (ionChange)="toggleMode()"></ion-toggle>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
-
-
-  <ion-button expand="block" (click)="openChangePasswordModal()">Cambiar Contraseña</ion-button>
-  <ion-button expand="block" color="danger" (click)="logout()">Cerrar Sesión</ion-button>
-
-  <ion-card *ngIf="currentUser">
+  <ion-card class="slide-up-card2" *ngIf="currentUser">
     <ion-card-header>
       <ion-card-title>Información del Usuario</ion-card-title>
     </ion-card-header>
@@ -22,7 +9,12 @@
     </ion-card-content>
   </ion-card>
 
-  <ion-card *ngIf="userInfo">
+<ion-card class="card-centerr" >
+  <ion-button id="last-of-type"  (click)="openChangePasswordModal()">Cambiar Contraseña</ion-button>
+  <ion-button id="last-of-type"  (click)="logout()">Cerrar Sesión</ion-button>
+</ion-card>
+
+  <ion-card class="card-centerr" *ngIf="userInfo">
     <ion-card-header>
       <ion-card-title>Información del Usuario de Mercado Libre</ion-card-title>
     </ion-card-header>
@@ -53,7 +45,7 @@
     </ion-card-content>
   </ion-card>
 
-  <div *ngIf="!userInfo">
+  <div class="card-centerr" *ngIf="!userInfo">
     <p>No se pudo cargar la información del usuario de Mercado Libre.</p>
   </div>
 

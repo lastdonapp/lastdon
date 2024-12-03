@@ -24,14 +24,38 @@ export class RegisterPage {
 
   async register() {
     if (!this.email || !this.password || !this.confirmPassword || !this.userType) {
-      this.errorMessage = 'Todos los campos son requeridos.';
-      return;
+      // Muestra un mensaje de éxito
+      const toast = await this.toastController.create({
+        message: 'Todos los campos son requeridos.',
+        duration: 5000,
+        position: 'top',
+        color: 'danger'
+      });
+      await toast.present();
+    }
+  
+    if (!this.validateEmailFormat(this.email)) {
+        // Muestra un mensaje de éxito
+        const toast = await this.toastController.create({
+          message: 'Formato de correo electrónico inválido.',
+          duration: 5000,
+          position: 'top',
+          color: 'warning'
+        });
+        await toast.present();
     }
 
     if (this.password !== this.confirmPassword) {
-      this.errorMessage = 'Las contraseñas no coinciden.';
-      return;
+        // Muestra un mensaje de éxito
+        const toast = await this.toastController.create({
+          message: 'Las contraseñas no coinciden.',
+          duration: 5000,
+          position: 'top',
+          color: 'warning'
+        });
+        await toast.present();
     }
+  
 
     try {
       // Registro de usuario en la tabla personalizada
@@ -66,18 +90,19 @@ export class RegisterPage {
       console.error('Error en el registro:', err);
       this.errorMessage = (err as Error).message || 'Ocurrió un error inesperado';
       
-      // Muestra un mensaje de error
-      const toast = await this.toastController.create({
-        message: this.errorMessage,
-        duration: 2000,
-        position: 'top',
-        color: 'danger'
-      });
-      await toast.present();
     }
   }
 
   async goBack(){
-    this.router.navigate(['/login']);
+    this.router.navigate(['/inicio']);
   }
+
+
+
+  private validateEmailFormat(email: string): boolean {
+    // Expresión regular para validar correos electrónicos
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
+  
 }

@@ -123,7 +123,7 @@ generateRandomPassword(length: number = 10): string {
   }
 
   goBack() {
-    this.router.navigate(['/login']);
+    this.router.navigate(['/register']);
   }
 
 

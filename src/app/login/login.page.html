@@ -1,16 +1,9 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Inicio de Sesión</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content>
+<div class="main-container">
 
-<ion-content class="ion-padding">
-  <ion-card>
-    <ion-img class="responsive-img" src="assets/img/lastdon-logo.png"></ion-img>
-    <ion-card-header>
-      <ion-card-title class="ion-text-center">Iniciar Sesión</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
+<ion-card class="card-centerr top">
+      <ion-card-title id="title2"class="ion-text-center">Nos alegra volver a verte</ion-card-title>
+
       <form (ngSubmit)="login()">
         <ion-item>
           <ion-label position="floating">Correo Electrónico</ion-label>
@@ -20,16 +13,19 @@
           <ion-label position="floating">Contraseña</ion-label>
           <ion-input [(ngModel)]="password" name="password" type="password" required></ion-input>
         </ion-item>
-        <ion-button expand="full" type="submit">Ingresar</ion-button>
-        <ion-button expand="full" fill="clear" routerLink="/register">Registrarse</ion-button>
+
+        <p id="espacio"></p>
+
+        <ion-button id="last-of-type" type="submit">Iniciar sesión</ion-button>
       </form>
       <ion-text color="danger" *ngIf="errorMessage">
         <p>{{ errorMessage }}</p>
       </ion-text>
-    </ion-card-content>
-  </ion-card>
-    <ion-button id="open-modal" expand="full" routerLink="/register-google" >
-    Registrarse con Google
-  </ion-button>
 
+    <ion-button id="last-of-type" routerLink="/inicio" >
+    Volver
+  </ion-button>
+  </ion-card> 
+
+</div>
 </ion-content>
